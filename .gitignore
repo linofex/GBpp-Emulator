@@ -1,2 +1,6 @@
-#ignore folder
+# ignore folder vscode
 .vscode/
+
+
+# ignore main executable
+sources/main

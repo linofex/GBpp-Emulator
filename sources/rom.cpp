@@ -26,7 +26,7 @@ GBemulator::Rom::Rom (const char* t_RomFileName){
         ROMFile.read((char*)&MaskROM, 1);  
         ROMFile.read((char*)&CompCheck, 1);  
         curPos = ROMFile.tellg(); // Get current position
-        Game.resize(size - curPos); // Allocate the space nedded for the game
+        Game.resize(size - curPos); // Allocate the space needed for the game
         ROMFile.read((char*)Game.data(), size - curPos);  
     }
         else std::cout << "Unable to open file";

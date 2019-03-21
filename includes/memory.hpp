@@ -29,6 +29,8 @@ namespace GBemulator{
             
             // this method writes 2 byte starting from t_add
             void writeWord(const WORD t_add, const WORD t_value);
+
+            void writeInStack(const WORD t_add);
     };
 
 };

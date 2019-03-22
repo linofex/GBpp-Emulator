@@ -4,28 +4,34 @@
 #include "utility.hpp"
 #include "cpu.hpp"
 #include "memory.hpp"
-#include "interrupts.hpp"
+ #include "interrupts.hpp"
 #include "rom.hpp"
+#include <vector>
 //#include "display.hpp"
 //#include "gpu.hpp"
 
-namespace GBemulator{
+//namespace GBemulator{
     class GameBoy{
         private:
+            
             Cpu cpu;
             Memory memory;
             InterruptHnadler interruptHnadler;
             Rom rom;
+            std::vector<BYTE> testRom;
             //Gpu gpu;
             //Display display;
         public:
             GameBoy();
-            GameBoy(std::string RomFileName);
+            GameBoy(std::string t_RomFileName);
+            bool CheckCartridge();
+            void LoadGame();
+            void PlayGame();
             void PrintRomInfo();
             ~GameBoy();
         };
 
-    }
+  //  }
 
 
 #endif

@@ -1,10 +1,12 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 #include"utility.hpp"
-#include"cpu.hpp"
+//#include"cpu.hpp"
 #include <vector>
+#include "cpu.hpp"
 
-namespace GBemulator{
+class Cpu;
+//namespace GBemulator{
     class Memory{
         private:
 
@@ -31,9 +33,10 @@ namespace GBemulator{
             // this method writes 2 byte starting from t_add
             void writeWord(const WORD t_add, const WORD t_value);
 
-            void writeInStack(Cpu& t_cpu, const WORD t_value);
+            void writeInStack(Cpu* t_cpu, WORD t_value);
+            ~Memory();
     };
 
-};
+//};
 #endif
 

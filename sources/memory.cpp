@@ -1,5 +1,7 @@
 
 #include "../includes/memory.hpp"
+#include <iostream>
+//#include "cpu.cpp";
 
 /*
     unsigned char rom[32*KB];     // 0000-7FFF space where the rom is stored 
@@ -13,7 +15,7 @@
     unsigned char IEReg;          // Interrupt Enable Register
 */
 
-GBemulator::Memory::Memory():
+Memory::Memory():
     rom(32*KB,0x00),
     vRam(8*KB,0x00),
     eRam(8*KB,0x00),
@@ -23,7 +25,7 @@ GBemulator::Memory::Memory():
     ioPorts(127, 0x00),
     hRam(127,0x00){}
 
-BYTE GBemulator::Memory::readByte(const WORD t_add) const {
+BYTE Memory::readByte(const WORD t_add) const {
     // ROM
     if(t_add < 0x8000){
         return rom.at(t_add);
@@ -60,12 +62,12 @@ BYTE GBemulator::Memory::readByte(const WORD t_add) const {
     else if (t_add == 0xFFFF) return t_add;  
 }
 
-WORD GBemulator::Memory::readWord(const WORD t_add) const {
+WORD Memory::readWord(const WORD t_add) const {
     return readByte(t_add) + (readByte(t_add + 1) << 8);
 }
 
 
-void GBemulator::Memory::writeByte(const WORD t_add, const BYTE t_value){
+void Memory::writeByte(const WORD t_add, const BYTE t_value){
     // ROM
     if(t_add < 0x8000){
         rom[t_add] = t_value;
@@ -102,13 +104,15 @@ void GBemulator::Memory::writeByte(const WORD t_add, const BYTE t_value){
     else if (t_add == 0xFFFF)  IEReg = t_value;  
 }
 
-void GBemulator::Memory::writeWord(const WORD t_add, const WORD t_value){
+void Memory::writeWord(const WORD t_add, const WORD t_value){
     writeByte(t_add, t_value & 0xFF); // First byte
     writeByte(t_add + 1, (t_value >> 8) & 0xFF);  // Second byte
 }
 
-void GBemulator::Memory::writeInStack(Cpu& t_cpu, const WORD t_value){
-    WORD sp = t_cpu.getSp();
-    writeWord(sp, t_value);
-    t_cpu.decreaseSp();
+void Memory::writeInStack(Cpu* t_cpu, WORD t_value){
+    // WORD sp = t_cpu;
+    // writeWord(sp, t_value);
+    // t_cpu--;
 }
+
+Memory::~Memory(){}

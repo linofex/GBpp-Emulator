@@ -3,8 +3,14 @@
 
 
 #include <string>
+#include <map>
+//using namespace std;
+
 typedef unsigned char BYTE;        //8 bit
 typedef unsigned short WORD;       //16 bits
+
+
+namespace GBemulator{
 
 //regAF.reg -> AF, regAF.high -> A, regAF.low -> F
 union REGISTER {
@@ -38,8 +44,6 @@ struct instruction {
 #define resetFlag(n) (regAF.high &= n)
 #define clearFlag(n) (regAF.high &= ~n)
 
-#include <map>
-using namespace std;
 
 class Cpu {
     
@@ -61,7 +65,7 @@ class Cpu {
         //map for the instructions
         std::map<unsigned char, instruction> instrMap;
         
-        void fillInstructions(string, unsigned char, void*);
+        void fillInstructions(std::string, unsigned char, void*);
 
         bool checkCartridge(void);
 
@@ -72,6 +76,13 @@ class Cpu {
     public:
         Cpu(void);
         ~Cpu(void);
+        
+        inline WORD getSp()const{return sp;}
+        inline WORD getPc()const{return pc;}
+        inline void setPc(const WORD t_pc){ pc = t_pc;}
+        
+        void decreaseSp(){sp--;}
+
 
         //instruction makeInstructions(std::string, int, int, void*);
         void addInstructions(void);
@@ -213,4 +224,5 @@ class Cpu {
 
 };
 
+}
 #endif

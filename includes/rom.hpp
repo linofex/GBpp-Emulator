@@ -29,6 +29,7 @@ namespace GBemulator {
                                     // 014E-014F Checksum not needed for GB
             std::vector<BYTE> Game;               // 
         public:
+            Rom();
             Rom (const std::string t_RomFileName);
             void PrintRomName() const;
             inline std::vector<BYTE> GetBeginPort() const{ return BeginPoint; };
@@ -46,6 +47,6 @@ namespace GBemulator {
             
             std::vector<BYTE> GetRom()const{ return Game; };     
 
-};
-};
+    };
+}
 #endif

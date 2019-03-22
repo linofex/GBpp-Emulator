@@ -13,7 +13,7 @@ void GBemulator::InterruptHnadler::ServeInterrupt(const BYTE t_interrupt, GBemul
     t_memory.writeByte(IRR_ADD, irr ^ t_interrupt); // Reset the Interrupet flag to 0, since is served
 
     // Save PC in the stack
-    t_memory.writeInStack(t_cpu, t_cpu.getPc);
+    t_memory.writeInStack(t_cpu, t_cpu.getPc());
 
     // Point the PC to the interrupt routine
     switch (t_interrupt){
@@ -21,7 +21,7 @@ void GBemulator::InterruptHnadler::ServeInterrupt(const BYTE t_interrupt, GBemul
             t_cpu.setPc(VBLANK_ADD);
             break;
         case LCD:
-            t_cpu.setPc(VBLANK_ADD);
+            t_cpu.setPc(LCD_ADD);
             break;
         case TIMER:
             t_cpu.setPc(TIMER_ADD);

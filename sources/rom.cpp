@@ -1,5 +1,6 @@
 #include "../includes/rom.hpp"
 
+GBemulator::Rom::Rom(){}
 GBemulator::Rom::Rom (const std::string t_RomFileName){                
     std::ifstream ROMFile(t_RomFileName.c_str(), std::ifstream::ate | std::ifstream::binary);
     int size;

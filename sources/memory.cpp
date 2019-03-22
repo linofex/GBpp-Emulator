@@ -17,6 +17,7 @@ GBemulator::Memory::Memory():
     rom(32*KB,0x00),
     vRam(8*KB,0x00),
     eRam(8*KB,0x00),
+    wRam(8*KB, 0x00),
     echowRam(8*KB,0x00),
     OAM(160,0x00),
     ioPorts(127, 0x00),

@@ -106,3 +106,8 @@ void GBemulator::Memory::writeWord(const WORD t_add, const WORD t_value){
     writeByte(t_add + 1, (t_value >> 8) & 0xFF);  // Second byte
 }
 
+void GBemulator::Memory::writeInStack(Cpu& t_cpu, const WORD t_value){
+    WORD sp = t_cpu.getSp();
+    writeWord(sp, t_value);
+    t_cpu.decreaseSp();
+}

@@ -1,6 +1,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 #include"utility.hpp"
+#include"cpu.hpp"
 #include <vector>
 
 namespace GBemulator{
@@ -30,7 +31,7 @@ namespace GBemulator{
             // this method writes 2 byte starting from t_add
             void writeWord(const WORD t_add, const WORD t_value);
 
-            void writeInStack(const WORD t_add);
+            void writeInStack(Cpu& t_cpu, const WORD t_value);
     };
 
 };

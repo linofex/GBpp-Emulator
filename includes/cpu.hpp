@@ -49,7 +49,7 @@ namespace GBemulator {
     class Cpu {
         
         private:
-            //pointer to other classes instances
+            //useful pointers
             Memory* mem;
 
             //special registers of 16 bits
@@ -80,7 +80,7 @@ namespace GBemulator {
 
         public:
             //Cpu(void);
-            Cpu(const Memory&);
+            Cpu(Memory*);
             ~Cpu(void);
             
             void reset(void);

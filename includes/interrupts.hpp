@@ -11,8 +11,8 @@ namespace GBemulator{
         public:
             InterruptHnadler():intMasterEnable(true){}
             void RequestInterrupt(const BYTE t_interrupt, GBemulator::Memory& t_memory);
-            WORD ServeInterrupt(const BYTE t_interrupt, GBemulator::Memory& t_memory);
-            WORD DoInterrupt(GBemulator::Memory& t_memory);
+            void ServeInterrupt(const BYTE t_interrupt, GBemulator::Memory& t_memory, WORD* t_pc);
+            void DoInterrupt(GBemulator::Memory& t_memory, WORD* t_pc);
     };
 }
 

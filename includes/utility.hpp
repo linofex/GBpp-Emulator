@@ -16,8 +16,8 @@ typedef unsigned short WORD; // 16bit
 
 //#if defined MEMORY_H
     #define KB 0x400    // 1024B
-    #define IER 0xFFFF  // Interrupt Enable Register
-    #define IRR 0xFF0F  // Interrupt Request Register
+    #define IER_ADD 0xFFFF  // Interrupt Enable Register address
+    #define IRR_ADD 0xFF0F  // Interrupt Request Register address
 //#endif
 
 #endif

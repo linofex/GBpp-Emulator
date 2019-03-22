@@ -1,11 +1,18 @@
 #include "../includes/cpu.hpp"
+#include "../includes/memory.hpp"
+#include "../includes/interrupts.hpp"
 
 #include <iostream>
 #include <map>
 #include <string>
 #include <fstream>
 
-GBemulator::Cpu::Cpu(void) { 
+/* GBemulator::Cpu::Cpu(void) {
+    reset();
+} */
+
+GBemulator::Cpu::Cpu(GBemulator::Memory* m) {
+    mem = m;
     reset();
 }
 GBemulator::Cpu::~Cpu(void) {
@@ -21,7 +28,7 @@ void GBemulator::Cpu::fillInstructions() {
 
     //---------------------ADD------------------------------
     instrMap[0x80] = GBemulator::Cpu::addInstruction("ADD A, B", 4, 0, (void*)&GBemulator::Cpu::add_A_B);
-    instrMap[0x81] = GBemulator::Cpu::addInstruction("ADD A, C", 4, 0, (void*)&GBemulator::Cpu::add_A_C);
+    /* instrMap[0x81] = GBemulator::Cpu::addInstruction("ADD A, C", 4, 0, (void*)&GBemulator::Cpu::add_A_C);
     instrMap[0x82] = GBemulator::Cpu::addInstruction("ADD A, D", 4, 0, (void*)&GBemulator::Cpu::add_A_D);
     instrMap[0x83] = GBemulator::Cpu::addInstruction("ADD A, E", 4, 0, (void*)&GBemulator::Cpu::add_A_E);
     instrMap[0x84] = GBemulator::Cpu::addInstruction("ADD A, H", 4, 0, (void*)&GBemulator::Cpu::add_A_H);
@@ -56,7 +63,7 @@ void GBemulator::Cpu::fillInstructions() {
     instrMap[0x9c] = GBemulator::Cpu::addInstruction("SBC A, H", 4, 0, (void*)&GBemulator::Cpu::sbc_A_H);
     instrMap[0x9d] = GBemulator::Cpu::addInstruction("SBC A, L", 4, 0, (void*)&GBemulator::Cpu::sbc_A_L);
     instrMap[0x9e] = GBemulator::Cpu::addInstruction("SBC A, (HL)", 8, 0, (void*)&GBemulator::Cpu::sbc_A_HL_ind);
-    instrMap[0x9f] = GBemulator::Cpu::addInstruction("SBC A, A", 4, 0, (void*)&GBemulator::Cpu::sbc_A_A);
+    instrMap[0x9f] = GBemulator::Cpu::addInstruction("SBC A, A", 4, 0, (void*)&GBemulator::Cpu::sbc_A_A); */
 
 
     //std::cout<<instrMap[0x87].name<<'\t'<<instrMap[0x87].cycles<<'\t'<<instrMap[0x87].paramNum<<'\t'<<instrMap[0x87].function<<std::endl;
@@ -89,7 +96,7 @@ bool GBemulator::Cpu::checkCartridge() {
     bool status = true;
 
     for(unsigned int i = 259; i <= 324; i++) { //0x103 = 259, 0x144 = 324
-        BYTE read = 0x00;// = readByte(i);
+        BYTE read = mem->readByte(i);
         if(read != intROM[i])
             status = false;
     }
@@ -124,45 +131,44 @@ void GBemulator::Cpu::reset() {
     //fill the instructions map
     GBemulator::Cpu::fillInstructions();
 
-    /* //initialization of I/O registers in the internal RAM
-    wb(0xFF05, 0x00);	//writeByte
-    wb(0xFF06, 0x00);
-    wb(0xFF07, 0x00);
-    wb(0xFF10, 0x80);
-    wb(0xFF11, 0xBF);
-    wb(0xFF12, 0xF3);
-    wb(0xFF14, 0xBF);
-    wb(0xFF16, 0x3F);
-    wb(0xFF17, 0x00);
-    wb(0xFF19, 0xBF);
-    wb(0xFF1A, 0x7F);
-    wb(0xFF1B, 0xFF);
-    wb(0xFF1C, 0x9F);
-    wb(0xFF1E, 0xBF);
-    wb(0xFF20, 0xFF);
-    wb(0xFF21, 0x00);
-    wb(0xFF22, 0x00);
-    wb(0xFF23, 0xBF);
-    wb(0xFF24, 0x77);
-    wb(0xFF25, 0xF3);
-    wb(0xFF26, 0xF1);
-    wb(0xFF40, 0x91);
-    wb(0xFF42, 0x00);
-    wb(0xFF43, 0x00);
-    wb(0xFF45, 0x00);
-    wb(0xFF47, 0xFC);
-    wb(0xFF48, 0xFF);
-    wb(0xFF49, 0xFF);
-    wb(0xFF4A, 0x00);
-    wb(0xFF4B, 0x00);
-    wb(0xFFFF, 0x00); */
+    //initialization of I/O registers in the internal RAM
+    mem->writeByte(0xFF05, 0x00);	//mem->writeByte
+    mem->writeByte(0xFF06, 0x00);
+    mem->writeByte(0xFF07, 0x00);
+    mem->writeByte(0xFF10, 0x80);
+    mem->writeByte(0xFF11, 0xBF);
+    mem->writeByte(0xFF12, 0xF3);
+    mem->writeByte(0xFF14, 0xBF);
+    mem->writeByte(0xFF16, 0x3F);
+    mem->writeByte(0xFF17, 0x00);
+    mem->writeByte(0xFF19, 0xBF);
+    mem->writeByte(0xFF1A, 0x7F);
+    mem->writeByte(0xFF1B, 0xFF);
+    mem->writeByte(0xFF1C, 0x9F);
+    mem->writeByte(0xFF1E, 0xBF);
+    mem->writeByte(0xFF20, 0xFF);
+    mem->writeByte(0xFF21, 0x00);
+    mem->writeByte(0xFF22, 0x00);
+    mem->writeByte(0xFF23, 0xBF);
+    mem->writeByte(0xFF24, 0x77);
+    mem->writeByte(0xFF25, 0xF3);
+    mem->writeByte(0xFF26, 0xF1);
+    mem->writeByte(0xFF40, 0x91);
+    mem->writeByte(0xFF42, 0x00);
+    mem->writeByte(0xFF43, 0x00);
+    mem->writeByte(0xFF45, 0x00);
+    mem->writeByte(0xFF47, 0xFC);
+    mem->writeByte(0xFF48, 0xFF);
+    mem->writeByte(0xFF49, 0xFF);
+    mem->writeByte(0xFF4A, 0x00);
+    mem->writeByte(0xFF4B, 0x00);
+    mem->writeByte(0xFFFF, 0x00);
 
 }
 
 BYTE GBemulator::Cpu::fetch(void) {
-    //unsigned char opcode = readByte(pc);
-    //return opcode;
-    return 0x80;
+    unsigned char opcode = mem->readByte(pc);
+    return opcode;
 }
 
 instruction GBemulator::Cpu::decode(BYTE opcode) {
@@ -204,7 +210,7 @@ void GBemulator::Cpu::add(unsigned char n) {
     else
         resetFlag(flagH);
 }
-void GBemulator::Cpu::add_A_A(void) {
+/* void GBemulator::Cpu::add_A_A(void) {
     GBemulator::Cpu::add(regAF.high);
 }
 void GBemulator::Cpu::add_A_B(void) {
@@ -224,10 +230,10 @@ void GBemulator::Cpu::add_A_H(void) {
 }
 void GBemulator::Cpu::add_A_L(void) {
     GBemulator::Cpu::add(regHL.low);
-}
+} */
  void GBemulator::Cpu::add_A_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
-    //GBemulator::Cpu::add(n);
+    unsigned char n = mem->readByte(regHL.reg);
+    GBemulator::Cpu::add(n);
 }
 void GBemulator::Cpu::add_A_n(unsigned char n) {
     GBemulator::Cpu::add(n);
@@ -283,8 +289,8 @@ void GBemulator::Cpu::adc_A_L(void) {
     GBemulator::Cpu::adc(regHL.low);
 }*/
 void GBemulator::Cpu::adc_A_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
-    //GBemulator::Cpu::adc(n);
+    unsigned char n = mem->readByte(regHL.reg);
+    GBemulator::Cpu::adc(n);
 }
 void GBemulator::Cpu::adc_A_n(unsigned char n) {
     GBemulator::Cpu::adc(n);
@@ -313,7 +319,7 @@ void GBemulator::Cpu::sub(unsigned char n) {
     else
         resetFlag(flagH);
 }
-void GBemulator::Cpu::sub_A_A(void) {
+/* void GBemulator::Cpu::sub_A_A(void) {
     GBemulator::Cpu::sub(regAF.high);
 }
 void GBemulator::Cpu::sub_A_B(void) {
@@ -333,10 +339,10 @@ void GBemulator::Cpu::sub_A_H(void) {
 }
 void GBemulator::Cpu::sub_A_L(void) {
     GBemulator::Cpu::sub(regHL.low);
-}
+} */
 void GBemulator::Cpu::sub_A_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
-    //GBemulator::Cpu::sub(n);
+    unsigned char n = mem->readByte(regHL.reg);
+    GBemulator::Cpu::sub(n);
 }
 void GBemulator::Cpu::sub_A_n(unsigned char n) {
     GBemulator::Cpu::sub(n);
@@ -367,7 +373,7 @@ void GBemulator::Cpu::sbc(unsigned char n) {
     else
         resetFlag(flagH); */
 }
-void GBemulator::Cpu::sbc_A_A(void) {
+/* void GBemulator::Cpu::sbc_A_A(void) {
     GBemulator::Cpu::sbc(regAF.high);
 }
 void GBemulator::Cpu::sbc_A_B(void) {
@@ -387,10 +393,10 @@ void GBemulator::Cpu::sbc_A_H(void) {
 }
 void GBemulator::Cpu::sbc_A_L(void) {
     GBemulator::Cpu::sbc(regHL.low);
-}
+} */
 void GBemulator::Cpu::sbc_A_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
-    //GBemulator::Cpu::sbc(n);
+    unsigned char n = mem->readByte(regHL.reg);
+    GBemulator::Cpu::sbc(n);
 }
 /* void GBemulator::Cpu::sbc_A_n(unsigned char n) {
     GBemulator::Cpu::sbc(n);
@@ -412,7 +418,7 @@ void GBemulator::Cpu::and_(unsigned char n) {
     resetFlag(flagN);
         
 }
-void GBemulator::Cpu::and_A_A(void) {
+/* void GBemulator::Cpu::and_A_A(void) {
     GBemulator::Cpu::and_(regAF.high);
 }
 void GBemulator::Cpu::and_A_B(void) {
@@ -432,10 +438,10 @@ void GBemulator::Cpu::and_A_H(void) {
 }
 void GBemulator::Cpu::and_A_L(void) {
     GBemulator::Cpu::and_(regHL.low);
-}
+} */
 void GBemulator::Cpu::and_A_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
-    //GBemulator::Cpu::and_(n);
+    unsigned char n = mem->readByte(regHL.reg);
+    GBemulator::Cpu::and_(n);
 }
 void GBemulator::Cpu::and_A_n(unsigned char n) {
     GBemulator::Cpu::and_(n);
@@ -457,7 +463,7 @@ void GBemulator::Cpu::or_(unsigned char n) {
     resetFlag(flagN);
         
 }
-void GBemulator::Cpu::or_A_A(void) {
+/* void GBemulator::Cpu::or_A_A(void) {
     GBemulator::Cpu::or_(regAF.high);
 }
 void GBemulator::Cpu::or_A_B(void) {
@@ -477,10 +483,10 @@ void GBemulator::Cpu::or_A_H(void) {
 }
 void GBemulator::Cpu::or_A_L(void) {
     GBemulator::Cpu::or_(regHL.low);
-}
+} */
 void GBemulator::Cpu::or_A_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
-    //GBemulator::Cpu::or_(n);
+    unsigned char n = mem->readByte(regHL.reg);
+    GBemulator::Cpu::or_(n);
 }
 void GBemulator::Cpu::or_A_n(unsigned char n) {
     GBemulator::Cpu::or_(n);
@@ -503,7 +509,7 @@ void GBemulator::Cpu::xor_(unsigned char n) {
     resetFlag(flagN);
         
 }
-void GBemulator::Cpu::xor_A_A(void) {
+/* void GBemulator::Cpu::xor_A_A(void) {
     GBemulator::Cpu::xor_(regAF.high);
 }
 void GBemulator::Cpu::xor_A_B(void) {
@@ -523,10 +529,10 @@ void GBemulator::Cpu::xor_A_H(void) {
 }
 void GBemulator::Cpu::xor_A_L(void) {
     GBemulator::Cpu::xor_(regHL.low);
-}
+} */
 void GBemulator::Cpu::xor_A_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
-    //GBemulator::Cpu::xor_(n);
+    unsigned char n = mem->readByte(regHL.reg);
+    GBemulator::Cpu::xor_(n);
 }
 void GBemulator::Cpu::xor_A_n(unsigned char n) {
     GBemulator::Cpu::xor_(n);
@@ -553,7 +559,7 @@ void GBemulator::Cpu::cp(unsigned char n) {
     else
         resetFlag(flagH);
 }
-void GBemulator::Cpu::cp_A_A(void) {
+/* void GBemulator::Cpu::cp_A_A(void) {
     GBemulator::Cpu::cp(regAF.high);
 }
 void GBemulator::Cpu::cp_A_B(void) {
@@ -573,10 +579,10 @@ void GBemulator::Cpu::cp_A_H(void) {
 }
 void GBemulator::Cpu::cp_A_L(void) {
     GBemulator::Cpu::cp(regHL.low);
-}
+} */
 void GBemulator::Cpu::cp_A_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
-    //GBemulator::Cpu::cp(n);
+    unsigned char n = mem->readByte(regHL.reg);
+    GBemulator::Cpu::cp(n);
 }
 void GBemulator::Cpu::cp_A_n(unsigned char n) {
     GBemulator::Cpu::cp(n);
@@ -599,7 +605,7 @@ void GBemulator::Cpu::inc(unsigned char* reg) {
     else
         resetFlag(flagH);
 }
-void GBemulator::Cpu::inc_A(void) {
+/*void GBemulator::Cpu::inc_A(void) {
     GBemulator::Cpu::inc(&regAF.high);
 }
 void GBemulator::Cpu::inc_B(void) {
@@ -619,10 +625,12 @@ void GBemulator::Cpu::inc_H(void) {
 }
 void GBemulator::Cpu::inc_L(void) {
     GBemulator::Cpu::inc(&regHL.low);
-}
-void inc_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
-    //GBemulator::Cpu::inc(n);
+}*/
+void GBemulator::Cpu::inc_HL_ind(void) {
+    BYTE addr = mem->readByte(regHL.reg);
+    BYTE val = mem->readByte(addr) + 1;
+    mem->writeByte(addr, val);
+    //ATTENZIONE, da rifare perchè così non aggiorna i flag---------------------------------
 }
 
 //------------------------DEC-------------------------------------
@@ -642,7 +650,7 @@ void GBemulator::Cpu::dec(unsigned char* reg) {
     else
         resetFlag(flagH);
 }
-void GBemulator::Cpu::dec_A(void) {
+/* void GBemulator::Cpu::dec_A(void) {
     GBemulator::Cpu::dec(&regAF.high);
 }
 void GBemulator::Cpu::dec_B(void) {
@@ -662,10 +670,13 @@ void GBemulator::Cpu::dec_H(void) {
 }
 void GBemulator::Cpu::dec_L(void) {
     GBemulator::Cpu::dec(&regHL.low);
-}
+} */
 void GBemulator::Cpu::dec_HL_ind(void) {
-    //unsigned char n = rb(regHL.reg)      //readByte
+    //unsigned char n = mem->readByte(regHL.reg);
     //GBemulator::Cpu::dec(n);
+    BYTE addr = mem->readByte(regHL.reg);
+    BYTE val = mem->readByte(addr) - 1;
+    mem->writeByte(addr, val);
 }
 
 

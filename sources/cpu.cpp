@@ -1,165 +1,113 @@
 #include "../includes/cpu.hpp"
+
 #include <iostream>
 #include <map>
 #include <string>
+#include <fstream>
 
-using namespace std;
-
-Cpu::Cpu(void) { 
+GBemulator::Cpu::Cpu(void) { 
     reset();
 }
-Cpu::~Cpu(void) {
+GBemulator::Cpu::~Cpu(void) {
     exit(1);
 }
 
-/* instruction Cpu::makeInstructions(std::string name, int cycles, int paramNum, void* function) {
-    instruction i = {name, cycles, paramNum};
-    //instruction i = {name, cycles, paramNum, function};
-    //cout<<i.name<<'\t'<<i.cycles<<'\t'<<i.function<<endl;
-    cout<<"______________"<<endl;
+instruction GBemulator::Cpu::addInstruction(std::string name, int cycles, int paramNum, void* function) {
+    instruction i = {name, cycles, paramNum, function};
     return i;
-}  */
-
-void Cpu::addInstructions() {
-    instruction i = {"ADD A, n", 4, 0, Cpu::add_A_n};
-    instrMap[0x80] =  i;
 }
-void Cpu::fillInstructions(string name, unsigned char cycles, void* function) {
-    //instrMap[0x88] = {name, cycles, fun};
-    //instrMap.insert{key = opcode, value =(name, cycles, function())};
-    
-    //instruction i = Cpu::makeInstructions("ADD A, B", 4, 0, Cpu::add_A_B);
-    //instrMap[0x80] = i;
+
+void GBemulator::Cpu::fillInstructions() {
 
     //---------------------ADD------------------------------
-    /*instrMap[0x80] = {"ADD A, B", 4, Cpu::add_A_B};
-    instrMap[0x81] = {"ADD A, C", 4, add_A_C};
-    instrMap[0x82] = {"ADD A, D", 4, add_A_D};
-    instrMap[0x83] = {"ADD A, E", 4, add_A_E};
-    instrMap[0x84] = {"ADD A, H", 4, add_A_H};
-    instrMap[0x85] = {"ADD A, L", 4, add_A_L};
-    instrMap[0x86] = {"ADD A, (HL)", 8, add_A_HL_ind};
-    instrMap[0x87] = {"ADD A, A", 4, add_A_A};
-
+    instrMap[0x80] = GBemulator::Cpu::addInstruction("ADD A, B", 4, 0, (void*)&GBemulator::Cpu::add_A_B);
+    instrMap[0x81] = GBemulator::Cpu::addInstruction("ADD A, C", 4, 0, (void*)&GBemulator::Cpu::add_A_C);
+    instrMap[0x82] = GBemulator::Cpu::addInstruction("ADD A, D", 4, 0, (void*)&GBemulator::Cpu::add_A_D);
+    instrMap[0x83] = GBemulator::Cpu::addInstruction("ADD A, E", 4, 0, (void*)&GBemulator::Cpu::add_A_E);
+    instrMap[0x84] = GBemulator::Cpu::addInstruction("ADD A, H", 4, 0, (void*)&GBemulator::Cpu::add_A_H);
+    instrMap[0x85] = GBemulator::Cpu::addInstruction("ADD A, L", 4, 0, (void*)&GBemulator::Cpu::add_A_L);
+    instrMap[0x86] = GBemulator::Cpu::addInstruction("ADD A, (HL)", 8, 0, (void*)&GBemulator::Cpu::add_A_HL_ind);
+    instrMap[0x87] = GBemulator::Cpu::addInstruction("ADD A, A", 4, 0, (void*)&GBemulator::Cpu::add_A_A);
     //---------------------ADC------------------------------
-    instrMap[0x88] = {"ADC A, B", 4, adc_A_B};
-    instrMap[0x89] = {"ADC A, C", 4, adc_A_C};
-    instrMap[0x8a] = {"ADC A, D", 4, adc_A_D};
-    instrMap[0x8b] = {"ADC A, E", 4, adc_A_E};
-    instrMap[0x8c] = {"ADC A, H", 4, adc_A_H};
-    instrMap[0x8d] = {"ADC A, L", 4, adc_A_L};
-    instrMap[0x8e] = {"ADC A, (HL)", 8, adc_A_HL_ind};
-    instrMap[0x8f] = {"ADC A, A", 4, adc_A_A};
+    instrMap[0x88] = GBemulator::Cpu::addInstruction("ADC A, B", 4, 0, (void*)&GBemulator::Cpu::adc_A_B);
+    instrMap[0x89] = GBemulator::Cpu::addInstruction("ADC A, C", 4, 0, (void*)&GBemulator::Cpu::adc_A_C);
+    instrMap[0x8a] = GBemulator::Cpu::addInstruction("ADC A, D", 4, 0, (void*)&GBemulator::Cpu::adc_A_D);
+    instrMap[0x8b] = GBemulator::Cpu::addInstruction("ADC A, E", 4, 0, (void*)&GBemulator::Cpu::adc_A_E);
+    instrMap[0x8c] = GBemulator::Cpu::addInstruction("ADC A, H", 4, 0, (void*)&GBemulator::Cpu::adc_A_H);
+    instrMap[0x8d] = GBemulator::Cpu::addInstruction("ADC A, L", 4, 0, (void*)&GBemulator::Cpu::adc_A_L);
+    instrMap[0x8e] = GBemulator::Cpu::addInstruction("ADC A, (HL)", 8, 0, (void*)&GBemulator::Cpu::adc_A_HL_ind);
+    instrMap[0x8f] = GBemulator::Cpu::addInstruction("ADC A, A", 4, 0, (void*)&GBemulator::Cpu::adc_A_A);
 
     //---------------------SUB------------------------------
-    instrMap[0x90] = {"SUB A, B", 4, sub_A_B};
-    instrMap[0x91] = {"SUB A, C", 4, sub_A_C};
-    instrMap[0x92] = {"SUB A, D", 4, sub_A_D};
-    instrMap[0x93] = {"SUB A, E", 4, sub_A_E};
-    instrMap[0x94] = {"SUB A, H", 4, sub_A_H};
-    instrMap[0x95] = {"SUB A, L", 4, sub_A_L};
-    instrMap[0x96] = {"SUB A, (HL)", 8, sub_A_HL_ind};
-    instrMap[0x97] = {"SUB A, A", 4, sub_A_A};
+    instrMap[0x90] = GBemulator::Cpu::addInstruction("SUB A, B", 4, 0, (void*)&GBemulator::Cpu::sub_A_B);
+    instrMap[0x91] = GBemulator::Cpu::addInstruction("SUB A, C", 4, 0, (void*)&GBemulator::Cpu::sub_A_C);
+    instrMap[0x92] = GBemulator::Cpu::addInstruction("SUB A, D", 4, 0, (void*)&GBemulator::Cpu::sub_A_D);
+    instrMap[0x93] = GBemulator::Cpu::addInstruction("SUB A, E", 4, 0, (void*)&GBemulator::Cpu::sub_A_E);
+    instrMap[0x94] = GBemulator::Cpu::addInstruction("SUB A, H", 4, 0, (void*)&GBemulator::Cpu::sub_A_H);
+    instrMap[0x95] = GBemulator::Cpu::addInstruction("SUB A, L", 4, 0, (void*)&GBemulator::Cpu::sub_A_L);
+    instrMap[0x96] = GBemulator::Cpu::addInstruction("SUB A, (HL)", 8, 0, (void*)&GBemulator::Cpu::sub_A_HL_ind);
+    instrMap[0x97] = GBemulator::Cpu::addInstruction("SUB A, A", 4, 0, (void*)&GBemulator::Cpu::sub_A_A);
 
     //---------------------SBC------------------------------
-    instrMap[0x98] = {"SBC A, B", 4, sbc_A_B};
-    instrMap[0x99] = {"SBC A, C", 4, sbc_A_C};
-    instrMap[0x9a] = {"SBC A, D", 4, sbc_A_D};
-    instrMap[0x9b] = {"SBC A, E", 4, sbc_A_E};
-    instrMap[0x9c] = {"SBC A, H", 4, sbc_A_H};
-    instrMap[0x9d] = {"SBC A, L", 4, sbc_A_L};
-    instrMap[0x9e] = {"SBC A, (HL)", 8, sbc_A_HL_ind};
-    instrMap[0x9f] = {"SBC A, A", 4, sbc_A_A};
-    */
+    instrMap[0x98] = GBemulator::Cpu::addInstruction("SBC A, B", 4, 0, (void*)&GBemulator::Cpu::sbc_A_B);
+    instrMap[0x99] = GBemulator::Cpu::addInstruction("SBC A, C", 4, 0, (void*)&GBemulator::Cpu::sbc_A_C);
+    instrMap[0x9a] = GBemulator::Cpu::addInstruction("SBC A, D", 4, 0, (void*)&GBemulator::Cpu::sbc_A_D);
+    instrMap[0x9b] = GBemulator::Cpu::addInstruction("SBC A, E", 4, 0, (void*)&GBemulator::Cpu::sbc_A_E);
+    instrMap[0x9c] = GBemulator::Cpu::addInstruction("SBC A, H", 4, 0, (void*)&GBemulator::Cpu::sbc_A_H);
+    instrMap[0x9d] = GBemulator::Cpu::addInstruction("SBC A, L", 4, 0, (void*)&GBemulator::Cpu::sbc_A_L);
+    instrMap[0x9e] = GBemulator::Cpu::addInstruction("SBC A, (HL)", 8, 0, (void*)&GBemulator::Cpu::sbc_A_HL_ind);
+    instrMap[0x9f] = GBemulator::Cpu::addInstruction("SBC A, A", 4, 0, (void*)&GBemulator::Cpu::sbc_A_A);
 
-    //instrMap.insert{0x80, ("ADD A, B", 4, add_A_B)};
-    //instrMap.insert{0x81, ("ADD A, C", 4, add_A_C)};
- //   instrMap.insert{0x82, ("ADD A, D", 4, add_A_D)};
- //   instrMap.insert{0x83, ("ADD A, E", 4, add_A_E)};
-  //  instrMap.insert{0x84, ("ADD A, H", 4, add_A_H)};
-  //  instrMap.insert{0x85, ("ADD A, L", 4, add_A_L)};
- //   instrMap.insert{0x86, ("ADD A, (HL)", 8, add_A_HL_ind)};
- //   instrMap.insert{0x87, ("ADD A, A", 4, add_A_A)};
 
-    //---------------------ADC------------------------------
-    /* instrMap.insert{0x88, ("ADC A, B", 4, adc_A_B)};
-    instrMap.insert{0x89, ("ADC A, C", 4, adc_A_C)};
-    instrMap.insert{0x8a, ("ADC A, D", 4, adc_A_D)};
-    instrMap.insert{0x8b, ("ADC A, E", 4, adc_A_E)};
-    instrMap.insert{0x8c, ("ADC A, H", 4, adc_A_H)};
-    instrMap.insert{0x8d, ("ADC A, L", 4, adc_A_L)};
-    instrMap.insert{0x8e, ("ADC A, (HL)", 8, adc_A_HL_ind)};
-    instrMap.insert{0x8f, ("ADC A, A", 4, adc_A_A)}; 
+    //std::cout<<instrMap[0x87].name<<'\t'<<instrMap[0x87].cycles<<'\t'<<instrMap[0x87].paramNum<<'\t'<<instrMap[0x87].function<<std::endl;
 
-    //---------------------SUB------------------------------
-    instrMap.insert{0x90, ("SUB A, B", 4, sub_A_B)};
-    instrMap.insert{0x91, ("SUB A, C", 4, sub_A_C)};
-    instrMap.insert{0x92, ("SUB A, D", 4, sub_A_D)};
-    instrMap.insert{0x93, ("SUB A, E", 4, sub_A_E)};
-    instrMap.insert{0x94, ("SUB A, H", 4, sub_A_H)};
-    instrMap.insert{0x95, ("SUB A, L", 4, sub_A_L)};
-    instrMap.insert{0x96, ("SUB A, (HL)", 8, sub_A_HL_ind)};
-    instrMap.insert{0x97, ("SUB A, A", 4, sub_A_A)};
+    //           ((void (*)(void))instrMap[0x87].function)();
 
-    //---------------------SBC------------------------------
-    instrMap.insert{0x98, ("SBC A, B", 4, sbc_A_B)};
-    instrMap.insert{0x99, ("SBC A, C", 4, sbc_A_C)};
-    instrMap.insert{0x9a, ("SBC A, D", 4, sbc_A_D)};
-    instrMap.insert{0x9b, ("SBC A, E", 4, sbc_A_E)};
-    instrMap.insert{0x9c, ("SBC A, H", 4, sbc_A_H)};
-    instrMap.insert{0x9d, ("SBC A, L", 4, sbc_A_L)};
-    instrMap.insert{0x9e, ("SBC A, (HL)", 8, sbc_A_HL_ind)};
-    instrMap.insert{0x9f, ("SBC A, A", 4, sbc_A_A)};
-    */
-
-    //cout<<instrMap[0x88].name<<'\t'<<instrMap[0x88].cycles<<'\t'<<instrMap[0x88].fun<<endl;
-    
-    
-    //{ "ADC B", 0, adc_A_B },                       // 0x88
-	//{ "ADC C", 0, adc_A_C },                       // 0x89
-	//{ "ADC D", 0, adc_A_D },                       // 0x8a
-	//{ "ADC E", 0, adc_A_E },                       // 0x8b
-	//{ "ADC H", 0, adc_A_H },                       // 0x8c
-	//{ "ADC L", 0, adc_A_L },                       // 0x8d
-	//{ "ADC (HL)", 0, adc_A_HL_ind },               // 0x8e
-	//{ "ADC A", 0, adc_A_A},                        // 0x8f
 
 }
 
-bool Cpu::checkCartridge() {
-    /*
-    const char *fn = "comparison.txt";
-    ifstream infile(fn, fstream::in);
-
-    unsigned char original[48] = {};
-
+void GBemulator::Cpu::loadInternalROM() {
+    std::ifstream inFile(internalROMName, std::ifstream::ate | std::ifstream::binary);
     try {
-        //fn.open("comparison.txt");
-        for(int i = 0; i < lenght; i++) {
-            infile >> hex >> original[i];
-            cout << hex << a;
+        unsigned char t;
+        for(int i = 0; i < internalROMSize; i++) {
+            inFile >> std::hex >> t;
+            intROM.push_back(t);
+            //std::cout << std::hex << original[i];
         }
     }
-    catch (const ifstream::failure& e) {
-        cerr<< "Exception opening/reading file comparison.txt"<endl;
-        return false;
+    catch (const std::ifstream::failure& e) {
+        std::cerr<<"Exception opening/reading file comparison.txt"<<std::endl;
+        exit(1);
     }
 
     inFile.close();
-    return true;
-    */
-}
-
-void Cpu::step() {
-    BYTE instr = Cpu::fetch();
-    Cpu::decode(instr);
-    //switch case to select the version with 0, 1 or 2 parameters
 
 }
 
-void Cpu::reset() {
+bool GBemulator::Cpu::checkCartridge() {
+    bool status = true;
+
+    for(unsigned int i = 259; i <= 324; i++) { //0x103 = 259, 0x144 = 324
+        BYTE read = 0x00;// = readByte(i);
+        if(read != intROM[i])
+            status = false;
+    }
+    if(!status)
+        std::cerr<<"ROM not verified"<<std::endl;
+
+    return status;
+}
+
+void GBemulator::Cpu::step() {
+    BYTE instr = GBemulator::Cpu::fetch();
+    instruction i = GBemulator::Cpu::decode(instr);
+    execute(i);
+}
+
+void GBemulator::Cpu::reset() {
     //security check for original cartridge
-    if(!Cpu::checkCartridge())
+    if(!GBemulator::Cpu::checkCartridge())
         //halt
         return;
     
@@ -172,6 +120,9 @@ void Cpu::reset() {
     regBC.reg = 0x0013;
     regDE.reg = 0x00D8;
     regHL.reg = 0x014D;
+
+    //fill the instructions map
+    GBemulator::Cpu::fillInstructions();
 
     /* //initialization of I/O registers in the internal RAM
     wb(0xFF05, 0x00);	//writeByte
@@ -208,22 +159,28 @@ void Cpu::reset() {
 
 }
 
-BYTE Cpu::fetch(void) {
+BYTE GBemulator::Cpu::fetch(void) {
     //unsigned char opcode = readByte(pc);
     //return opcode;
+    return 0x80;
 }
 
-void* Cpu::decode(BYTE opcode) {
-    //return instrMap[opcode].function;
+instruction GBemulator::Cpu::decode(BYTE opcode) {
+    return instrMap[opcode];
 }
 
-void Cpu::execute(void* exec) {
-    //exec();
-    
+void GBemulator::Cpu::execute(instruction i) {
+    switch(i.paramNum) {
+        case 0:
+            ((void (*)(void))i.function)();
+            break;
+        default:
+            return;
+    }
 }
 
 //-----------------------ADD-------------------------------------
-void Cpu::add(unsigned char n) {
+void GBemulator::Cpu::add(unsigned char n) {
     int res = regAF.high + (int) n;
     
     if(res == 0)        //sum = 0
@@ -247,39 +204,39 @@ void Cpu::add(unsigned char n) {
     else
         resetFlag(flagH);
 }
-void Cpu::add_A_A(void) {
-    Cpu::add(regAF.high);
+void GBemulator::Cpu::add_A_A(void) {
+    GBemulator::Cpu::add(regAF.high);
 }
-void Cpu::add_A_B(void) {
-    Cpu::add(regBC.high);
+void GBemulator::Cpu::add_A_B(void) {
+    GBemulator::Cpu::add(regBC.high);
 }
-void Cpu::add_A_C(void) {
-    Cpu::add(regBC.low);
+void GBemulator::Cpu::add_A_C(void) {
+    GBemulator::Cpu::add(regBC.low);
 }
-void Cpu::add_A_D(void) {
-    Cpu::add(regDE.high);
+void GBemulator::Cpu::add_A_D(void) {
+    GBemulator::Cpu::add(regDE.high);
 }
-void Cpu::add_A_E(void) {
-    Cpu::add(regDE.low);
+void GBemulator::Cpu::add_A_E(void) {
+    GBemulator::Cpu::add(regDE.low);
 }
-void Cpu::add_A_H(void) {
-    Cpu::add(regHL.high);
+void GBemulator::Cpu::add_A_H(void) {
+    GBemulator::Cpu::add(regHL.high);
 }
-void Cpu::add_A_L(void) {
-    Cpu::add(regHL.low);
+void GBemulator::Cpu::add_A_L(void) {
+    GBemulator::Cpu::add(regHL.low);
 }
- void Cpu::add_A_HL_ind(void) {
+ void GBemulator::Cpu::add_A_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::add(n);
+    //GBemulator::Cpu::add(n);
 }
-void Cpu::add_A_n(unsigned char n) {
-    Cpu::add(n);
+void GBemulator::Cpu::add_A_n(unsigned char n) {
+    GBemulator::Cpu::add(n);
 }
 
 //-----------------------ADC-------------------------------------
-void Cpu::adc(unsigned char n) {
+void GBemulator::Cpu::adc(unsigned char n) {
     int carry = isFlagCarry() ? 1 : 0;  //carry = 1 or 0
-    Cpu::add(n + carry);
+    GBemulator::Cpu::add(n + carry);
     /* int res = regAF.high + (int) n + carry;
 
     if(res == 0)        //sum = 0
@@ -304,37 +261,37 @@ void Cpu::adc(unsigned char n) {
     else
         resetFlag(flagH); */
 }
-void Cpu::adc_A_A(void) {
-    Cpu::adc(regAF.high);
+/* void GBemulator::Cpu::adc_A_A(void) {
+    GBemulator::Cpu::adc(regAF.high);
+} 
+void GBemulator::Cpu::adc_A_B(void) {
+    GBemulator::Cpu::adc(regBC.high);
 }
-void Cpu::adc_A_B(void) {
-    Cpu::adc(regBC.high);
+void GBemulator::Cpu::adc_A_C(void) {
+    GBemulator::Cpu::adc(regBC.low);
 }
-void Cpu::adc_A_C(void) {
-    Cpu::adc(regBC.low);
+void GBemulator::Cpu::adc_A_D(void) {
+    GBemulator::Cpu::adc(regDE.high);
 }
-void Cpu::adc_A_D(void) {
-    Cpu::adc(regDE.high);
+void GBemulator::Cpu::adc_A_E(void) {
+    GBemulator::Cpu::adc(regDE.low);
 }
-void Cpu::adc_A_E(void) {
-    Cpu::adc(regDE.low);
+void GBemulator::Cpu::adc_A_H(void) {
+    GBemulator::Cpu::adc(regHL.high);
 }
-void Cpu::adc_A_H(void) {
-    Cpu::adc(regHL.high);
-}
-void Cpu::adc_A_L(void) {
-    Cpu::adc(regHL.low);
-}
-void Cpu::adc_A_HL_ind(void) {
+void GBemulator::Cpu::adc_A_L(void) {
+    GBemulator::Cpu::adc(regHL.low);
+}*/
+void GBemulator::Cpu::adc_A_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::adc(n);
+    //GBemulator::Cpu::adc(n);
 }
-void Cpu::adc_A_n(unsigned char n) {
-    Cpu::adc(n);
+void GBemulator::Cpu::adc_A_n(unsigned char n) {
+    GBemulator::Cpu::adc(n);
 }
 
 //-----------------------SUB-------------------------------------
-void Cpu::sub(unsigned char n) {
+void GBemulator::Cpu::sub(unsigned char n) {
     int res = regAF.high - (int) n;
 
     if(res == 0)        //sub = 0
@@ -356,39 +313,39 @@ void Cpu::sub(unsigned char n) {
     else
         resetFlag(flagH);
 }
-void Cpu::sub_A_A(void) {
-    Cpu::sub(regAF.high);
+void GBemulator::Cpu::sub_A_A(void) {
+    GBemulator::Cpu::sub(regAF.high);
 }
-void Cpu::sub_A_B(void) {
-    Cpu::sub(regBC.high);
+void GBemulator::Cpu::sub_A_B(void) {
+    GBemulator::Cpu::sub(regBC.high);
 }
-void Cpu::sub_A_C(void) {
-    Cpu::sub(regBC.low);
+void GBemulator::Cpu::sub_A_C(void) {
+    GBemulator::Cpu::sub(regBC.low);
 }
-void Cpu::sub_A_D(void) {
-    Cpu::sub(regDE.high);
+void GBemulator::Cpu::sub_A_D(void) {
+    GBemulator::Cpu::sub(regDE.high);
 }
-void Cpu::sub_A_E(void) {
-    Cpu::sub(regDE.low);
+void GBemulator::Cpu::sub_A_E(void) {
+    GBemulator::Cpu::sub(regDE.low);
 }
-void Cpu::sub_A_H(void) {
-    Cpu::sub(regHL.high);
+void GBemulator::Cpu::sub_A_H(void) {
+    GBemulator::Cpu::sub(regHL.high);
 }
-void Cpu::sub_A_L(void) {
-    Cpu::sub(regHL.low);
+void GBemulator::Cpu::sub_A_L(void) {
+    GBemulator::Cpu::sub(regHL.low);
 }
-void Cpu::sub_A_HL_ind(void) {
+void GBemulator::Cpu::sub_A_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::sub(n);
+    //GBemulator::Cpu::sub(n);
 }
-void Cpu::sub_A_n(unsigned char n) {
-    Cpu::sub(n);
+void GBemulator::Cpu::sub_A_n(unsigned char n) {
+    GBemulator::Cpu::sub(n);
 }
 
 //-----------------------SBC-------------------------------------
-void Cpu::sbc(unsigned char n) {
+void GBemulator::Cpu::sbc(unsigned char n) {
     int carry = isFlagCarry() ? 1 : 0;  //carry = 1 or 0
-    Cpu::sub(n + carry);
+    GBemulator::Cpu::sub(n + carry);
     /* int res = regAF.high - ((int) n + carry);
 
     if(res == 0)        //sub = 0
@@ -410,37 +367,37 @@ void Cpu::sbc(unsigned char n) {
     else
         resetFlag(flagH); */
 }
-void Cpu::sbc_A_A(void) {
-    Cpu::sbc(regAF.high);
+void GBemulator::Cpu::sbc_A_A(void) {
+    GBemulator::Cpu::sbc(regAF.high);
 }
-void Cpu::sbc_A_B(void) {
-    Cpu::sbc(regBC.high);
+void GBemulator::Cpu::sbc_A_B(void) {
+    GBemulator::Cpu::sbc(regBC.high);
 }
-void Cpu::sbc_A_C(void) {
-    Cpu::sbc(regBC.low);
+void GBemulator::Cpu::sbc_A_C(void) {
+    GBemulator::Cpu::sbc(regBC.low);
 }
-void Cpu::sbc_A_D(void) {
-    Cpu::sbc(regDE.high);
+void GBemulator::Cpu::sbc_A_D(void) {
+    GBemulator::Cpu::sbc(regDE.high);
 }
-void Cpu::sbc_A_E(void) {
-    Cpu::sbc(regDE.low);
+void GBemulator::Cpu::sbc_A_E(void) {
+    GBemulator::Cpu::sbc(regDE.low);
 }
-void Cpu::sbc_A_H(void) {
-    Cpu::sbc(regHL.high);
+void GBemulator::Cpu::sbc_A_H(void) {
+    GBemulator::Cpu::sbc(regHL.high);
 }
-void Cpu::sbc_A_L(void) {
-    Cpu::sbc(regHL.low);
+void GBemulator::Cpu::sbc_A_L(void) {
+    GBemulator::Cpu::sbc(regHL.low);
 }
-void Cpu::sbc_A_HL_ind(void) {
+void GBemulator::Cpu::sbc_A_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::sbc(n);
+    //GBemulator::Cpu::sbc(n);
 }
-/* void Cpu::sbc_A_n(unsigned char n) {
-    Cpu::sbc(n);
+/* void GBemulator::Cpu::sbc_A_n(unsigned char n) {
+    GBemulator::Cpu::sbc(n);
 } */
  
 //-----------------------AND-------------------------------------
-void Cpu::and_(unsigned char n) {
+void GBemulator::Cpu::and_(unsigned char n) {
     int res = regAF.high & (int) n;
 
     if(res == 0)        //and = 0
@@ -455,37 +412,37 @@ void Cpu::and_(unsigned char n) {
     resetFlag(flagN);
         
 }
-void Cpu::and_A_A(void) {
-    Cpu::and_(regAF.high);
+void GBemulator::Cpu::and_A_A(void) {
+    GBemulator::Cpu::and_(regAF.high);
 }
-void Cpu::and_A_B(void) {
-    Cpu::and_(regBC.high);
+void GBemulator::Cpu::and_A_B(void) {
+    GBemulator::Cpu::and_(regBC.high);
 }
-void Cpu::and_A_C(void) {
-    Cpu::and_(regBC.low);
+void GBemulator::Cpu::and_A_C(void) {
+    GBemulator::Cpu::and_(regBC.low);
 }
-void Cpu::and_A_D(void) {
-    Cpu::and_(regDE.high);
+void GBemulator::Cpu::and_A_D(void) {
+    GBemulator::Cpu::and_(regDE.high);
 }
-void Cpu::and_A_E(void) {
-    Cpu::and_(regDE.low);
+void GBemulator::Cpu::and_A_E(void) {
+    GBemulator::Cpu::and_(regDE.low);
 }
-void Cpu::and_A_H(void) {
-    Cpu::and_(regHL.high);
+void GBemulator::Cpu::and_A_H(void) {
+    GBemulator::Cpu::and_(regHL.high);
 }
-void Cpu::and_A_L(void) {
-    Cpu::and_(regHL.low);
+void GBemulator::Cpu::and_A_L(void) {
+    GBemulator::Cpu::and_(regHL.low);
 }
-void Cpu::and_A_HL_ind(void) {
+void GBemulator::Cpu::and_A_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::and_(n);
+    //GBemulator::Cpu::and_(n);
 }
-void Cpu::and_A_n(unsigned char n) {
-    Cpu::and_(n);
+void GBemulator::Cpu::and_A_n(unsigned char n) {
+    GBemulator::Cpu::and_(n);
 }
 
 //-----------------------OR-------------------------------------
-void Cpu::or_(unsigned char n) {
+void GBemulator::Cpu::or_(unsigned char n) {
     int res = regAF.high | (int) n;
 
     if(res == 0)        //or = 0
@@ -500,37 +457,37 @@ void Cpu::or_(unsigned char n) {
     resetFlag(flagN);
         
 }
-void Cpu::or_A_A(void) {
-    Cpu::or_(regAF.high);
+void GBemulator::Cpu::or_A_A(void) {
+    GBemulator::Cpu::or_(regAF.high);
 }
-void Cpu::or_A_B(void) {
-    Cpu::or_(regBC.high);
+void GBemulator::Cpu::or_A_B(void) {
+    GBemulator::Cpu::or_(regBC.high);
 }
-void Cpu::or_A_C(void) {
-    Cpu::or_(regBC.low);
+void GBemulator::Cpu::or_A_C(void) {
+    GBemulator::Cpu::or_(regBC.low);
 }
-void Cpu::or_A_D(void) {
-    Cpu::or_(regDE.high);
+void GBemulator::Cpu::or_A_D(void) {
+    GBemulator::Cpu::or_(regDE.high);
 }
-void Cpu::or_A_E(void) {
-    Cpu::or_(regDE.low);
+void GBemulator::Cpu::or_A_E(void) {
+    GBemulator::Cpu::or_(regDE.low);
 }
-void Cpu::or_A_H(void) {
-    Cpu::or_(regHL.high);
+void GBemulator::Cpu::or_A_H(void) {
+    GBemulator::Cpu::or_(regHL.high);
 }
-void Cpu::or_A_L(void) {
-    Cpu::or_(regHL.low);
+void GBemulator::Cpu::or_A_L(void) {
+    GBemulator::Cpu::or_(regHL.low);
 }
-void Cpu::or_A_HL_ind(void) {
+void GBemulator::Cpu::or_A_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::or_(n);
+    //GBemulator::Cpu::or_(n);
 }
-void Cpu::or_A_n(unsigned char n) {
-    Cpu::or_(n);
+void GBemulator::Cpu::or_A_n(unsigned char n) {
+    GBemulator::Cpu::or_(n);
 }
 
 //-----------------------XOR-------------------------------------
-void Cpu::xor_(unsigned char n) {
+void GBemulator::Cpu::xor_(unsigned char n) {
     int res;
     res ? !n : n;
 
@@ -546,37 +503,37 @@ void Cpu::xor_(unsigned char n) {
     resetFlag(flagN);
         
 }
-void Cpu::xor_A_A(void) {
-    Cpu::xor_(regAF.high);
+void GBemulator::Cpu::xor_A_A(void) {
+    GBemulator::Cpu::xor_(regAF.high);
 }
-void Cpu::xor_A_B(void) {
-    Cpu::xor_(regBC.high);
+void GBemulator::Cpu::xor_A_B(void) {
+    GBemulator::Cpu::xor_(regBC.high);
 }
-void Cpu::xor_A_C(void) {
-    Cpu::xor_(regBC.low);
+void GBemulator::Cpu::xor_A_C(void) {
+    GBemulator::Cpu::xor_(regBC.low);
 }
-void Cpu::xor_A_D(void) {
-    Cpu::xor_(regDE.high);
+void GBemulator::Cpu::xor_A_D(void) {
+    GBemulator::Cpu::xor_(regDE.high);
 }
-void Cpu::xor_A_E(void) {
-    Cpu::xor_(regDE.low);
+void GBemulator::Cpu::xor_A_E(void) {
+    GBemulator::Cpu::xor_(regDE.low);
 }
-void Cpu::xor_A_H(void) {
-    Cpu::xor_(regHL.high);
+void GBemulator::Cpu::xor_A_H(void) {
+    GBemulator::Cpu::xor_(regHL.high);
 }
-void Cpu::xor_A_L(void) {
-    Cpu::xor_(regHL.low);
+void GBemulator::Cpu::xor_A_L(void) {
+    GBemulator::Cpu::xor_(regHL.low);
 }
-void Cpu::xor_A_HL_ind(void) {
+void GBemulator::Cpu::xor_A_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::xor_(n);
+    //GBemulator::Cpu::xor_(n);
 }
-void Cpu::xor_A_n(unsigned char n) {
-    Cpu::xor_(n);
+void GBemulator::Cpu::xor_A_n(unsigned char n) {
+    GBemulator::Cpu::xor_(n);
 }
 
 //------------------------CP-------------------------------------
-void Cpu::cp(unsigned char n) {
+void GBemulator::Cpu::cp(unsigned char n) {
     int res = regAF.high - (int) n;
 
     if(res == 0)        //sub = 0
@@ -596,37 +553,37 @@ void Cpu::cp(unsigned char n) {
     else
         resetFlag(flagH);
 }
-void Cpu::cp_A_A(void) {
-    Cpu::cp(regAF.high);
+void GBemulator::Cpu::cp_A_A(void) {
+    GBemulator::Cpu::cp(regAF.high);
 }
-void Cpu::cp_A_B(void) {
-    Cpu::cp(regBC.high);
+void GBemulator::Cpu::cp_A_B(void) {
+    GBemulator::Cpu::cp(regBC.high);
 }
-void Cpu::cp_A_C(void) {
-    Cpu::cp(regBC.low);
+void GBemulator::Cpu::cp_A_C(void) {
+    GBemulator::Cpu::cp(regBC.low);
 }
-void Cpu::cp_A_D(void) {
-    Cpu::cp(regDE.high);
+void GBemulator::Cpu::cp_A_D(void) {
+    GBemulator::Cpu::cp(regDE.high);
 }
-void Cpu::cp_A_E(void) {
-    Cpu::cp(regDE.low);
+void GBemulator::Cpu::cp_A_E(void) {
+    GBemulator::Cpu::cp(regDE.low);
 }
-void Cpu::cp_A_H(void) {
-    Cpu::cp(regHL.high);
+void GBemulator::Cpu::cp_A_H(void) {
+    GBemulator::Cpu::cp(regHL.high);
 }
-void Cpu::cp_A_L(void) {
-    Cpu::cp(regHL.low);
+void GBemulator::Cpu::cp_A_L(void) {
+    GBemulator::Cpu::cp(regHL.low);
 }
-void Cpu::cp_A_HL_ind(void) {
+void GBemulator::Cpu::cp_A_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::cp(n);
+    //GBemulator::Cpu::cp(n);
 }
-void Cpu::cp_A_n(unsigned char n) {
-    Cpu::cp(n);
+void GBemulator::Cpu::cp_A_n(unsigned char n) {
+    GBemulator::Cpu::cp(n);
 }
 
 //------------------------INC-------------------------------------
-void Cpu::inc(unsigned char* reg) {
+void GBemulator::Cpu::inc(unsigned char* reg) {
     int res = (*reg) + 1;
     (*reg)++;
 
@@ -642,34 +599,34 @@ void Cpu::inc(unsigned char* reg) {
     else
         resetFlag(flagH);
 }
-void Cpu::inc_A(void) {
-    Cpu::inc(&regAF.high);
+void GBemulator::Cpu::inc_A(void) {
+    GBemulator::Cpu::inc(&regAF.high);
 }
-void Cpu::inc_B(void) {
-    Cpu::inc(&regBC.high);
+void GBemulator::Cpu::inc_B(void) {
+    GBemulator::Cpu::inc(&regBC.high);
 }
-void Cpu::inc_C(void) {
-    Cpu::inc(&regBC.low);
+void GBemulator::Cpu::inc_C(void) {
+    GBemulator::Cpu::inc(&regBC.low);
 }
-void Cpu::inc_D(void) {
-    Cpu::inc(&regDE.high);
+void GBemulator::Cpu::inc_D(void) {
+    GBemulator::Cpu::inc(&regDE.high);
 }
-void Cpu::inc_E(void) {
-    Cpu::inc(&regDE.low);
+void GBemulator::Cpu::inc_E(void) {
+    GBemulator::Cpu::inc(&regDE.low);
 }
-void Cpu::inc_H(void) {
-    Cpu::inc(&regHL.high);
+void GBemulator::Cpu::inc_H(void) {
+    GBemulator::Cpu::inc(&regHL.high);
 }
-void Cpu::inc_L(void) {
-    Cpu::inc(&regHL.low);
+void GBemulator::Cpu::inc_L(void) {
+    GBemulator::Cpu::inc(&regHL.low);
 }
 void inc_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::inc(n);
+    //GBemulator::Cpu::inc(n);
 }
 
 //------------------------DEC-------------------------------------
-void Cpu::dec(unsigned char* reg) {
+void GBemulator::Cpu::dec(unsigned char* reg) {
     int res = (*reg) - 1;
     (*reg)--;
 
@@ -685,92 +642,92 @@ void Cpu::dec(unsigned char* reg) {
     else
         resetFlag(flagH);
 }
-void Cpu::dec_A(void) {
-    Cpu::dec(&regAF.high);
+void GBemulator::Cpu::dec_A(void) {
+    GBemulator::Cpu::dec(&regAF.high);
 }
-void Cpu::dec_B(void) {
-    Cpu::dec(&regBC.high);
+void GBemulator::Cpu::dec_B(void) {
+    GBemulator::Cpu::dec(&regBC.high);
 }
-void Cpu::dec_C(void) {
-    Cpu::dec(&regBC.low);
+void GBemulator::Cpu::dec_C(void) {
+    GBemulator::Cpu::dec(&regBC.low);
 }
-void Cpu::dec_D(void) {
-    Cpu::dec(&regDE.high);
+void GBemulator::Cpu::dec_D(void) {
+    GBemulator::Cpu::dec(&regDE.high);
 }
-void Cpu::dec_E(void) {
-    Cpu::dec(&regDE.low);
+void GBemulator::Cpu::dec_E(void) {
+    GBemulator::Cpu::dec(&regDE.low);
 }
-void Cpu::dec_H(void) {
-    Cpu::dec(&regHL.high);
+void GBemulator::Cpu::dec_H(void) {
+    GBemulator::Cpu::dec(&regHL.high);
 }
-void Cpu::dec_L(void) {
-    Cpu::dec(&regHL.low);
+void GBemulator::Cpu::dec_L(void) {
+    GBemulator::Cpu::dec(&regHL.low);
 }
-void Cpu::dec_HL_ind(void) {
+void GBemulator::Cpu::dec_HL_ind(void) {
     //unsigned char n = rb(regHL.reg)      //readByte
-    //Cpu::dec(n);
+    //GBemulator::Cpu::dec(n);
 }
 
 
 //-----------------------ADD HL-------------------------------------
-void Cpu::addWord(unsigned short n) {
+void GBemulator::Cpu::addWord(unsigned short n) {
     WORD res = regHL.reg + (int) n;   
     regAF.reg = res;
     resetFlag(flagN);
 }
-void Cpu::add_HL_BC(void) {
-    Cpu::addWord(regBC.reg);
+void GBemulator::Cpu::add_HL_BC(void) {
+    GBemulator::Cpu::addWord(regBC.reg);
 }
-void Cpu::add_HL_DE(void) {
-    Cpu::addWord(regDE.reg);
+void GBemulator::Cpu::add_HL_DE(void) {
+    GBemulator::Cpu::addWord(regDE.reg);
 }
-void Cpu::add_HL_HL(void) {
-    Cpu::addWord(regHL.reg);
+void GBemulator::Cpu::add_HL_HL(void) {
+    GBemulator::Cpu::addWord(regHL.reg);
 }
-void Cpu::add_HL_SP(void) {
-    Cpu::addWord(sp);
+void GBemulator::Cpu::add_HL_SP(void) {
+    GBemulator::Cpu::addWord(sp);
 }
 //-----------------------ADD SP-------------------------------------
-void Cpu::add_SP_n(signed char n) {
+void GBemulator::Cpu::add_SP_n(signed char n) {
    sp += (int) n;
 }
 
 //------------------------INC-------------------------------------
-/* void Cpu::incWord(unsigned char* reg) {
+/* void GBemulator::Cpu::incWord(unsigned char* reg) {
     (*reg)++;
 } */
-void Cpu::inc_BC(void) {
+void GBemulator::Cpu::inc_BC(void) {
     regBC.reg++;
-    //Cpu::incWord(&regBC.reg);
+    //GBemulator::Cpu::incWord(&regBC.reg);
 }
-void Cpu::inc_DE(void) {
+void GBemulator::Cpu::inc_DE(void) {
     regBC.reg++;
-    //Cpu::incWord(&regDE.reg);
+    //GBemulator::Cpu::incWord(&regDE.reg);
 }
-void Cpu::inc_HL(void) {
+void GBemulator::Cpu::inc_HL(void) {
     regBC.reg++;
-    //Cpu::incWord(&regHL.reg);
+    //GBemulator::Cpu::incWord(&regHL.reg);
 }
-void Cpu::inc_SP(void) {
+void GBemulator::Cpu::inc_SP(void) {
     sp++;
 }
 
 //------------------------DEC-------------------------------------
-/* void Cpu::decWord(unsigned char* reg) {
+/* void GBemulator::Cpu::decWord(unsigned char* reg) {
     (*reg)--;
 } */
-void Cpu::dec_BC(void) {
+void GBemulator::Cpu::dec_BC(void) {
     regBC.reg--;
-    //Cpu::decWord(&regBC.reg);
+    //GBemulator::Cpu::decWord(&regBC.reg);
 }
-void Cpu::dec_DE(void) {
+void GBemulator::Cpu::dec_DE(void) {
     regDE.reg--;
-    //Cpu::decWord(&regDE.reg);
+    //GBemulator::Cpu::decWord(&regDE.reg);
 }
-void Cpu::dec_HL(void) {
+void GBemulator::Cpu::dec_HL(void) {
     regHL.reg--;
-    //Cpu::decWord(&regHL.reg);
+    //GBemulator::Cpu::decWord(&regHL.reg);
 }
-void Cpu::dec_SP(void) {
+void GBemulator::Cpu::dec_SP(void) {
     sp--;
 }

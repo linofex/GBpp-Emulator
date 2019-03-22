@@ -29,11 +29,21 @@ namespace GBemulator {
                                     // 014E-014F Checksum not needed for GB
             std::vector<BYTE> Game;               // 
         public:
-            Rom (const char* t_RomFileName);
+            Rom (const std::string t_RomFileName);
             void PrintRomName() const;
             inline std::vector<BYTE> GetBeginPort() const{ return BeginPoint; };
             inline std::vector<BYTE> GetNintendoLogo()const{ return NintendoLogo; };
             std::vector<BYTE> GetRomName()const{ return RomName; };
+            void PrintLicenseCodeNew()const;
+            void PrintNintendoGraphic()const;
+            void PrintBeginPoint() const;
+            void PrintRomSize()const;
+            void PrintRamSize()const;
+            void PrintCartridgeType() const;
+            void PrintColorType() const;
+            void PrintDestCode() const;
+            void PrintLicenseCodeOld() const;
+            
             std::vector<BYTE> GetRom()const{ return Game; };     
 
 };

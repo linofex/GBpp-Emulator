@@ -1,7 +1,7 @@
-#include "../includes/rom.hpp"
-#include "../includes/memory.hpp"
+//#include "../includes/rom.hpp"
+//#include "../includes/memory.hpp"
 #include "../includes/GameBoy.hpp"
-#include "../includes/cpu.hpp"
+//#include "../includes/cpu.hpp"
 
 //using namespace GBemulator;
 int main(int argc, char** argv){

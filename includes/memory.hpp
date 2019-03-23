@@ -3,9 +3,10 @@
 #include"utility.hpp"
 //#include"cpu.hpp"
 #include <vector>
-#include "cpu.hpp"
+
 
 class Cpu;
+
 //namespace GBemulator{
     class Memory{
         private:

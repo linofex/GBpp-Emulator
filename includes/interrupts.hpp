@@ -2,8 +2,9 @@
 #define INTERRUPT_H
 
 #include "utility.hpp"
-#include "memory.hpp"
-#include "cpu.hpp"
+
+class Cpu;
+class Memory;
 
 //namespace GBemulator{
     class InterruptHnadler{

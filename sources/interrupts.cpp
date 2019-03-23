@@ -1,5 +1,6 @@
 #include "../includes/interrupts.hpp"
-//#include "../includes/memory.hpp"
+#include "../includes/memory.hpp"
+#include "../includes/cpu.hpp"
 
 void InterruptHnadler::RequestInterrupt(const BYTE t_interrupt, Memory& t_memory){
     BYTE irr = t_memory.readByte(IRR_ADD);          // Read Interrupt Request Reister from memory at 0x0FF0F

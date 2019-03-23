@@ -1,7 +1,7 @@
-#include "../includes/cpu.hpp"
+
 #include "../includes/memory.hpp"
 #include "../includes/interrupts.hpp"
-
+#include "../includes/cpu.hpp"
 #include <iostream>
 #include <map>
 #include <string>
@@ -741,5 +741,6 @@ void Cpu::dec_HL(void) {
     //Cpu::decWord(&regHL.reg);
 }
 void Cpu::dec_SP(void) {
+    //Fare controllo dell'indirizzo
     sp--;
 }

@@ -31,7 +31,7 @@
             std::vector<BYTE> game;               // 
         public:
             Rom();
-            ~Rom(){std::cout<< "UUU";}
+            ~Rom();
             Rom (const std::string t_RomFileName);
             void PrintRomName() const;
             std::vector<BYTE> GetNintendoLogo()const;

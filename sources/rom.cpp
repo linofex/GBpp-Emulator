@@ -1,6 +1,8 @@
 #include "../includes/rom.hpp"
 
 Rom::Rom(){}
+Rom::~Rom(){}
+
 Rom::Rom (const std::string t_RomFileName){                
     std::ifstream ROMFile(t_RomFileName.c_str(), std::ifstream::ate | std::ifstream::binary);
     int size;

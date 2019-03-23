@@ -1,7 +1,7 @@
 
 #include "../includes/memory.hpp"
 #include <iostream>
-//#include "cpu.cpp";
+#include "../includes/cpu.hpp"
 
 /*
     unsigned char rom[32*KB];     // 0000-7FFF space where the rom is stored 
@@ -111,8 +111,8 @@ void Memory::writeWord(const WORD t_add, const WORD t_value){
 
 void Memory::writeInStack(Cpu* t_cpu, WORD t_value){
     // WORD sp = t_cpu;
-    // writeWord(sp, t_value);
-    // t_cpu--;
+    writeWord(t_cpu->getSp(), t_value);
+    t_cpu->dec_SP();
 }
 
 Memory::~Memory(){}

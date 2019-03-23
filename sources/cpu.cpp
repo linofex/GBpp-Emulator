@@ -1,34 +1,33 @@
-
-#include "../includes/memory.hpp"
-#include "../includes/interrupts.hpp"
 #include "../includes/cpu.hpp"
+//#include "../includes/memory.hpp"
+#include "../includes/interrupts.hpp"
+//#include "../includes/instruction.hpp"
+
 #include <iostream>
 #include <map>
 #include <string>
 #include <fstream>
 
-/* Cpu::Cpu(void) {
-    reset();
-} */
-Cpu::Cpu(){};
+Cpu::Cpu(void) { } 
+
 Cpu::Cpu(Memory* m) {
     mem = m;
-    reset();
+    Cpu::reset();
+    std::cout<<"reset end"<<std::endl;
 }
 Cpu::~Cpu(void) {
-    
     exit(1);
 }
 
-instruction Cpu::addInstruction(std::string name, int cycles, int paramNum, void* function) {
+/* instruction Cpu::addInstruction(std::string name, int cycles, int paramNum, void* function) {
     instruction i = {name, cycles, paramNum, function};
     return i;
-}
+} */
 
-void Cpu::fillInstructions() {
-
+//void Cpu::fillInstructions() {
+    //instrSet
     //---------------------ADD------------------------------
-    instrMap[0x80] = Cpu::addInstruction("ADD A, B", 4, 0, (void*)&Cpu::add_A_B);
+    //instrMap[0x80] = instruction::addInstruction("ADD A, B", 4, 0, (void*)&Cpu::add_A_B);
     /* instrMap[0x81] = Cpu::addInstruction("ADD A, C", 4, 0, (void*)&Cpu::add_A_C);
     instrMap[0x82] = Cpu::addInstruction("ADD A, D", 4, 0, (void*)&Cpu::add_A_D);
     instrMap[0x83] = Cpu::addInstruction("ADD A, E", 4, 0, (void*)&Cpu::add_A_E);
@@ -72,7 +71,7 @@ void Cpu::fillInstructions() {
     //           ((void (*)(void))instrMap[0x87].function)();
 
 
-}
+//}
 
 void Cpu::loadInternalROM() {
     std::ifstream inFile(internalROMName, std::ifstream::ate | std::ifstream::binary);
@@ -95,11 +94,12 @@ void Cpu::loadInternalROM() {
 
 bool Cpu::checkCartridge() {
     bool status = true;
+    return true;
 
     for(unsigned int i = 259; i <= 324; i++) { //0x103 = 259, 0x144 = 324
-        mem->writeInStack(this, (WORD)0x0000);
-        // if(read != intROM[i])
-        //     status = false;
+        BYTE read = mem->readByte(i);
+        if(read != intROM[i])
+            status = false;
     }
     if(!status)
         std::cerr<<"ROM not verified"<<std::endl;
@@ -108,17 +108,31 @@ bool Cpu::checkCartridge() {
 }
 
 void Cpu::step() {
+    
+    unsigned char opcode = 0x80;//mem->readByte(pc);
+   
+    //std::cout<<i.name<<'\t'<<i.cycles<<'\t'<<i.paramNum<<'\t'<<i.function<<std::endl;
+
+   
+
+    //instruction::getInstr(opcode);
+    //instruction i = instruction::instrSet[opcode];
+    //execute(i);
+
+}
+/* void Cpu::step() {
     BYTE instr = Cpu::fetch();
     instruction i = Cpu::decode(instr);
     execute(i);
-}
+} */
 
 void Cpu::reset() {
+
     //security check for original cartridge
     if(!Cpu::checkCartridge())
         //halt
         return;
-    
+
     //initialization of special registers
     pc = 0x100;
     sp = 0xFFFE;
@@ -130,7 +144,7 @@ void Cpu::reset() {
     regHL.reg = 0x014D;
 
     //fill the instructions map
-    Cpu::fillInstructions();
+    //Cpu::fillInstructions();
 
     //initialization of I/O registers in the internal RAM
     mem->writeByte(0xFF05, 0x00);	//mem->writeByte
@@ -165,29 +179,29 @@ void Cpu::reset() {
     mem->writeByte(0xFF4B, 0x00);
     mem->writeByte(0xFFFF, 0x00);
 
+    std::cout<<"pre step"<<std::endl;
+    
+    Cpu::step();
 }
 
 BYTE Cpu::fetch(void) {
-    unsigned char opcode = mem->readByte(pc);
+    std::cout<<"fetch"<<std::endl;
+    unsigned char opcode = 0x80;//mem->readByte(pc);
     return opcode;
 }
 
-instruction Cpu::decode(BYTE opcode) {
-    return instrMap[opcode];
+struct instruction Cpu::decode(BYTE opcode) {
+    std::cout<<"decode"<<std::endl;
+    return getInstr(opcode);
 }
 
-void Cpu::execute(instruction i) {
-    switch(i.paramNum) {
-        case 0:
-            ((void (*)(void))i.function)();
-            break;
-        default:
-            return;
-    }
+void Cpu::execute(instruction instr) {
+    std::cout<<"execute"<<std::endl;
+    instr.function(this);
 }
-
+/*
 //-----------------------ADD-------------------------------------
-void Cpu::add(unsigned char n) {
+/*void Cpu::add(unsigned char n) {
     int res = regAF.high + (int) n;
     
     if(res == 0)        //sum = 0
@@ -211,7 +225,7 @@ void Cpu::add(unsigned char n) {
     else
         resetFlag(flagH);
 }
-/* void Cpu::add_A_A(void) {
+ void Cpu::add_A_A(void) {
     Cpu::add(regAF.high);
 }
 void Cpu::add_A_B(void) {
@@ -231,7 +245,7 @@ void Cpu::add_A_H(void) {
 }
 void Cpu::add_A_L(void) {
     Cpu::add(regHL.low);
-} */
+} 
  void Cpu::add_A_HL_ind(void) {
     unsigned char n = mem->readByte(regHL.reg);
     Cpu::add(n);
@@ -239,11 +253,11 @@ void Cpu::add_A_L(void) {
 void Cpu::add_A_n(unsigned char n) {
     Cpu::add(n);
 }
-
+*/
 //-----------------------ADC-------------------------------------
-void Cpu::adc(unsigned char n) {
+/*void Cpu::adc(unsigned char n) {
     int carry = isFlagCarry() ? 1 : 0;  //carry = 1 or 0
-    Cpu::add(n + carry);
+    //Cpu::add(n + carry);
     /* int res = regAF.high + (int) n + carry;
 
     if(res == 0)        //sum = 0
@@ -266,7 +280,7 @@ void Cpu::adc(unsigned char n) {
     if(((n & 0x0F) + (regAF.high & 0x0F) + carry) > 0x0F)    //if carry from bit 3
         setFlag(flagH);
     else
-        resetFlag(flagH); */
+        resetFlag(flagH); 
 }
 /* void Cpu::adc_A_A(void) {
     Cpu::adc(regAF.high);
@@ -288,7 +302,7 @@ void Cpu::adc_A_H(void) {
 }
 void Cpu::adc_A_L(void) {
     Cpu::adc(regHL.low);
-}*/
+}
 void Cpu::adc_A_HL_ind(void) {
     unsigned char n = mem->readByte(regHL.reg);
     Cpu::adc(n);
@@ -296,9 +310,9 @@ void Cpu::adc_A_HL_ind(void) {
 void Cpu::adc_A_n(unsigned char n) {
     Cpu::adc(n);
 }
-
+*/
 //-----------------------SUB-------------------------------------
-void Cpu::sub(unsigned char n) {
+/*void Cpu::sub(unsigned char n) {
     int res = regAF.high - (int) n;
 
     if(res == 0)        //sub = 0
@@ -319,7 +333,7 @@ void Cpu::sub(unsigned char n) {
         setFlag(flagH);
     else
         resetFlag(flagH);
-}
+}*/
 /* void Cpu::sub_A_A(void) {
     Cpu::sub(regAF.high);
 }
@@ -340,19 +354,19 @@ void Cpu::sub_A_H(void) {
 }
 void Cpu::sub_A_L(void) {
     Cpu::sub(regHL.low);
-} */
+}
 void Cpu::sub_A_HL_ind(void) {
     unsigned char n = mem->readByte(regHL.reg);
     Cpu::sub(n);
 }
 void Cpu::sub_A_n(unsigned char n) {
     Cpu::sub(n);
-}
+}*/
 
 //-----------------------SBC-------------------------------------
-void Cpu::sbc(unsigned char n) {
+/*void Cpu::sbc(unsigned char n) {
     int carry = isFlagCarry() ? 1 : 0;  //carry = 1 or 0
-    Cpu::sub(n + carry);
+    //Cpu::sub(n + carry);
     /* int res = regAF.high - ((int) n + carry);
 
     if(res == 0)        //sub = 0
@@ -372,7 +386,7 @@ void Cpu::sbc(unsigned char n) {
     if(((n & 0x0F) + (regAF.high & 0x0F) + carry) < 0)    //if carry from bit 3
         setFlag(flagH);
     else
-        resetFlag(flagH); */
+        resetFlag(flagH); 
 }
 /* void Cpu::sbc_A_A(void) {
     Cpu::sbc(regAF.high);
@@ -394,7 +408,7 @@ void Cpu::sbc_A_H(void) {
 }
 void Cpu::sbc_A_L(void) {
     Cpu::sbc(regHL.low);
-} */
+} 
 void Cpu::sbc_A_HL_ind(void) {
     unsigned char n = mem->readByte(regHL.reg);
     Cpu::sbc(n);
@@ -404,7 +418,7 @@ void Cpu::sbc_A_HL_ind(void) {
 } */
  
 //-----------------------AND-------------------------------------
-void Cpu::and_(unsigned char n) {
+/*void Cpu::and_(unsigned char n) {
     int res = regAF.high & (int) n;
 
     if(res == 0)        //and = 0
@@ -439,17 +453,17 @@ void Cpu::and_A_H(void) {
 }
 void Cpu::and_A_L(void) {
     Cpu::and_(regHL.low);
-} */
+} 
 void Cpu::and_A_HL_ind(void) {
     unsigned char n = mem->readByte(regHL.reg);
     Cpu::and_(n);
 }
 void Cpu::and_A_n(unsigned char n) {
     Cpu::and_(n);
-}
+}*/
 
 //-----------------------OR-------------------------------------
-void Cpu::or_(unsigned char n) {
+/*void Cpu::or_(unsigned char n) {
     int res = regAF.high | (int) n;
 
     if(res == 0)        //or = 0
@@ -484,17 +498,17 @@ void Cpu::or_A_H(void) {
 }
 void Cpu::or_A_L(void) {
     Cpu::or_(regHL.low);
-} */
+}
 void Cpu::or_A_HL_ind(void) {
     unsigned char n = mem->readByte(regHL.reg);
     Cpu::or_(n);
 }
 void Cpu::or_A_n(unsigned char n) {
     Cpu::or_(n);
-}
+}*/
 
 //-----------------------XOR-------------------------------------
-void Cpu::xor_(unsigned char n) {
+/*void Cpu::xor_(unsigned char n) {
     int res;
     res ? !n : n;
 
@@ -530,7 +544,7 @@ void Cpu::xor_A_H(void) {
 }
 void Cpu::xor_A_L(void) {
     Cpu::xor_(regHL.low);
-} */
+} 
 void Cpu::xor_A_HL_ind(void) {
     unsigned char n = mem->readByte(regHL.reg);
     Cpu::xor_(n);
@@ -538,9 +552,9 @@ void Cpu::xor_A_HL_ind(void) {
 void Cpu::xor_A_n(unsigned char n) {
     Cpu::xor_(n);
 }
-
+*/
 //------------------------CP-------------------------------------
-void Cpu::cp(unsigned char n) {
+/*void Cpu::cp(unsigned char n) {
     int res = regAF.high - (int) n;
 
     if(res == 0)        //sub = 0
@@ -580,17 +594,17 @@ void Cpu::cp_A_H(void) {
 }
 void Cpu::cp_A_L(void) {
     Cpu::cp(regHL.low);
-} */
+}
 void Cpu::cp_A_HL_ind(void) {
     unsigned char n = mem->readByte(regHL.reg);
     Cpu::cp(n);
 }
 void Cpu::cp_A_n(unsigned char n) {
     Cpu::cp(n);
-}
+}*/
 
 //------------------------INC-------------------------------------
-void Cpu::inc(unsigned char* reg) {
+/*void Cpu::inc(unsigned char* reg) {
     int res = (*reg) + 1;
     (*reg)++;
 
@@ -626,16 +640,16 @@ void Cpu::inc_H(void) {
 }
 void Cpu::inc_L(void) {
     Cpu::inc(&regHL.low);
-}*/
+}
 void Cpu::inc_HL_ind(void) {
     BYTE addr = mem->readByte(regHL.reg);
     BYTE val = mem->readByte(addr) + 1;
     mem->writeByte(addr, val);
     //ATTENZIONE, da rifare perchè così non aggiorna i flag---------------------------------
 }
-
+*/
 //------------------------DEC-------------------------------------
-void Cpu::dec(unsigned char* reg) {
+/*void Cpu::dec(unsigned char* reg) {
     int res = (*reg) - 1;
     (*reg)--;
 
@@ -671,14 +685,14 @@ void Cpu::dec_H(void) {
 }
 void Cpu::dec_L(void) {
     Cpu::dec(&regHL.low);
-} */
+} 
 void Cpu::dec_HL_ind(void) {
     //unsigned char n = mem->readByte(regHL.reg);
     //Cpu::dec(n);
     BYTE addr = mem->readByte(regHL.reg);
     BYTE val = mem->readByte(addr) - 1;
     mem->writeByte(addr, val);
-}
+}*/
 
 
 //-----------------------ADD HL-------------------------------------
@@ -741,6 +755,5 @@ void Cpu::dec_HL(void) {
     //Cpu::decWord(&regHL.reg);
 }
 void Cpu::dec_SP(void) {
-    //Fare controllo dell'indirizzo
     sp--;
 }

@@ -127,23 +127,22 @@ void Cpu::setTimer() {
     if(!isTimerOn())
         return;
 
-    int actualTimer = mem->readByte(TMC);   //timer controller register
-    int actualFreq = CLOCK/actualTimer;
-    int newFreq = 0;
+    int oldTimer = mem->readByte(TMC);   //timer controller register
+    int newTimer = 0;
 
     //00: 4096Hz    01: 262144Hz    10: 65536Hz     11: 16384Hz
-    switch(actualTimer & 0x03) {
+    switch(oldTimer & 0x03) {
         case 0:
-            newFreq = 1024; // 1024 = CLOCK/4096Hz
+            newTimer = 1024; // 1024 = CLOCK/4096Hz
             break;
         case 1:
-            newFreq = 16;   //   16 = CLOCK/262144Hz
+            newTimer = 16;   //   16 = CLOCK/262144Hz
             break;
         case 2:
-            newFreq = 64;   //   64 = CLOCK/65536Hz
+            newTimer = 64;   //   64 = CLOCK/65536Hz
             break;
         case 3:
-            newFreq = 256;  //  256 = CLOCK/16384Hz
+            newTimer = 256;  //  256 = CLOCK/16384Hz
             break;
         default:
             exit(1);
@@ -151,7 +150,7 @@ void Cpu::setTimer() {
             break; 
     }
 
-    timerCounter = newFreq;
+    timerCounter = newTimer;
 }
 
 void Cpu::stepDivider(int cycles) {

@@ -14,20 +14,20 @@ void InterruptHnadler::ServeInterrupt(const BYTE t_interrupt, Memory& t_memory, 
     t_memory.writeByte(IRR_ADD, irr ^ t_interrupt); // Reset the Interrupet flag to 0, since is served
 
     // Save PC in the stack
-    t_memory.writeInStack(t_cpu, t_cpu->getPc());
+    t_memory.writeInStack(t_cpu, t_cpu->getPC());
     // Point the PC to the interrupt routine
     switch (t_interrupt){
         case VBLANK:
-            t_cpu->setPc(VBLANK_ADD);
+            t_cpu->setPC(VBLANK_ADD);
             break;
         case LCD:
-            t_cpu->setPc(LCD_ADD);
+            t_cpu->setPC(LCD_ADD);
             break;
         case TIMER:
-            t_cpu->setPc(TIMER_ADD);
+            t_cpu->setPC(TIMER_ADD);
             break;
         case JOYPAD:
-            t_cpu->setPc(JOYPAD_ADD);
+            t_cpu->setPC(JOYPAD_ADD);
     }
 }
 

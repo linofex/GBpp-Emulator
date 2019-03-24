@@ -59,7 +59,8 @@ BYTE Memory::readByte(const WORD t_add) const {
         return hRam.at(t_add & 0x007F); // from to 0 to 125
     }
     //Interrupt Enable Register
-    else if (t_add == 0xFFFF) return t_add;  
+    else
+        return IEReg;  
 }
 
 WORD Memory::readWord(const WORD t_add) const {
@@ -111,7 +112,7 @@ void Memory::writeWord(const WORD t_add, const WORD t_value){
 
 void Memory::writeInStack(Cpu* t_cpu, WORD t_value){
     // WORD sp = t_cpu;
-    writeWord(t_cpu->getSp(), t_value);
+    writeWord(t_cpu->getSP(), t_value);
     t_cpu->dec_SP();
 }
 

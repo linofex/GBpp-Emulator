@@ -1,4 +1,4 @@
-#include "..\includes\instruction.hpp"
+#include "../includes/instruction.hpp"
 #include <iostream>
 #include <map>
 
@@ -19,16 +19,30 @@ instruction::instruction(std::string name, int cycles, int paramNum, void (*f)(C
 //instruction i = instruction("ADD A, B", 4, 0, add_A_B);
 //instrSet[0x80] = i;
 
-//instrSet[0x80] = instruction("ADD A, B", 4, 0, add_A_B);
-//instrSet[0x81] = instruction("ADD A, C", 4, 0, add_A_C);
-
-instruction instrSet[2] = {
+/* instrSet[0x80] = instruction("ADD A, B", 4, 0, add_A_B);
+instrSet[0x81] = instruction("ADD A, C", 4, 0, add_A_C);
+ */
+instruction instrSet2[2] = {
 	instruction("ADD_A_B", 4, 0, add_A_B),
     instruction("ADD_A_C", 4, 0, add_A_C)
-};
+}; 
+
+//std::map<unsigned char, struct instruction> instrSet;
+
+/* void init() {
+    instrSet[0x80] = instruction("ADD A, B", 4, 0, add_A_B);
+    instrSet[0x81] = instruction("ADD A, C", 4, 0, add_A_C);
+
+} */
 
 instruction getInstr(unsigned char opcode) {
-    return instrSet[0];
+    //return instruction("ADD A, B", 4, 0, add_A_B);
+    return instrSet2[0];
+}
+
+//----------------------- EMPTY -------------------------------------
+static void empty() {
+    std::cout<<"Instruction not defined"<<std::endl;
 }
 
 //-----------------------ADD-------------------------------------
@@ -60,6 +74,7 @@ static void add(Cpu* c, unsigned char n) {
         c->resetFlag(flagH);
 
     std::cout<<"fine add"<<std::endl;
+    
 }
 
 static void add_A_B(Cpu* c) {add(c, c->getB());}
@@ -327,8 +342,125 @@ static void dec_HL_ind(Cpu* c) {
     c->setA(dec(c, n));
 }
 
+static void add_HL(Cpu* c, BYTE val) {
+    
+    unsigned long res = c->getHL() + val;
 
+    c->setHL((unsigned short)(res & 0xFFFF));
+ 
+    c->resetFlag(flagN);
 
+    if(res & 0xFFFF0000)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+    
+    if(((c->getHL() & 0x0F) + (val & 0x0F)) > 0x0F)
+        c->setFlag(flagH);
+	else
+        c->resetFlag(flagH);
+}
+static void add_HL_BC(Cpu* c) {add_HL(c, c->getBC());};
+static void add_HL_DE(Cpu* c) {add_HL(c, c->getDE());};
+static void add_HL_HL(Cpu* c) {add_HL(c, c->getHL());};
+static void add_HL_SP(Cpu* c) {add_HL(c, c->getSP());};
 
+static void add_SP_n(Cpu* c, unsigned char n) {
+    c->resetFlag(flagZ);
+    c->resetFlag(flagN);
 
+    unsigned long res = c->getSP() + n;
 
+    c->setSP((unsigned short)(res & 0xFFFF));
+ 
+    c->resetFlag(flagN);
+
+    if(res & 0xFFFF0000)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+    
+    if(((c->getSP() & 0x0F) + (n & 0x0F)) > 0x0F)
+        c->setFlag(flagH);
+	else
+        c->resetFlag(flagH);
+
+};
+
+static void inc_HL(Cpu* c) {c->setHL(c->getHL() + 1);};
+static void inc_SP(Cpu* c) {c->setSP(c->getSP() + 1);};
+static void inc_DE(Cpu* c) {c->setDE(c->getDE() + 1);};
+static void inc_BC(Cpu* c) {c->setBC(c->getBC() + 1);};
+
+static void dec_HL(Cpu* c) {c->setHL(c->getHL() - 1);};
+static void dec_SP(Cpu* c) {c->setSP(c->getSP() - 1);};
+static void dec_DE(Cpu* c) {c->setDE(c->getDE() - 1);};
+static void dec_BC(Cpu* c) {c->setBC(c->getBC() - 1);};
+
+BYTE swap_n(Cpu* c, unsigned char n) {
+    c->resetFlag(flagN);
+    c->resetFlag(flagH);
+    c->resetFlag(flagC);
+
+    BYTE high = n & 0xFFFF0000;
+    BYTE low = n & 0x0000FFFF;
+    if((high + low) == 0)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+    return high + low;
+}
+static void swap_A(Cpu* c) {c->setA(swap_n(c, c->getA()));}
+static void swap_B(Cpu* c) {c->setA(swap_n(c, c->getB()));}
+static void swap_C(Cpu* c) {c->setA(swap_n(c, c->getC()));}
+static void swap_D(Cpu* c) {c->setA(swap_n(c, c->getD()));}
+static void swap_E(Cpu* c) {c->setA(swap_n(c, c->getE()));}
+static void swap_H(Cpu* c) {c->setA(swap_n(c, c->getH()));}
+static void swap_L(Cpu* c) {c->setA(swap_n(c, c->getL()));}
+static void swap_HL(Cpu* c) {
+    WORD addr = c->getHL();
+    unsigned char n = c->readByte(addr);
+    c->setHL(swap_n(c, c->getHL()));    
+}
+
+static void daa(Cpu* c) {
+    //manca-------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>
+}
+
+static void cpl(Cpu* c) {
+    c->setFlag(flagN);
+    c->setFlag(flagH);
+
+    c->setA(~c->getA());
+}
+static void ccf(Cpu* c) {
+    int carry = c->isFlagCarry() ? 1 : 0;
+    c->setFlag(~carry);
+    c->resetFlag(flagH);
+    c->resetFlag(flagN);
+}
+static void scf(Cpu* c) {
+    c->setFlag(flagC);
+    c->resetFlag(flagH);
+    c->resetFlag(flagN);
+}
+static void nop() {}
+static void halt() {}   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+static void stop() {}   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+static void di(Cpu* c) {}//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+static void ei(Cpu* c) {}//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+static void rlca(Cpu* c) {
+    c->resetFlag(flagN);
+    c->resetFlag(flagH);
+
+    BYTE a = c->getA();
+    BYTE carry = 0;//((a & 0xF0000000) >> 7) ? c->setFlag(flagC) : c->resetFlag(flagC); //_______________________
+    a <<= 1;
+    a += carry;
+    if(a == 0)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+    c->setA(a);
+}
+static void rla(Cpu* c) {}  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

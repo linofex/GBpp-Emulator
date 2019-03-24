@@ -9,7 +9,7 @@ int main(int argc, char** argv){
         std::string romName = "../roms/" + std::string(argv[1]);
         GameBoy gameboy = GameBoy(romName);
         
-       gameboy.PrintRomInfo();
+        gameboy.PrintRomInfo();
     }
     
             

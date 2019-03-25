@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <fstream>
+#include <unistd.h>
 
 Cpu::Cpu(void) { } 
 
@@ -19,119 +20,23 @@ Cpu::~Cpu(void) {
     exit(1);
 }
 
-/* instruction Cpu::addInstruction(std::string name, int cycles, int paramNum, void* function) {
-    instruction i = {name, cycles, paramNum, function};
-    return i;
-} */
-
-//void Cpu::fillInstructions() {
-    //instrSet
-    //---------------------ADD------------------------------
-    //instrMap[0x80] = instruction::addInstruction("ADD A, B", 4, 0, (void*)&Cpu::add_A_B);
-    /* instrMap[0x81] = Cpu::addInstruction("ADD A, C", 4, 0, (void*)&Cpu::add_A_C);
-    instrMap[0x82] = Cpu::addInstruction("ADD A, D", 4, 0, (void*)&Cpu::add_A_D);
-    instrMap[0x83] = Cpu::addInstruction("ADD A, E", 4, 0, (void*)&Cpu::add_A_E);
-    instrMap[0x84] = Cpu::addInstruction("ADD A, H", 4, 0, (void*)&Cpu::add_A_H);
-    instrMap[0x85] = Cpu::addInstruction("ADD A, L", 4, 0, (void*)&Cpu::add_A_L);
-    instrMap[0x86] = Cpu::addInstruction("ADD A, (HL)", 8, 0, (void*)&Cpu::add_A_HL_ind);
-    instrMap[0x87] = Cpu::addInstruction("ADD A, A", 4, 0, (void*)&Cpu::add_A_A);
-    //---------------------ADC------------------------------
-    instrMap[0x88] = Cpu::addInstruction("ADC A, B", 4, 0, (void*)&Cpu::adc_A_B);
-    instrMap[0x89] = Cpu::addInstruction("ADC A, C", 4, 0, (void*)&Cpu::adc_A_C);
-    instrMap[0x8a] = Cpu::addInstruction("ADC A, D", 4, 0, (void*)&Cpu::adc_A_D);
-    instrMap[0x8b] = Cpu::addInstruction("ADC A, E", 4, 0, (void*)&Cpu::adc_A_E);
-    instrMap[0x8c] = Cpu::addInstruction("ADC A, H", 4, 0, (void*)&Cpu::adc_A_H);
-    instrMap[0x8d] = Cpu::addInstruction("ADC A, L", 4, 0, (void*)&Cpu::adc_A_L);
-    instrMap[0x8e] = Cpu::addInstruction("ADC A, (HL)", 8, 0, (void*)&Cpu::adc_A_HL_ind);
-    instrMap[0x8f] = Cpu::addInstruction("ADC A, A", 4, 0, (void*)&Cpu::adc_A_A);
-
-    //---------------------SUB------------------------------
-    instrMap[0x90] = Cpu::addInstruction("SUB A, B", 4, 0, (void*)&Cpu::sub_A_B);
-    instrMap[0x91] = Cpu::addInstruction("SUB A, C", 4, 0, (void*)&Cpu::sub_A_C);
-    instrMap[0x92] = Cpu::addInstruction("SUB A, D", 4, 0, (void*)&Cpu::sub_A_D);
-    instrMap[0x93] = Cpu::addInstruction("SUB A, E", 4, 0, (void*)&Cpu::sub_A_E);
-    instrMap[0x94] = Cpu::addInstruction("SUB A, H", 4, 0, (void*)&Cpu::sub_A_H);
-    instrMap[0x95] = Cpu::addInstruction("SUB A, L", 4, 0, (void*)&Cpu::sub_A_L);
-    instrMap[0x96] = Cpu::addInstruction("SUB A, (HL)", 8, 0, (void*)&Cpu::sub_A_HL_ind);
-    instrMap[0x97] = Cpu::addInstruction("SUB A, A", 4, 0, (void*)&Cpu::sub_A_A);
-
-    //---------------------SBC------------------------------
-    instrMap[0x98] = Cpu::addInstruction("SBC A, B", 4, 0, (void*)&Cpu::sbc_A_B);
-    instrMap[0x99] = Cpu::addInstruction("SBC A, C", 4, 0, (void*)&Cpu::sbc_A_C);
-    instrMap[0x9a] = Cpu::addInstruction("SBC A, D", 4, 0, (void*)&Cpu::sbc_A_D);
-    instrMap[0x9b] = Cpu::addInstruction("SBC A, E", 4, 0, (void*)&Cpu::sbc_A_E);
-    instrMap[0x9c] = Cpu::addInstruction("SBC A, H", 4, 0, (void*)&Cpu::sbc_A_H);
-    instrMap[0x9d] = Cpu::addInstruction("SBC A, L", 4, 0, (void*)&Cpu::sbc_A_L);
-    instrMap[0x9e] = Cpu::addInstruction("SBC A, (HL)", 8, 0, (void*)&Cpu::sbc_A_HL_ind);
-    instrMap[0x9f] = Cpu::addInstruction("SBC A, A", 4, 0, (void*)&Cpu::sbc_A_A); */
-
-
-    //std::cout<<instrMap[0x87].name<<'\t'<<instrMap[0x87].cycles<<'\t'<<instrMap[0x87].paramNum<<'\t'<<instrMap[0x87].function<<std::endl;
-
-    //           ((void (*)(void))instrMap[0x87].function)();
-
-
-//}
-
-void Cpu::loadInternalROM() {
-    std::ifstream inFile(internalROMName, std::ifstream::ate | std::ifstream::binary);
-    try {
-        unsigned char t;
-        for(int i = 0; i < internalROMSize; i++) {
-            inFile >> std::hex >> t;
-            intROM.push_back(t);
-            //std::cout << std::hex << original[i];
-        }
-    }
-    catch (const std::ifstream::failure& e) {
-        std::cerr<<"Exception opening/reading file comparison.txt"<<std::endl;
-        exit(1);
-    }
-
-    inFile.close();
-
-}
-
-bool Cpu::checkCartridge() {
-    bool status = true;
-    return true;
-
-    for(unsigned int i = 259; i <= 324; i++) { //0x103 = 259, 0x144 = 324
-        BYTE read = mem->readByte(i);
-        if(read != intROM[i])
-            status = false;
-    }
-    if(!status)
-        std::cerr<<"ROM not verified"<<std::endl;
-
-    return status;
-}
-
 void Cpu::step() {
     
     unsigned char opcode = 0x80;//mem->readByte(pc);
    
     //std::cout<<i.name<<'\t'<<i.cycles<<'\t'<<i.paramNum<<'\t'<<i.function<<std::endl;
 
-   
-
-    //instruction::getInstr(opcode);
-    //instruction i = instruction::instrSet[opcode];
-    //execute(i);
-
+    //BYTE opcode = Cpu::fetch();
+    instruction instr = Cpu::decode(opcode);
+    Cpu::execute(instr);
 }
-/* void Cpu::step() {
-    BYTE instr = Cpu::fetch();
-    instruction i = Cpu::decode(instr);
-    execute(i);
-} */
 
 void Cpu::reset() {
 
     //security check for original cartridge
-    if(!Cpu::checkCartridge())
+    //if(!Cpu::checkCartridge())
         //halt
-        return;
+        //return;
 
     //initialization of special registers
     pc = 0x100;
@@ -179,7 +84,8 @@ void Cpu::reset() {
     mem->writeByte(0xFF4B, 0x00);
     mem->writeByte(0xFFFF, 0x00);
 
-    std::cout<<"pre step"<<std::endl;
+    clockCycles = 0;
+    timerCounter = 1024;
     
     Cpu::step();
 }
@@ -198,8 +104,102 @@ struct instruction Cpu::decode(BYTE opcode) {
 void Cpu::execute(instruction instr) {
     std::cout<<"execute"<<std::endl;
     instr.function(this);
+
+    //update the clock cycles counter
+    clockCycles += instr.cycles;
+
+    Cpu::updateTimers(instr.cycles);
+    Cpu::sync();
 }
-/*
+
+void Cpu::updateTimers(int cycles) {
+    Cpu::stepTimer(cycles);
+    Cpu::stepDivider(cycles);
+}
+
+bool Cpu::isTimerOn() {
+    BYTE tmc = mem->readByte(TMC);
+    return ((tmc >> 2) & 1);
+}
+
+void Cpu::setTimer() {
+    
+    if(!isTimerOn())
+        return;
+
+    int oldTimer = mem->readByte(TMC);   //timer controller register
+    int newTimer = 0;
+
+    //00: 4096Hz    01: 262144Hz    10: 65536Hz     11: 16384Hz
+    switch(oldTimer & 0x03) {
+        case 0:
+            newTimer = 1024; // 1024 = CLOCK/4096Hz
+            break;
+        case 1:
+            newTimer = 16;   //   16 = CLOCK/262144Hz
+            break;
+        case 2:
+            newTimer = 64;   //   64 = CLOCK/65536Hz
+            break;
+        case 3:
+            newTimer = 256;  //  256 = CLOCK/16384Hz
+            break;
+        default:
+            exit(1);
+            std::cout<<"Invalid timer"<<std::endl;
+            break; 
+    }
+
+    timerCounter = newTimer;
+}
+
+void Cpu::stepDivider(int cycles) {
+    
+    //divider always done
+    dividerCounter += cycles;
+    
+    if(dividerCounter >= 0xFF) {   //next is an overflow (255)
+        dividerCounter = 0x00;
+        mem->writeByte(DIVIDER, dividerCounter);
+    }
+}
+
+void Cpu::stepTimer(int cycles) {
+    
+    if(!isTimerOn())
+        return;
+
+    timerCounter -= cycles;
+    if(timerCounter <= 0) {
+        //timer is reset again to the value specified by the timer controller TMC
+        Cpu::setTimer();
+        BYTE tima = mem->readByte(TIMA);
+
+        if(tima == 0xFF) {              //next is an overflow (255)
+            BYTE tma = mem->readByte(TMA);
+            mem->writeByte(TIMA, tma);
+
+            //send timer interrupt ______________________________>>>>>>>>>>>>>>>>>>>>>>>>
+
+        } else {            //increment the counter
+            mem->writeByte(TIMA, tima + 1);
+        }
+    }
+}
+
+void Cpu::sync() {
+
+    WORD hostTime = HOSTPERIOD * clockCycles;
+    WORD gameboyTime = GUESTPERIOD * clockCycles;
+
+    unsigned int diff = gameboyTime - hostTime;
+    if(diff > (2/10^3))     //2 ms
+        ;//Sleep(diff);
+
+}
+
+
+/* 
 //-----------------------ADD-------------------------------------
 /*void Cpu::add(unsigned char n) {
     int res = regAF.high + (int) n;
@@ -692,7 +692,7 @@ void Cpu::dec_HL_ind(void) {
     BYTE addr = mem->readByte(regHL.reg);
     BYTE val = mem->readByte(addr) - 1;
     mem->writeByte(addr, val);
-}*/
+} */
 
 
 //-----------------------ADD HL-------------------------------------
@@ -757,3 +757,4 @@ void Cpu::dec_HL(void) {
 void Cpu::dec_SP(void) {
     sp--;
 }
+ 

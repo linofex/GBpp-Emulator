@@ -59,14 +59,9 @@ BYTE Memory::readByte(const WORD t_add) const {
         return hRam.at(t_add & 0x007F); // from to 0 to 125
     }
     //Interrupt Enable Register
-<<<<<<< HEAD
     else{ 
         return IEReg;  
     }
-=======
-    else
-        return IEReg;  
->>>>>>> 09ed1dc181796bee1cc4e5667325062aa238c6fb
 }
 
 WORD Memory::readWord(const WORD t_add) const {

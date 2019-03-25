@@ -3,6 +3,7 @@
 
 #include "cpu.hpp"
 #include <string>
+#include <map>
 
 class Cpu;
 struct instruction {
@@ -14,7 +15,15 @@ struct instruction {
     //constructor
     instruction(std::string, int, int, void(*)(Cpu*));
 };
+//std::map<unsigned char, instruction> instrSet;
+//void init(void);
 instruction getInstr(unsigned char);
+
+//________________________________ 8/bit Arithmetic_____________________________
+
+//------------------- EMPTY -------------------
+static void empty(void);
+
 //------------------- ADD -------------------
 static void add(Cpu*, unsigned char);
 static void add_A_B(Cpu*);
@@ -133,10 +142,64 @@ static void dec_A_L(Cpu*);
 static void dec_A_A(Cpu*);
 static void dec_A_HL_ind(Cpu*);
 
+//________________________________ 8/bit Arithmetic_____________________________
 
+//------------------- ADD HL -------------------
+static void add_HL(Cpu*, BYTE);
+static void add_HL_BC(Cpu*);
+static void add_HL_DE(Cpu*);
+static void add_HL_HL(Cpu*);
+static void add_HL_SP(Cpu*);
+//------------------- ADD Sp, n -------------------
+static void add_SP_n(Cpu*);
+//------------------- INC nn -------------------
+static void inc_HL(Cpu*);
+static void inc_SP(Cpu*);
+static void inc_DE(Cpu*);
+static void inc_BC(Cpu*);
+//------------------- DEC nn -------------------
+static void dec_HL(Cpu*);
+static void dec_SP(Cpu*);
+static void dec_DE(Cpu*);
+static void dec_BC(Cpu*);
 
+//________________________________ Miscellaneous _____________________________
 
+//------------------- SWAP n -------------------
+BYTE swap_n(Cpu*, unsigned char);
+static void swap_A(Cpu*);
+static void swap_B(Cpu*);
+static void swap_C(Cpu*);
+static void swap_D(Cpu*);
+static void swap_E(Cpu*);
+static void swap_H(Cpu*);
+static void swap_L(Cpu*);
+static void swap_HL(Cpu*);
+//------------------- SWAP n -------------------
+static void daa(Cpu*);
+//------------------- CPL n -------------------
+static void cpl(Cpu*);
+//------------------- CCF -------------------
+static void ccf(Cpu*);
+//------------------- SCF -------------------
+static void scf(Cpu*);
+//------------------- NOP -------------------
+static void nop(void);
+//------------------- HALT -------------------
+static void halt(void);
+//------------------- STOP -------------------
+static void stop(void);
+//------------------- DI -------------------
+static void di(Cpu*);
+//------------------- EI -------------------
+static void ei(Cpu*);
 
+//________________________________ Rotates and shifts _____________________________
+
+//------------------- RLCA -------------------
+static void rlca(Cpu*);
+//------------------- RLA -------------------
+static void rla(Cpu*);
 
 
 

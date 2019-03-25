@@ -1,10 +1,12 @@
 #ifndef GAMEBOY_H
 #define GAMEBOY_H
+
 #include <string>
 #include "utility.hpp"
 #include "cpu.hpp"
 #include "memory.hpp"
- #include "interrupts.hpp"
+#include "interrupts.hpp"
+#include "instruction.hpp"
 #include "rom.hpp"
 #include <vector>
 //#include "display.hpp"

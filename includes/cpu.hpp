@@ -18,8 +18,19 @@ union REGISTER {
     };
 };
 
-#define internalROMSize 48
-#define internalROMName "comparison.txt"
+//#define internalROMSize 48
+//#define internalROMName "comparison.txt"
+
+//clock
+#define CLOCK 4194304
+#define GUESTPERIOD 1/(4194304)
+#define HOSTPERIOD 1/(25*10^9)    //0.4 ns
+
+//locations for the timers
+#define DIVIDER 0xFF04
+#define TIMA 0xFF05
+#define TMA 0xFF06
+#define TMC 0xFF07
 
 //flag register F (only 4 bit are used) |Z|N|H|C|x|x|x|x|
 #define flagZ 7
@@ -55,21 +66,38 @@ class Cpu {
         REGISTER regDE;
         REGISTER regHL;
     
+        //clock cycles passed
+        WORD clockCycles;
+
         //timer
-        float timer;
+        WORD timerCounter;
+        WORD dividerCounter;
 
         //map for the instructions
-        //std::map<unsigned char, struct instruction> instrMap;           
+/*         std::map<unsigned char, struct instruction> instrSet;
+        instruction getInstruction(unsigned char);
+        void initInstructions(void);   */  
         //void fillInstructions(void);
         //instruction addInstruction(std::string, int, int, void*);
 
-        std::vector<BYTE> intROM;
-        bool checkCartridge(void);
-        void loadInternalROM(void);
+        //std::vector<BYTE> intROM;
+        //bool checkCartridge(void);
+        //void loadInternalROM(void);
 
+        //execution functions
         BYTE fetch(void);
         struct instruction decode(BYTE);
         void execute(instruction);
+
+        //timing functions
+        void stepTimer(int);
+        void stepDivider(int);
+        void updateTimers(int);
+        void setTimer(void);
+        inline WORD getTimer(){return timerCounter;};
+        void sync(void);
+        bool isTimerOn(void);
+
 
     public:
         Cpu(void);
@@ -88,6 +116,9 @@ class Cpu {
         inline BYTE getH(void) const {return regHL.high;}
         inline BYTE getL(void) const {return regHL.low;}
         inline WORD getHL(void) const {return regHL.reg;}
+        inline WORD getAF(void) const {return regAF.reg;}
+        inline WORD getBC(void) const {return regBC.reg;}
+        inline WORD getDE(void) const {return regDE.reg;}
 
         inline void setA(const BYTE t_a) {regAF.high = t_a;}
         inline void setB(const BYTE t_b) {regBC.high = t_b;}
@@ -97,22 +128,26 @@ class Cpu {
         inline void setH(const BYTE t_h) {regHL.high = t_h;}
         inline void setL(const BYTE t_l) {regHL.low = t_l;}
         inline void setHL(const WORD t_hl) {regHL.reg = t_hl;}
+        inline void setAF(const WORD t_af) {regAF.reg = t_af;}
+        inline void setBC(const WORD t_bc) {regBC.reg = t_bc;}
+        inline void setDE(const WORD t_de) {regDE.reg = t_de;}
+        inline void setSP(const WORD t_sp) {sp = t_sp;}
 
-        inline BYTE isFlagZero(void) {return regAF.high & (1 << flagZ);}
-        inline BYTE isFlagNeg(void) {return regAF.high & (1 << flagN);}
-        inline BYTE isFlagHalfCarry(void) {return regAF.high & (1 << flagH);}
-        inline BYTE isFlagCarry(void) {return regAF.high & (1 << flagC);}
+        inline BYTE isFlagZero(void) {return regAF.low & (1 << flagZ);}
+        inline BYTE isFlagNeg(void) {return regAF.low & (1 << flagN);}
+        inline BYTE isFlagHalfCarry(void) {return regAF.low & (1 << flagH);}
+        inline BYTE isFlagCarry(void) {return regAF.low & (1 << flagC);}
 
         inline void setFlag(const BYTE n) {regAF.high |= n;}
         inline void resetFlag(const BYTE n) {regAF.high &= ~n;}
 
         inline BYTE readByte(BYTE t_addr) {return mem->readByte(t_addr);}
 
-        inline WORD getSp(void) const {return sp;}
-        inline WORD getPc(void) const {return pc;}
-        inline void setPc(const WORD t_pc) {pc = t_pc;}
-        inline void decreaseSp(void) {sp--;}
-        inline void increaseSp(void) {sp++;}
+        inline WORD getSP(void) const {return sp;}
+        inline WORD getPC(void) const {return pc;}
+        inline void setPC(const WORD t_pc) {pc = t_pc;}
+        inline void decSp(void) {sp--;}
+        inline void incSp(void) {sp++;}
         
 
         //--------------------- 8-bit arithmetic ---------------------
@@ -237,6 +272,7 @@ class Cpu {
         void dec_H(void);
         void dec_L(void);
         void dec_HL_ind(void);*/
+
 
         //--------------------- 16-bit arithmetic ---------------------
         void addWord(unsigned short);

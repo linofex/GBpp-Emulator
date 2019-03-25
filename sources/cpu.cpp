@@ -30,6 +30,7 @@ void Cpu::step() {
     //BYTE opcode = Cpu::fetch();
     instruction instr = Cpu::decode(opcode);
     Cpu::execute(instr);
+    
 }
 
 void Cpu::reset() {
@@ -113,6 +114,8 @@ void Cpu::execute(instruction instr) {
 
     Cpu::updateTimers(instr.cycles);
     Cpu::sync();
+
+    //check for interrupts >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 }
 
 void Cpu::updateTimers(int cycles) {
@@ -203,10 +206,36 @@ void Cpu::sync() {
     
 
     if((targetElapsedTime - hostElapsedTime) > (2/10^3))     //2 ms
-        std::cout<<"The diff is: "<<'\t'<<targetElapsedTime - hostElapsedTime<<std::endl;//Sleep(diff);
+        std::cout<<"The diff is: "<<'\t'<<targetElapsedTime - hostElapsedTime<<std::endl;
+        //Sleep(diff);
+
+    hostOldTime = hostNewTime;
+    targetOldTime = targetNewTime;
  
 }
 
+void Cpu::push(WORD t_val) {
+    mem->writeWord(getSP(), t_val);
+    incSP();
+    incSP();
+}
+
+void Cpu::push(BYTE t_val) {
+    //aggiungere controllo dell'indirizzo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    mem->writeWord(getSP(), t_val);
+    incSP();
+}
+
+WORD Cpu::popWord() {
+    BYTE temp = Cpu::popByte();
+    return temp + (Cpu::popByte() << 8);
+}
+
+BYTE Cpu::popByte() {
+    BYTE temp = mem->readWord(getSP());
+    decSP();
+    return temp;
+}
 
 /* 
 //-----------------------ADD-------------------------------------

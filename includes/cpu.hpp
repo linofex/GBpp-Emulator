@@ -25,8 +25,8 @@ union REGISTER {
 
 //clock
 #define CLOCK 4194304
-#define TARGETPERIOD 1/(4194304)
-#define HOSTPERIOD 1/(25*10^9)    //0.4 ns
+#define TARGETPERIOD 0.000238418     //1000/(4194304)
+#define HOSTPERIOD 1/(25*10^9)      //0.4 ns
 
 //locations for the timers
 #define DIVIDER 0xFF04
@@ -113,6 +113,11 @@ class Cpu {
         void reset(void);
         void step(void);
 
+        void push(WORD);
+        WORD popWord(void);
+        void push(BYTE);
+        BYTE popByte(void);
+
         inline BYTE getA(void) const {return regAF.high;}
         inline BYTE getB(void) const {return regBC.high;}
         inline BYTE getC(void) const {return regBC.low;}
@@ -153,8 +158,8 @@ class Cpu {
         inline WORD getSP(void) const {return sp;}
         inline WORD getPC(void) const {return pc;}
         inline void setPC(const WORD t_pc) {pc = t_pc;}
-        inline void decSp(void) {sp--;}
-        inline void incSp(void) {sp++;}
+        inline void decSP(void) {sp--;}
+        inline void incSP(void) {sp++;}
         
 
         //--------------------- 8-bit arithmetic ---------------------

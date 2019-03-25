@@ -59,8 +59,9 @@ BYTE Memory::readByte(const WORD t_add) const {
         return hRam.at(t_add & 0x007F); // from to 0 to 125
     }
     //Interrupt Enable Register
-    else
+    else{ 
         return IEReg;  
+    }
 }
 
 WORD Memory::readWord(const WORD t_add) const {
@@ -102,7 +103,9 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
          hRam[t_add & 0x007F] = t_value; // from to 0 to 125
     }
     //Interrupt Enable Register (necessario?)
-    else if (t_add == 0xFFFF)  IEReg = t_value;  
+    else {  
+        IEReg = t_add;
+    }  
 }
 
 void Memory::writeWord(const WORD t_add, const WORD t_value){
@@ -116,4 +119,6 @@ void Memory::writeInStack(Cpu* t_cpu, WORD t_value){
     t_cpu->dec_SP();
 }
 
-Memory::~Memory(){}
+Memory::~Memory(){
+    std::cout << "MEMORY distruttore\n";
+}

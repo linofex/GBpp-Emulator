@@ -1,7 +1,9 @@
 #include "../includes/rom.hpp"
 
 Rom::Rom(){}
-Rom::~Rom(){}
+Rom::~Rom(){
+    std::cout << "ROM distruttore\n";
+}
 
 Rom::Rom (const std::string t_RomFileName){                
     std::ifstream ROMFile(t_RomFileName.c_str(), std::ifstream::ate | std::ifstream::binary);
@@ -38,7 +40,7 @@ void Rom::PrintNintendoGraphic() const {
 
 std::vector<BYTE> Rom::GetNintendoLogo()const{
     std::vector<BYTE>::const_iterator begin = game.begin() + 0x0104;
-    std::vector<BYTE>::const_iterator end = game.begin() + 0x0133;
+    std::vector<BYTE>::const_iterator end = game.begin() + 0x0134;
     return std::vector<BYTE>(begin, end);
 }
 

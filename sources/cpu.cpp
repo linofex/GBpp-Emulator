@@ -86,6 +86,8 @@ void Cpu::reset() {
 
     clockCycles = 0;
     timerCounter = 1024;
+    hostOldTime = std::chrono::system_clock::now();
+    targetOldTime = TARGETPERIOD * clockCycles;
     
     Cpu::step();
 }
@@ -189,13 +191,19 @@ void Cpu::stepTimer(int cycles) {
 
 void Cpu::sync() {
 
-    WORD hostTime = HOSTPERIOD * clockCycles;
-    WORD gameboyTime = GUESTPERIOD * clockCycles;
+    std::chrono::time_point<std::chrono::system_clock>hostNewTime = std::chrono::system_clock::now();
+    std::chrono::duration<double> hostElapsedTimeC = hostNewTime - hostOldTime;
+    unsigned int hostElapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(hostElapsedTimeC).count();
+    std::cout<<"The host elapsed time is: "<<'\t'<<hostElapsedTime<<std::endl;
 
-    unsigned int diff = gameboyTime - hostTime;
-    if(diff > (2/10^3))     //2 ms
-        ;//Sleep(diff);
+    unsigned int targetNewTime = TARGETPERIOD * clockCycles;
+    unsigned int targetElapsedTime = targetNewTime - targetOldTime;
+    std::cout<<"The target elapsed time is: "<<'\t'<<targetElapsedTime<<std::endl;
+    
 
+    if((targetElapsedTime - hostElapsedTime) > (2/10^3))     //2 ms
+        std::cout<<"The diff is: "<<'\t'<<targetElapsedTime - hostElapsedTime<<std::endl;//Sleep(diff);
+ 
 }
 
 

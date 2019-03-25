@@ -5,6 +5,8 @@
 #include "instruction.hpp"
 #include <string>
 #include <vector>
+#include <chrono>
+#include <ctime>
 
 typedef unsigned char BYTE;        //8 bit
 typedef unsigned short WORD;       //16 bits
@@ -23,7 +25,7 @@ union REGISTER {
 
 //clock
 #define CLOCK 4194304
-#define GUESTPERIOD 1/(4194304)
+#define TARGETPERIOD 1/(4194304)
 #define HOSTPERIOD 1/(25*10^9)    //0.4 ns
 
 //locations for the timers
@@ -72,6 +74,10 @@ class Cpu {
         //timer
         WORD timerCounter;
         WORD dividerCounter;
+
+        std::chrono::time_point<std::chrono::system_clock> hostOldTime;
+        //std::chrono::time_point<std::chrono::system_clock> targetOldTime;
+        unsigned int targetOldTime;
 
         //map for the instructions
 /*         std::map<unsigned char, struct instruction> instrSet;
@@ -142,6 +148,7 @@ class Cpu {
         inline void resetFlag(const BYTE n) {regAF.high &= ~n;}
 
         inline BYTE readByte(BYTE t_addr) {return mem->readByte(t_addr);}
+        inline void writeByte(BYTE t_addr, BYTE t_val) {mem->writeByte(t_addr, t_val);}
 
         inline WORD getSP(void) const {return sp;}
         inline WORD getPC(void) const {return pc;}

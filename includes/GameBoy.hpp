@@ -27,9 +27,11 @@
             GameBoy();
             GameBoy(std::string t_RomFileName);
             bool CheckCartridge();
-            void LoadGame();
+            bool LoadGame();
             void PlayGame();
             void PrintRomInfo();
+            void PrintNintendoGraphic();
+            void PrintByte(WORD t_add);
             ~GameBoy();
         };
 

@@ -17,7 +17,8 @@ Cpu::Cpu(Memory* m) {
     std::cout<<"reset end"<<std::endl;
 }
 Cpu::~Cpu(void) {
-    exit(1);
+    std::cout << "CPU distruttore\n";
+    //exit(1);
 }
 
 void Cpu::step() {

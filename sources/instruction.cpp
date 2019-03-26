@@ -71,6 +71,91 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0x9F, instruction("SBC A, A", 4, 0, sbc_A_A)));  
     //instrSet.insert(std::make_pair(0xD6, instruction("SBC A, #", 8, 0, sbc_A_n))); ->>>>>>>>>>>>>> forse non esiste
 
+    instrSet.insert(std::make_pair(0xA0, instruction("AND A, B", 4, 0, and_A_B)));  
+    instrSet.insert(std::make_pair(0xA1, instruction("AND A, C", 4, 0, and_A_C)));
+    instrSet.insert(std::make_pair(0xA2, instruction("AND A, D", 4, 0, and_A_D)));
+    instrSet.insert(std::make_pair(0xA3, instruction("AND A, E", 4, 0, and_A_E)));  
+    instrSet.insert(std::make_pair(0xA4, instruction("AND A, H", 4, 0, and_A_H)));
+    instrSet.insert(std::make_pair(0xA5, instruction("AND A, L", 4, 0, and_A_L)));
+    instrSet.insert(std::make_pair(0xA6, instruction("AND A, (HL)", 8, 0, and_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0xA7, instruction("AND A, A", 4, 0, and_A_A))); 
+    //--------------instrSet.insert(std::make_pair(0xE6, instruction("AND A, #", 8, 0, and_A_n)));
+
+    instrSet.insert(std::make_pair(0xB0, instruction("OR A, B", 4, 0, or_A_B)));  
+    instrSet.insert(std::make_pair(0xB1, instruction("OR A, C", 4, 0, or_A_C)));
+    instrSet.insert(std::make_pair(0xB2, instruction("OR A, D", 4, 0, or_A_D)));
+    instrSet.insert(std::make_pair(0xB3, instruction("OR A, E", 4, 0, or_A_E)));  
+    instrSet.insert(std::make_pair(0xB4, instruction("OR A, H", 4, 0, or_A_H)));
+    instrSet.insert(std::make_pair(0xB5, instruction("OR A, L", 4, 0, or_A_L)));
+    instrSet.insert(std::make_pair(0xB6, instruction("OR A, (HL)", 8, 0, or_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0xB7, instruction("OR A, A", 4, 0, or_A_A))); 
+    //-------------------------instrSet.insert(std::make_pair(0xF6, instruction("OR A, #", 8, 0, or_A_n)));
+
+    instrSet.insert(std::make_pair(0xA8, instruction("XOR A, B", 4, 0, xor_A_B)));  
+    instrSet.insert(std::make_pair(0xA9, instruction("XOR A, C", 4, 0, xor_A_C)));
+    instrSet.insert(std::make_pair(0xAA, instruction("XOR A, D", 4, 0, xor_A_D)));
+    instrSet.insert(std::make_pair(0xAB, instruction("XOR A, E", 4, 0, xor_A_E)));  
+    instrSet.insert(std::make_pair(0xAC, instruction("XOR A, H", 4, 0, xor_A_H)));
+    instrSet.insert(std::make_pair(0xAD, instruction("XOR A, L", 4, 0, xor_A_L)));
+    instrSet.insert(std::make_pair(0xAE, instruction("XOR A, (HL)", 8, 0, xor_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0xAF, instruction("XOR A, A", 4, 0, xor_A_A))); 
+    //-------------------instrSet.insert(std::make_pair(0xEE, instruction("XOR A, #", 8, 0, xor_A_n)));
+
+    instrSet.insert(std::make_pair(0xB8, instruction("CP A, B", 4, 0, cp_A_B)));  
+    instrSet.insert(std::make_pair(0xB9, instruction("CP A, C", 4, 0, cp_A_C)));
+    instrSet.insert(std::make_pair(0xBA, instruction("CP A, D", 4, 0, cp_A_D)));
+    instrSet.insert(std::make_pair(0xBB, instruction("CP A, E", 4, 0, cp_A_E)));  
+    instrSet.insert(std::make_pair(0xBC, instruction("CP A, H", 4, 0, cp_A_H)));
+    instrSet.insert(std::make_pair(0xBD, instruction("CP A, L", 4, 0, cp_A_L)));
+    instrSet.insert(std::make_pair(0xBE, instruction("CP A, (HL)", 8, 0, cp_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0xBF, instruction("CP A, A", 4, 0, cp_A_A))); 
+    //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, 0, cp_A_n)));
+
+    instrSet.insert(std::make_pair(0x04, instruction("INC B", 4, 0, inc_B)));  
+    instrSet.insert(std::make_pair(0x0C, instruction("INC C", 4, 0, inc_C)));
+    instrSet.insert(std::make_pair(0x14, instruction("INC D", 4, 0, inc_D)));
+    instrSet.insert(std::make_pair(0x1C, instruction("INC E", 4, 0, inc_E)));  
+    instrSet.insert(std::make_pair(0x24, instruction("INC H", 4, 0, inc_H)));
+    instrSet.insert(std::make_pair(0x2C, instruction("INC L", 4, 0, inc_L)));
+    instrSet.insert(std::make_pair(0x34, instruction("INC (HL)", 12, 0, inc_HL_ind)));  
+    instrSet.insert(std::make_pair(0x3C, instruction("INC A", 4, 0, inc_A)));
+
+    instrSet.insert(std::make_pair(0x05, instruction("DEC B", 4, 0, dec_B)));  
+    instrSet.insert(std::make_pair(0x0D, instruction("DEC C", 4, 0, dec_C)));
+    instrSet.insert(std::make_pair(0x15, instruction("DEC D", 4, 0, dec_D)));
+    instrSet.insert(std::make_pair(0x1D, instruction("DEC E", 4, 0, dec_E)));  
+    instrSet.insert(std::make_pair(0x25, instruction("DEC H", 4, 0, dec_H)));
+    instrSet.insert(std::make_pair(0x2D, instruction("DEC L", 4, 0, dec_L)));
+    instrSet.insert(std::make_pair(0x35, instruction("DEC (HL)", 12, 0, dec_HL_ind)));  
+    instrSet.insert(std::make_pair(0x3D, instruction("DEC A", 4, 0, dec_A)));
+
+    instrSet.insert(std::make_pair(0x09, instruction("ADD HL, BC", 8, 0, add_HL_BC)));  
+    instrSet.insert(std::make_pair(0x19, instruction("ADD HL, DE", 8, 0, add_HL_DE)));
+    instrSet.insert(std::make_pair(0x29, instruction("ADD HL, HL", 8, 0, add_HL_HL)));
+    instrSet.insert(std::make_pair(0x39, instruction("ADD HL, SP", 8, 0, add_HL_SP)));  
+
+    //---------------------instrSet.insert(std::make_pair(0xE8, instruction("ADD SP, N", 16, 0, add_SP_n)));  
+
+    instrSet.insert(std::make_pair(0x03, instruction("INC BC", 8, 0, inc_BC)));  
+    instrSet.insert(std::make_pair(0x13, instruction("INC DE", 8, 0, inc_DE)));
+    instrSet.insert(std::make_pair(0x23, instruction("INC HL", 8, 0, inc_HL)));
+    instrSet.insert(std::make_pair(0x33, instruction("INC SP", 8, 0, inc_SP)));  
+ 
+    instrSet.insert(std::make_pair(0x0B, instruction("DEC BC", 4, 0, dec_BC)));
+    instrSet.insert(std::make_pair(0x1B, instruction("DEC DE", 4, 0, dec_DE)));
+    instrSet.insert(std::make_pair(0x2B, instruction("DEC HL", 12, 0, dec_HL)));  
+    instrSet.insert(std::make_pair(0x3B, instruction("DEC SP", 4, 0, dec_SP)));
+
+    /* instrSet.insert(std::make_pair(0x06, instruction("LOAD B, n", 8, 0, load_B_n)));
+    instrSet.insert(std::make_pair(0x0E, instruction("LOAD C, n", 8, 0, load_C_n)));
+    instrSet.insert(std::make_pair(0x16, instruction("LOAD D, n", 8, 0, load_D_n)));  
+    instrSet.insert(std::make_pair(0x1E, instruction("LOAD E, n", 8, 0, load_E_n)));
+    instrSet.insert(std::make_pair(0x26, instruction("LOAD H, n", 8, 0, load_H_n)));
+    instrSet.insert(std::make_pair(0x2E, instruction("LOAD L, n", 8, 0, load_L_n)));   */
+
+
+
+
 
     //std::cout<<"---------------------------------------------> "<<instrSet.at(0x80).name<<std::endl;
 
@@ -126,7 +211,11 @@ static void add_A_E(Cpu* c) {add(c, c->getE());}
 static void add_A_H(Cpu* c) {add(c, c->getH());}
 static void add_A_L(Cpu* c) {add(c, c->getL());}
 static void add_A_A(Cpu* c) {add(c, c->getA());}
-static void add_A_n(Cpu* c, unsigned char n) {add(c, n);}
+static void add_A_n(Cpu* c) {
+    c->incPC();
+    unsigned char data = c->readByte(c->getPC());
+    add(c, data);
+    }
 static void add_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
@@ -144,7 +233,11 @@ static void adc_A_E(Cpu* c) {adc(c, c->getE());}
 static void adc_A_H(Cpu* c) {adc(c, c->getH());}
 static void adc_A_L(Cpu* c) {adc(c, c->getL());}
 static void adc_A_A(Cpu* c) {adc(c, c->getA());}
-static void adc_A_n(Cpu* c, unsigned char n) {adc(c, n);}
+static void adc_A_n(Cpu* c) {
+    c->incPC();
+    unsigned char data = c->readByte(c->getPC());
+    adc(c, data);
+    }
 static void adc_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
@@ -180,7 +273,11 @@ static void sub_A_E(Cpu* c) {sub(c, c->getE());}
 static void sub_A_H(Cpu* c) {sub(c, c->getH());}
 static void sub_A_L(Cpu* c) {sub(c, c->getL());}
 static void sub_A_A(Cpu* c) {sub(c, c->getA());}
-static void sub_A_n(Cpu* c, unsigned char n) {sub(c, n);}
+static void sub_A_n(Cpu* c) {
+    c->incPC();
+    unsigned char data = c->readByte(c->getPC());
+    sub(c, data);
+}
 static void sub_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
@@ -226,7 +323,11 @@ static void and_A_E(Cpu* c) {and_(c, c->getE());}
 static void and_A_H(Cpu* c) {and_(c, c->getH());}
 static void and_A_L(Cpu* c) {and_(c, c->getL());}
 static void and_A_A(Cpu* c) {and_(c, c->getA());}
-static void and_A_n(Cpu* c, unsigned char n) {and_(c, n);}
+static void and_A_n(Cpu* c) {
+    c->incPC();
+    unsigned char data = c->readByte(c->getPC());
+    and_(c, data);
+}
 static void and_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
@@ -254,7 +355,11 @@ static void or_A_E(Cpu* c) {or_(c, c->getE());}
 static void or_A_H(Cpu* c) {or_(c, c->getH());}
 static void or_A_L(Cpu* c) {or_(c, c->getL());}
 static void or_A_A(Cpu* c) {or_(c, c->getA());}
-static void or_A_n(Cpu* c, unsigned char n) {or_(c, n);}
+static void or_A_n(Cpu* c) {
+    c->incPC();
+    unsigned char data = c->readByte(c->getPC());
+    or_(c, data);
+}
 static void or_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
@@ -283,7 +388,11 @@ static void xor_A_E(Cpu* c) {xor_(c, c->getE());}
 static void xor_A_H(Cpu* c) {xor_(c, c->getH());}
 static void xor_A_L(Cpu* c) {xor_(c, c->getL());}
 static void xor_A_A(Cpu* c) {xor_(c, c->getA());}
-static void xor_A_n(Cpu* c, unsigned char n) {xor_(c, n);}
+static void xor_A_n(Cpu* c) {
+    c->incPC();
+    unsigned char data = c->readByte(c->getPC());
+    xor_(c, data);
+}
 static void xor_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
@@ -317,7 +426,11 @@ static void cp_A_E(Cpu* c) {cp(c, c->getE());}
 static void cp_A_H(Cpu* c) {cp(c, c->getH());}
 static void cp_A_L(Cpu* c) {cp(c, c->getL());}
 static void cp_A_A(Cpu* c) {cp(c, c->getA());}
-static void cp_A_n(Cpu* c, unsigned char n) {cp(c, n);}
+static void cp_A_n(Cpu* c, unsigned char n) {
+    c->incPC();
+    unsigned char data = c->readByte(c->getPC());
+    cp(c, data);
+}
 static void cp_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
@@ -407,7 +520,11 @@ static void add_HL_DE(Cpu* c) {add_HL(c, c->getDE());};
 static void add_HL_HL(Cpu* c) {add_HL(c, c->getHL());};
 static void add_HL_SP(Cpu* c) {add_HL(c, c->getSP());};
 
-static void add_SP_n(Cpu* c, unsigned char n) {
+static void add_SP_n(Cpu* c) {
+
+    c->incPC();
+    unsigned char n = c->readByte(c->getPC());
+
     c->resetFlag(flagZ);
     c->resetFlag(flagN);
 
@@ -439,6 +556,154 @@ static void dec_SP(Cpu* c) {c->setSP(c->getSP() - 1);};
 static void dec_DE(Cpu* c) {c->setDE(c->getDE() - 1);};
 static void dec_BC(Cpu* c) {c->setBC(c->getBC() - 1);};
 
+
+static void load_B_n(Cpu* c, unsigned char n) {c->setB(n);}
+static void load_C_n(Cpu* c, unsigned char n) {c->setC(n);}
+static void load_D_n(Cpu* c, unsigned char n) {c->setD(n);}
+static void load_E_n(Cpu* c, unsigned char n) {c->setE(n);}
+static void load_H_n(Cpu* c, unsigned char n) {c->setH(n);}
+static void load_L_n(Cpu* c, unsigned char n) {c->setL(n);}
+
+static void load_A_A(Cpu* c) {c->setA(c->getA());}
+static void load_A_B(Cpu* c) {c->setA(c->getB());}
+static void load_A_C(Cpu* c) {c->setA(c->getC());}
+static void load_A_D(Cpu* c) {c->setA(c->getD());}
+static void load_A_E(Cpu* c) {c->setA(c->getE());}
+static void load_A_H(Cpu* c) {c->setA(c->getH());}
+static void load_A_L(Cpu* c) {c->setA(c->getL());}
+static void load_A_HL_ind(Cpu* c) {
+    WORD addr = c->getHL();
+    unsigned char n = c->readByte(addr);
+    c->setA(n);
+}
+
+static void load_B_B(Cpu* c) {c->setB(c->getB());}
+static void load_B_C(Cpu* c) {c->setB(c->getC());}
+static void load_B_D(Cpu* c) {c->setB(c->getD());}
+static void load_B_E(Cpu* c) {c->setB(c->getE());}
+static void load_B_H(Cpu* c) {c->setB(c->getH());}
+static void load_B_L(Cpu* c) {c->setB(c->getL());}
+static void load_B_HL_ind(Cpu* c) {
+    WORD addr = c->getHL();
+    unsigned char n = c->readByte(addr);
+    c->setB(n);
+}
+
+static void load_C_B(Cpu* c) {c->setC(c->getB());}
+static void load_C_C(Cpu* c) {c->setC(c->getC());}
+static void load_C_D(Cpu* c) {c->setC(c->getD());}
+static void load_C_E(Cpu* c) {c->setC(c->getE());}
+static void load_C_H(Cpu* c) {c->setC(c->getH());}
+static void load_C_L(Cpu* c) {c->setC(c->getL());}
+static void load_C_HL_ind(Cpu* c) {
+    WORD addr = c->getHL();
+    unsigned char n = c->readByte(addr);
+    c->setC(n);
+}
+
+static void load_D_B(Cpu* c) {c->setD(c->getB());}
+static void load_D_C(Cpu* c) {c->setD(c->getC());}
+static void load_D_D(Cpu* c) {c->setD(c->getD());}
+static void load_D_E(Cpu* c) {c->setD(c->getE());}
+static void load_D_H(Cpu* c) {c->setD(c->getH());}
+static void load_D_L(Cpu* c) {c->setD(c->getL());}
+static void load_D_HL_ind(Cpu* c) {
+    WORD addr = c->getHL();
+    unsigned char n = c->readByte(addr);
+    c->setD(n);
+}
+
+static void load_E_B(Cpu* c) {c->setE(c->getB());}
+static void load_E_C(Cpu* c) {c->setE(c->getC());}
+static void load_E_D(Cpu* c) {c->setE(c->getD());}
+static void load_E_E(Cpu* c) {c->setE(c->getE());}
+static void load_E_H(Cpu* c) {c->setE(c->getH());}
+static void load_E_L(Cpu* c) {c->setE(c->getL());}
+static void load_E_HL_ind(Cpu* c) {
+    WORD addr = c->getHL();
+    unsigned char n = c->readByte(addr);
+    c->setE(n);
+}
+
+static void load_H_B(Cpu* c) {c->setH(c->getB());}
+static void load_H_C(Cpu* c) {c->setH(c->getC());}
+static void load_H_D(Cpu* c) {c->setH(c->getD());}
+static void load_H_E(Cpu* c) {c->setH(c->getE());}
+static void load_H_H(Cpu* c) {c->setH(c->getH());}
+static void load_H_L(Cpu* c) {c->setH(c->getL());}
+static void load_H_HL_ind(Cpu* c) {
+    WORD addr = c->getHL();
+    unsigned char n = c->readByte(addr);
+    c->setH(n);
+}
+
+static void load_L_B(Cpu* c) {c->setL(c->getB());}
+static void load_L_C(Cpu* c) {c->setL(c->getC());}
+static void load_L_D(Cpu* c) {c->setL(c->getD());}
+static void load_L_E(Cpu* c) {c->setL(c->getE());}
+static void load_L_H(Cpu* c) {c->setL(c->getH());}
+static void load_L_L(Cpu* c) {c->setL(c->getL());}
+static void load_L_HL_ind(Cpu* c) {
+    WORD addr = c->getHL();
+    unsigned char n = c->readByte(addr);
+    c->setL(n);
+}
+
+static void load_HL_ind_x(Cpu* c, unsigned char n) {
+    WORD addr = c->getHL();
+    c->writeByte(addr, n);
+}
+static void load_HL_ind_B(Cpu* c) {load_HL_ind_x(c, c->getB());}
+static void load_HL_ind_C(Cpu* c) {load_HL_ind_x(c, c->getC());}
+static void load_HL_ind_D(Cpu* c) {load_HL_ind_x(c, c->getD());}
+static void load_HL_ind_E(Cpu* c) {load_HL_ind_x(c, c->getE());}
+static void load_HL_ind_H(Cpu* c) {load_HL_ind_x(c, c->getH());}
+static void load_HL_ind_L(Cpu* c) {load_HL_ind_x(c, c->getL());}
+static void load_HL_ind_n(Cpu* c, unsigned char n) {load_HL_ind_x(c, n);}
+
+static void load_A_x_ind(Cpu* c, unsigned short  n) {
+    unsigned char res = c->readByte(n);
+    c->setA(res);
+}
+static void load_A_BC_ind(Cpu* c) {load_A_x_ind(c, c->getBC());}
+static void load_A_DE_ind(Cpu* c) {load_A_x_ind(c, c->getDE());}
+//static void load_A_HL_ind(Cpu* c) {load_A_x_ind(c, c->getHL());}
+static void load_A_nn_ind(Cpu* c, unsigned short nn) {load_A_x_ind(c, nn);}
+
+static void load_A_n(Cpu* c, unsigned char n) {c->setA(n);}
+
+//static void load_A_HL_ind(Cpu* c) {load_A_x_ind(c, c->getHL());}
+
+static void load_B_A(Cpu* c) {c->setB(c->getA());}
+static void load_C_A(Cpu* c) {c->setC(c->getA());}
+static void load_D_A(Cpu* c) {c->setD(c->getA());}
+static void load_E_A(Cpu* c) {c->setE(c->getA());}
+static void load_H_A(Cpu* c) {c->setH(c->getA());}
+static void load_L_A(Cpu* c) {c->setL(c->getA());}
+
+static void load_nn_ind_n(Cpu* c, unsigned short addr) {
+    c->writeByte(addr, c->getA());
+}
+static void load_BC_ind_A(Cpu* c) {load_nn_ind_n(c, c->getBC());}
+
+
+
+//..............................................69..............................................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 BYTE swap_n(Cpu* c, unsigned char n) {
     c->resetFlag(flagN);
     c->resetFlag(flagH);
@@ -452,6 +717,7 @@ BYTE swap_n(Cpu* c, unsigned char n) {
         c->resetFlag(flagZ);
     return high + low;
 }
+
 static void swap_A(Cpu* c) {c->setA(swap_n(c, c->getA()));}
 static void swap_B(Cpu* c) {c->setA(swap_n(c, c->getB()));}
 static void swap_C(Cpu* c) {c->setA(swap_n(c, c->getC()));}
@@ -506,3 +772,5 @@ static void rlca(Cpu* c) {
     c->setA(a);
 }
 static void rla(Cpu* c) {}  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+

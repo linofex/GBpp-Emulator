@@ -161,6 +161,9 @@ class Cpu {
         inline WORD getSP(void) const {return sp;}
         inline WORD getPC(void) const {return pc;}
         inline void setPC(const WORD t_pc) {pc = t_pc;}
+        
+        inline void decPC(void) {pc--;}
+        inline void incPC(void) {pc++;}
         inline void decSP(void) {sp--;}
         inline void incSP(void) {sp++;}
         

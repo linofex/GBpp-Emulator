@@ -32,16 +32,54 @@ instruction instrSet2[2] = {
 void init(std::map<unsigned char, instruction>& instrSet) {
     //std::cout<<typeid(i).name()<<std::endl;
     instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, 0, add_A_B)));  
-    instrSet.insert(std::make_pair(0x80, instruction("ADD A, C", 4, 0, add_A_C)));
-    instrSet.insert(std::make_pair(0x80, instruction("ADD A, D", 4, 0, add_A_D)));
+    instrSet.insert(std::make_pair(0x81, instruction("ADD A, C", 4, 0, add_A_C)));
+    instrSet.insert(std::make_pair(0x82, instruction("ADD A, D", 4, 0, add_A_D)));
+    instrSet.insert(std::make_pair(0x83, instruction("ADD A, E", 4, 0, add_A_E)));  
+    instrSet.insert(std::make_pair(0x84, instruction("ADD A, H", 4, 0, add_A_H)));
+    instrSet.insert(std::make_pair(0x85, instruction("ADD A, L", 4, 0, add_A_L)));
+    instrSet.insert(std::make_pair(0x86, instruction("ADD A, (HL)", 8, 0, add_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0x87, instruction("ADD A, A", 4, 0, add_A_A)));
+    //instrSet.insert(std::make_pair(0xC6, instruction("ADD A, #", 8, 0, add_A_n))); ->>>>>>>>>>>>>> da rivedere il parametro unsigned char
+
+    instrSet.insert(std::make_pair(0x88, instruction("ADC A, B", 4, 0, adc_A_B)));  
+    instrSet.insert(std::make_pair(0x89, instruction("ADC A, C", 4, 0, adc_A_C)));
+    instrSet.insert(std::make_pair(0x8A, instruction("ADC A, D", 4, 0, adc_A_D)));
+    instrSet.insert(std::make_pair(0x8B, instruction("ADC A, E", 4, 0, adc_A_E)));  
+    instrSet.insert(std::make_pair(0x8C, instruction("ADC A, H", 4, 0, adc_A_H)));
+    instrSet.insert(std::make_pair(0x8D, instruction("ADC A, L", 4, 0, adc_A_L)));
+    instrSet.insert(std::make_pair(0x8E, instruction("ADC A, (HL)", 8, 0, adc_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0x8F, instruction("ADC A, A", 4, 0, adc_A_A)));  
+    //instrSet.insert(std::make_pair(0xCE, instruction("ADC A, #", 8, 0, adc_A_n))); ->>>>>>>>>>>>>> da rivedere il parametro unsigned char
+
+    instrSet.insert(std::make_pair(0x90, instruction("SUB A, B", 4, 0, sub_A_B)));  
+    instrSet.insert(std::make_pair(0x91, instruction("SUB A, C", 4, 0, sub_A_C)));
+    instrSet.insert(std::make_pair(0x92, instruction("SUB A, D", 4, 0, sub_A_D)));
+    instrSet.insert(std::make_pair(0x93, instruction("SUB A, E", 4, 0, sub_A_E)));  
+    instrSet.insert(std::make_pair(0x94, instruction("SUB A, H", 4, 0, sub_A_H)));
+    instrSet.insert(std::make_pair(0x95, instruction("SUB A, L", 4, 0, sub_A_L)));
+    instrSet.insert(std::make_pair(0x96, instruction("SUB A, (HL)", 8, 0, sub_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0x97, instruction("SUB A, A", 4, 0, sub_A_A)));  
+    //instrSet.insert(std::make_pair(0xD6, instruction("SUB A, #", 8, 0, sub_A_n))); ->>>>>>>>>>>>>> da rivedere il parametro unsigned char
+
+    instrSet.insert(std::make_pair(0x98, instruction("SBC A, B", 4, 0, sbc_A_B)));  
+    instrSet.insert(std::make_pair(0x99, instruction("SBC A, C", 4, 0, sbc_A_C)));
+    instrSet.insert(std::make_pair(0x9A, instruction("SBC A, D", 4, 0, sbc_A_D)));
+    instrSet.insert(std::make_pair(0x9B, instruction("SBC A, E", 4, 0, sbc_A_E)));  
+    instrSet.insert(std::make_pair(0x9C, instruction("SBC A, H", 4, 0, sbc_A_H)));
+    instrSet.insert(std::make_pair(0x9D, instruction("SBC A, L", 4, 0, sbc_A_L)));
+    instrSet.insert(std::make_pair(0x9E, instruction("SBC A, (HL)", 8, 0, sbc_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0x9F, instruction("SBC A, A", 4, 0, sbc_A_A)));  
+    //instrSet.insert(std::make_pair(0xD6, instruction("SBC A, #", 8, 0, sbc_A_n))); ->>>>>>>>>>>>>> forse non esiste
+
+
     //std::cout<<"---------------------------------------------> "<<instrSet.at(0x80).name<<std::endl;
 
 }
 
-instruction getInstr(unsigned char opcode) {
+/* instruction getInstr(unsigned char opcode) {
     unsigned char temp = 0x80;
     return instrSet2[0];
-}
+} */
 
 
 //----------------------- EMPTY -------------------------------------

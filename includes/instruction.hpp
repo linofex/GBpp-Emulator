@@ -18,7 +18,7 @@ struct instruction {
 };
 //std::map<unsigned char, instruction> instrSet;
 void init(std::map<unsigned char, instruction>&);
-instruction getInstr(unsigned char);
+//instruction getInstr(unsigned char);
 
 
 //________________________________ 8/bit Arithmetic_____________________________

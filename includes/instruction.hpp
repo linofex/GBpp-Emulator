@@ -5,7 +5,8 @@
 #include <string>
 #include <map>
 
-class Cpu;
+//class Cpu;
+
 struct instruction {
     std::string name;
     int cycles;
@@ -16,13 +17,14 @@ struct instruction {
     instruction(std::string, int, int, void(*)(Cpu*));
 };
 //std::map<unsigned char, instruction> instrSet;
-//void init(void);
+void init(std::map<unsigned char, instruction>&);
 instruction getInstr(unsigned char);
+
 
 //________________________________ 8/bit Arithmetic_____________________________
 
-//------------------- EMPTY -------------------
-static void empty(void);
+//------------------- NOT_DEFINED -------------------
+static void not_defined(void);
 
 //------------------- ADD -------------------
 static void add(Cpu*, unsigned char);

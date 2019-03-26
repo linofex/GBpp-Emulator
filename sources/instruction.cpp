@@ -29,19 +29,23 @@ instruction instrSet2[2] = {
 
 //std::map<unsigned char, struct instruction> instrSet;
 
-/* void init() {
-    instrSet[0x80] = instruction("ADD A, B", 4, 0, add_A_B);
-    instrSet[0x81] = instruction("ADD A, C", 4, 0, add_A_C);
+void init(std::map<unsigned char, instruction>& instrSet) {
+    //std::cout<<typeid(i).name()<<std::endl;
+    instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, 0, add_A_B)));  
+    instrSet.insert(std::make_pair(0x80, instruction("ADD A, C", 4, 0, add_A_C)));
+    instrSet.insert(std::make_pair(0x80, instruction("ADD A, D", 4, 0, add_A_D)));
+    //std::cout<<"---------------------------------------------> "<<instrSet.at(0x80).name<<std::endl;
 
-} */
+}
 
 instruction getInstr(unsigned char opcode) {
-    //return instruction("ADD A, B", 4, 0, add_A_B);
+    unsigned char temp = 0x80;
     return instrSet2[0];
 }
 
+
 //----------------------- EMPTY -------------------------------------
-static void empty() {
+static void not_defined() {
     std::cout<<"Instruction not defined"<<std::endl;
 }
 

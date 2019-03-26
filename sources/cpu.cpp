@@ -21,6 +21,11 @@ Cpu::~Cpu(void) {
     //exit(1);
 }
 
+void Cpu::initInstructions() {
+    init(instrSet);
+}
+
+
 void Cpu::step() {
     
     unsigned char opcode = 0x80;//mem->readByte(pc);
@@ -50,8 +55,10 @@ void Cpu::reset() {
     regDE.reg = 0x00D8;
     regHL.reg = 0x014D;
 
+    std::cout<<"initInstructions called"<<std::endl;
     //fill the instructions map
-    //Cpu::fillInstructions();
+    Cpu::initInstructions();
+    std::cout<<"initInstructions done"<<std::endl;
 
     //initialization of I/O registers in the internal RAM
     mem->writeByte(0xFF05, 0x00);	//mem->writeByte
@@ -102,7 +109,8 @@ BYTE Cpu::fetch(void) {
 
 struct instruction Cpu::decode(BYTE opcode) {
     std::cout<<"decode"<<std::endl;
-    return getInstr(opcode);
+    std::cout<<"---------------------------------------------> "<<instrSet.size()<<std::endl;
+    return instrSet.at(0x80);
 }
 
 void Cpu::execute(instruction instr) {

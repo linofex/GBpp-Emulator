@@ -80,6 +80,9 @@ class Cpu {
         unsigned int targetOldTime;
 
         //map for the instructions
+        std::map<unsigned char, struct instruction> instrSet;
+        void initInstructions(void);
+
 /*         std::map<unsigned char, struct instruction> instrSet;
         instruction getInstruction(unsigned char);
         void initInstructions(void);   */  

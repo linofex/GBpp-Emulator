@@ -5,6 +5,9 @@
 
 //using namespace GBemulator;
 int main(int argc, char** argv){
+    Memory mem = Memory();
+    Cpu cpu = Cpu(&mem);
+
     if (argc == 2){
         std::string romName = "../roms/" + std::string(argv[1]);
         GameBoy gameboy = GameBoy(romName);

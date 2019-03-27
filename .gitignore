@@ -1,6 +1,8 @@
 # ignore folder vscode
 .vscode/
 
-
 # ignore main executable
 sources/main
+
+# ignore gameboy executable
+gameboy.exe

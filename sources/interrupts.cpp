@@ -2,11 +2,6 @@
 #include "../includes/memory.hpp"
 #include "../includes/cpu.hpp"
 
-void InterruptHnadler::RequestInterrupt(const BYTE t_interrupt, Memory& t_memory){
-    BYTE irr = t_memory.readByte(IRR_ADD);          // Read Interrupt Request Reister from memory at 0x0FF0F
-    t_memory.writeByte(IRR_ADD, irr | t_interrupt); // Set the Interrupt flag to 1, since requested
-}
-
 
 void InterruptHnadler::ServeInterrupt(const BYTE t_interrupt, Memory& t_memory, Cpu* t_cpu){
     intMasterEnable = false;                    // RETI and EI instructions enable it again

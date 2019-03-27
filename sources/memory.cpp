@@ -119,6 +119,11 @@ void Memory::writeInStack(Cpu* t_cpu, WORD t_value){
     t_cpu->dec_SP();
 }
 
+void Memory::RequestInterrupt(const BYTE t_interrupt){
+    BYTE irr = readByte(IRR_ADD);          // Read Interrupt Request Reister from memory at 0x0FF0F
+    writeByte(IRR_ADD, irr | t_interrupt); // Set the Interrupt flag to 1, since requested
+}
+
 Memory::~Memory(){
     std::cout << "MEMORY distruttore\n";
 }

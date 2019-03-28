@@ -1,6 +1,7 @@
 #include "../includes/instruction.hpp"
 #include <iostream>
 #include <map>
+#include <vector>
 
 instruction::instruction(std::string name, int cycles, int paramNum, void (*f)(Cpu*)) {
 	this->name = name;
@@ -28,6 +29,10 @@ instruction instrSet2[2] = {
 }; 
 
 //std::map<unsigned char, struct instruction> instrSet;
+
+void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
+     instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, 0, add_A_B)));  
+}
 
 void init(std::map<unsigned char, instruction>& instrSet) {
     //std::cout<<typeid(i).name()<<std::endl;
@@ -167,6 +172,11 @@ void init(std::map<unsigned char, instruction>& instrSet) {
 } */
 
 
+/* BYTE getBitIndex(BYTE r) {
+    std::vector<BYTE> v = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
+    return v.at(r);
+} */
+
 //----------------------- EMPTY -------------------------------------
 static void not_defined() {
     std::cout<<"Instruction not defined"<<std::endl;
@@ -212,8 +222,8 @@ static void add_A_H(Cpu* c) {add(c, c->getH());}
 static void add_A_L(Cpu* c) {add(c, c->getL());}
 static void add_A_A(Cpu* c) {add(c, c->getA());}
 static void add_A_n(Cpu* c) {
-    c->incPC();
     unsigned char data = c->readByte(c->getPC());
+    c->incPC();
     add(c, data);
     }
 static void add_A_HL_ind(Cpu* c) {
@@ -234,8 +244,8 @@ static void adc_A_H(Cpu* c) {adc(c, c->getH());}
 static void adc_A_L(Cpu* c) {adc(c, c->getL());}
 static void adc_A_A(Cpu* c) {adc(c, c->getA());}
 static void adc_A_n(Cpu* c) {
-    c->incPC();
     unsigned char data = c->readByte(c->getPC());
+    c->incPC();
     adc(c, data);
     }
 static void adc_A_HL_ind(Cpu* c) {
@@ -274,8 +284,8 @@ static void sub_A_H(Cpu* c) {sub(c, c->getH());}
 static void sub_A_L(Cpu* c) {sub(c, c->getL());}
 static void sub_A_A(Cpu* c) {sub(c, c->getA());}
 static void sub_A_n(Cpu* c) {
-    c->incPC();
     unsigned char data = c->readByte(c->getPC());
+    c->incPC();
     sub(c, data);
 }
 static void sub_A_HL_ind(Cpu* c) {
@@ -324,8 +334,8 @@ static void and_A_H(Cpu* c) {and_(c, c->getH());}
 static void and_A_L(Cpu* c) {and_(c, c->getL());}
 static void and_A_A(Cpu* c) {and_(c, c->getA());}
 static void and_A_n(Cpu* c) {
-    c->incPC();
     unsigned char data = c->readByte(c->getPC());
+    c->incPC();
     and_(c, data);
 }
 static void and_A_HL_ind(Cpu* c) {
@@ -356,8 +366,8 @@ static void or_A_H(Cpu* c) {or_(c, c->getH());}
 static void or_A_L(Cpu* c) {or_(c, c->getL());}
 static void or_A_A(Cpu* c) {or_(c, c->getA());}
 static void or_A_n(Cpu* c) {
-    c->incPC();
     unsigned char data = c->readByte(c->getPC());
+    c->incPC();
     or_(c, data);
 }
 static void or_A_HL_ind(Cpu* c) {
@@ -389,8 +399,8 @@ static void xor_A_H(Cpu* c) {xor_(c, c->getH());}
 static void xor_A_L(Cpu* c) {xor_(c, c->getL());}
 static void xor_A_A(Cpu* c) {xor_(c, c->getA());}
 static void xor_A_n(Cpu* c) {
-    c->incPC();
     unsigned char data = c->readByte(c->getPC());
+    c->incPC();
     xor_(c, data);
 }
 static void xor_A_HL_ind(Cpu* c) {
@@ -427,8 +437,8 @@ static void cp_A_H(Cpu* c) {cp(c, c->getH());}
 static void cp_A_L(Cpu* c) {cp(c, c->getL());}
 static void cp_A_A(Cpu* c) {cp(c, c->getA());}
 static void cp_A_n(Cpu* c, unsigned char n) {
-    c->incPC();
     unsigned char data = c->readByte(c->getPC());
+    c->incPC();
     cp(c, data);
 }
 static void cp_A_HL_ind(Cpu* c) {
@@ -522,8 +532,8 @@ static void add_HL_SP(Cpu* c) {add_HL(c, c->getSP());};
 
 static void add_SP_n(Cpu* c) {
 
-    c->incPC();
     unsigned char n = c->readByte(c->getPC());
+    c->incPC();
 
     c->resetFlag(flagZ);
     c->resetFlag(flagN);
@@ -757,20 +767,505 @@ static void halt() {}   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 static void stop() {}   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 static void di(Cpu* c) {}//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 static void ei(Cpu* c) {}//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-static void rlca(Cpu* c) {
+
+static BYTE rlc(Cpu* c, unsigned char a) {
     c->resetFlag(flagN);
     c->resetFlag(flagH);
 
-    BYTE a = c->getA();
-    BYTE carry = 0;//((a & 0xF0000000) >> 7) ? c->setFlag(flagC) : c->resetFlag(flagC); //_______________________
+    BYTE carry = ((a & 0x80) >> 7);
+    (carry == 1) ? c->setFlag(flagC) : c->resetFlag(flagC);
+
     a <<= 1;
     a += carry;
     if(a == 0)
         c->setFlag(flagZ);
     else
         c->resetFlag(flagZ);
-    c->setA(a);
+    
+    return a;
 }
-static void rla(Cpu* c) {}  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+static void rlc_A(Cpu* c) {c->setA(rlc(c, c->getA()));}
+static void rlc_B(Cpu* c) {c->setB(rlc(c, c->getB()));}
+static void rlc_C(Cpu* c) {c->setC(rlc(c, c->getC()));}
+static void rlc_D(Cpu* c) {c->setD(rlc(c, c->getD()));}
+static void rlc_E(Cpu* c) {c->setE(rlc(c, c->getE()));}
+static void rlc_H(Cpu* c) {c->setH(rlc(c, c->getH()));}
+static void rlc_L(Cpu* c) {c->setL(rlc(c, c->getL()));}
+static void rlc_HL_ind(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = rlc(c, c->readByte(addr));
+    c->writeByte(addr, res);
+}
+
+static BYTE rl(Cpu* c, unsigned char a) {
+    c->resetFlag(flagN);
+    c->resetFlag(flagH);
+
+    BYTE a_7 = ((a & 0x80) >> 7);
+    a <<= 1;
+    unsigned char carry = c->isFlagCarry();
+    a+= carry;
+    
+    if(a_7 == 1)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+
+    if(a == 0)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+    
+    return a;
+}
+static void rl_A(Cpu* c) {c->setA(rl(c, c->getA()));}
+static void rl_B(Cpu* c) {c->setB(rl(c, c->getB()));}
+static void rl_C(Cpu* c) {c->setC(rl(c, c->getC()));}
+static void rl_D(Cpu* c) {c->setD(rl(c, c->getD()));}
+static void rl_E(Cpu* c) {c->setE(rl(c, c->getE()));}
+static void rl_H(Cpu* c) {c->setH(rl(c, c->getH()));}
+static void rl_L(Cpu* c) {c->setL(rl(c, c->getL()));}
+static void rl_HL_ind(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = rl(c, c->readByte(addr));
+    c->writeByte(addr, res);
+}
+
+static BYTE rrc(Cpu* c, unsigned char a) {
+    c->resetFlag(flagN);
+    c->resetFlag(flagH);
+
+    BYTE carry = (a & 0x01);
+    (carry == 1) ? c->setFlag(flagC) : c->resetFlag(flagC);
+
+    a >>= 1;
+    a += (carry << 7);
+    if(a == 0)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+    
+    return a;
+}
+static void rrc_A(Cpu* c) {c->setA(rrc(c, c->getA()));}
+static void rrc_B(Cpu* c) {c->setB(rrc(c, c->getB()));}
+static void rrc_C(Cpu* c) {c->setC(rrc(c, c->getC()));}
+static void rrc_D(Cpu* c) {c->setD(rrc(c, c->getD()));}
+static void rrc_E(Cpu* c) {c->setE(rrc(c, c->getE()));}
+static void rrc_H(Cpu* c) {c->setH(rrc(c, c->getH()));}
+static void rrc_L(Cpu* c) {c->setL(rrc(c, c->getL()));}
+static void rrc_HL_ind(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = rrc(c, c->readByte(addr));
+    c->writeByte(addr, res);
+}
+
+static BYTE rr(Cpu* c, unsigned char a) {
+    c->resetFlag(flagN);
+    c->resetFlag(flagH);
+
+    BYTE a_0 = (a & 0x01);
+    a >>= 1;
+    unsigned char carry = c->isFlagCarry();
+    a+= (carry << 7);
+    
+    if(a_0 == 1)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+
+    if(a == 0)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+    
+    return a;
+}
+static void rr_A(Cpu* c) {c->setA(rr(c, c->getA()));}
+static void rr_B(Cpu* c) {c->setB(rr(c, c->getB()));}
+static void rr_C(Cpu* c) {c->setC(rr(c, c->getC()));}
+static void rr_D(Cpu* c) {c->setD(rr(c, c->getD()));}
+static void rr_E(Cpu* c) {c->setE(rr(c, c->getE()));}
+static void rr_H(Cpu* c) {c->setH(rr(c, c->getH()));}
+static void rr_L(Cpu* c) {c->setL(rr(c, c->getL()));}
+static void rr_HL_ind(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = rr(c, c->readByte(addr));
+    c->writeByte(addr, res);
+}
+
+static BYTE sla(Cpu* c, unsigned char a) {
+    c->resetFlag(flagN);
+    c->resetFlag(flagH);
+
+    BYTE a_7 = ((a & 0x80) >> 7);
+    a <<= 1;
+    
+    if(a_7 == 1)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+
+    if(a == 0)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+    
+    return a;
+}
+static void sla_A(Cpu* c) {c->setA(sla(c, c->getA()));}
+static void sla_B(Cpu* c) {c->setB(sla(c, c->getB()));}
+static void sla_C(Cpu* c) {c->setC(sla(c, c->getC()));}
+static void sla_D(Cpu* c) {c->setD(sla(c, c->getD()));}
+static void sla_E(Cpu* c) {c->setE(sla(c, c->getE()));}
+static void sla_H(Cpu* c) {c->setH(sla(c, c->getH()));}
+static void sla_L(Cpu* c) {c->setL(sla(c, c->getL()));}
+static void sla_HL_ind(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = sla(c, c->readByte(addr));
+    c->writeByte(addr, res);
+}
+
+static BYTE sra(Cpu* c, unsigned char a) {
+    c->resetFlag(flagN);
+    c->resetFlag(flagH);
+
+    BYTE a_7 = (a & 0x80);
+    BYTE a_0 = (a & 0x01);
+    a >>= 1;
+
+    if(a_0 == 1)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+
+    a |= a_7;
+
+    if(a == 0)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+    
+    return a;
+}
+static void sra_A(Cpu* c) {c->setA(sra(c, c->getA()));}
+static void sra_B(Cpu* c) {c->setB(sra(c, c->getB()));}
+static void sra_C(Cpu* c) {c->setC(sra(c, c->getC()));}
+static void sra_D(Cpu* c) {c->setD(sra(c, c->getD()));}
+static void sra_E(Cpu* c) {c->setE(sra(c, c->getE()));}
+static void sra_H(Cpu* c) {c->setH(sra(c, c->getH()));}
+static void sra_L(Cpu* c) {c->setL(sra(c, c->getL()));}
+static void sra_HL_ind(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = sra(c, c->readByte(addr));
+    c->writeByte(addr, res);
+}
+
+static BYTE srl(Cpu* c, unsigned char a) {
+    c->resetFlag(flagN);
+    c->resetFlag(flagH);
+
+    BYTE a_0 = (a & 0x01);
+    a >>= 1;
+
+    if(a_0 == 1)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+
+    if(a == 0)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+    
+    return a;
+}
+static void srl_A(Cpu* c) {c->setA(srl(c, c->getA()));}
+static void srl_B(Cpu* c) {c->setB(srl(c, c->getB()));}
+static void srl_C(Cpu* c) {c->setC(srl(c, c->getC()));}
+static void srl_D(Cpu* c) {c->setD(srl(c, c->getD()));}
+static void srl_E(Cpu* c) {c->setE(srl(c, c->getE()));}
+static void srl_H(Cpu* c) {c->setH(srl(c, c->getH()));}
+static void srl_L(Cpu* c) {c->setL(srl(c, c->getL()));}
+static void srl_HL_ind(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = srl(c, c->readByte(addr));
+    c->writeByte(addr, res);
+}
+
+static void bit_b_r(Cpu* c, unsigned char r, unsigned char b) {
+    c->resetFlag(flagN);
+    c->setFlag(flagH);
+
+    //BYTE b = c->readByte(c->getPC());
+    c->incPC();
+
+    b = (b >> r) & 0x01;
+    if(!b)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+}
+static void bit_A_0(Cpu* c) {bit_b_r(c, c->getA(), 0);}
+static void bit_A_1(Cpu* c) {bit_b_r(c, c->getA(), 1);}
+static void bit_A_2(Cpu* c) {bit_b_r(c, c->getA(), 2);}
+static void bit_A_3(Cpu* c) {bit_b_r(c, c->getA(), 3);}
+static void bit_A_4(Cpu* c) {bit_b_r(c, c->getA(), 4);}
+static void bit_A_5(Cpu* c) {bit_b_r(c, c->getA(), 5);}
+static void bit_A_6(Cpu* c) {bit_b_r(c, c->getA(), 6);}
+static void bit_A_7(Cpu* c) {bit_b_r(c, c->getA(), 7);}
+
+static void bit_B_0(Cpu* c) {bit_b_r(c, c->getB(), 0);}
+static void bit_B_1(Cpu* c) {bit_b_r(c, c->getB(), 1);}
+static void bit_B_2(Cpu* c) {bit_b_r(c, c->getB(), 2);}
+static void bit_B_3(Cpu* c) {bit_b_r(c, c->getB(), 3);}
+static void bit_B_4(Cpu* c) {bit_b_r(c, c->getB(), 4);}
+static void bit_B_5(Cpu* c) {bit_b_r(c, c->getB(), 5);}
+static void bit_B_6(Cpu* c) {bit_b_r(c, c->getB(), 6);}
+static void bit_B_7(Cpu* c) {bit_b_r(c, c->getB(), 7);}
+
+static void bit_C_0(Cpu* c) {bit_b_r(c, c->getC(), 0);}
+static void bit_C_1(Cpu* c) {bit_b_r(c, c->getC(), 1);}
+static void bit_C_2(Cpu* c) {bit_b_r(c, c->getC(), 2);}
+static void bit_C_3(Cpu* c) {bit_b_r(c, c->getC(), 3);}
+static void bit_C_4(Cpu* c) {bit_b_r(c, c->getC(), 4);}
+static void bit_C_5(Cpu* c) {bit_b_r(c, c->getC(), 5);}
+static void bit_C_6(Cpu* c) {bit_b_r(c, c->getC(), 6);}
+static void bit_C_7(Cpu* c) {bit_b_r(c, c->getC(), 7);}
+
+
+static void bit_D_0(Cpu* c) {bit_b_r(c, c->getD(), 0);}
+static void bit_D_1(Cpu* c) {bit_b_r(c, c->getD(), 1);}
+static void bit_D_2(Cpu* c) {bit_b_r(c, c->getD(), 2);}
+static void bit_D_3(Cpu* c) {bit_b_r(c, c->getD(), 3);}
+static void bit_D_4(Cpu* c) {bit_b_r(c, c->getD(), 4);}
+static void bit_D_5(Cpu* c) {bit_b_r(c, c->getD(), 5);}
+static void bit_D_6(Cpu* c) {bit_b_r(c, c->getD(), 6);}
+static void bit_D_7(Cpu* c) {bit_b_r(c, c->getD(), 7);}
+
+
+static void bit_E_0(Cpu* c) {bit_b_r(c, c->getE(), 0);}
+static void bit_E_1(Cpu* c) {bit_b_r(c, c->getE(), 1);}
+static void bit_E_2(Cpu* c) {bit_b_r(c, c->getE(), 2);}
+static void bit_E_3(Cpu* c) {bit_b_r(c, c->getE(), 3);}
+static void bit_E_4(Cpu* c) {bit_b_r(c, c->getE(), 4);}
+static void bit_E_5(Cpu* c) {bit_b_r(c, c->getE(), 5);}
+static void bit_E_6(Cpu* c) {bit_b_r(c, c->getE(), 6);}
+static void bit_E_7(Cpu* c) {bit_b_r(c, c->getE(), 7);}
+
+
+static void bit_H_0(Cpu* c) {bit_b_r(c, c->getH(), 0);}
+static void bit_H_1(Cpu* c) {bit_b_r(c, c->getH(), 1);}
+static void bit_H_2(Cpu* c) {bit_b_r(c, c->getH(), 2);}
+static void bit_H_3(Cpu* c) {bit_b_r(c, c->getH(), 3);}
+static void bit_H_4(Cpu* c) {bit_b_r(c, c->getH(), 4);}
+static void bit_H_5(Cpu* c) {bit_b_r(c, c->getH(), 5);}
+static void bit_H_6(Cpu* c) {bit_b_r(c, c->getH(), 6);}
+static void bit_H_7(Cpu* c) {bit_b_r(c, c->getH(), 7);}
+
+
+static void bit_L_0(Cpu* c) {bit_b_r(c, c->getL(), 0);}
+static void bit_L_1(Cpu* c) {bit_b_r(c, c->getL(), 1);}
+static void bit_L_2(Cpu* c) {bit_b_r(c, c->getL(), 2);}
+static void bit_L_3(Cpu* c) {bit_b_r(c, c->getL(), 3);}
+static void bit_L_4(Cpu* c) {bit_b_r(c, c->getL(), 4);}
+static void bit_L_5(Cpu* c) {bit_b_r(c, c->getL(), 5);}
+static void bit_L_6(Cpu* c) {bit_b_r(c, c->getL(), 6);}
+static void bit_L_7(Cpu* c) {bit_b_r(c, c->getL(), 7);}
+
+
+static void bit_HL_ind_0(Cpu* c) {
+    BYTE addr = c->getHL();
+    bit_b_r(c, c->readByte(addr), 0);
+}
+static void bit_HL_ind_1(Cpu* c) {
+    BYTE addr = c->getHL();
+    bit_b_r(c, c->readByte(addr), 1);
+}
+static void bit_HL_ind_2(Cpu* c) {
+    BYTE addr = c->getHL();
+    bit_b_r(c, c->readByte(addr), 2);
+}
+static void bit_HL_ind_3(Cpu* c) {
+    BYTE addr = c->getHL();
+    bit_b_r(c, c->readByte(addr), 3);
+}
+static void bit_HL_ind_4(Cpu* c) {
+    BYTE addr = c->getHL();
+    bit_b_r(c, c->readByte(addr), 4);
+}
+static void bit_HL_ind_5(Cpu* c) {
+    BYTE addr = c->getHL();
+    bit_b_r(c, c->readByte(addr), 5);
+}
+static void bit_HL_ind_6(Cpu* c) {
+    BYTE addr = c->getHL();
+    bit_b_r(c, c->readByte(addr), 6);
+}
+static void bit_HL_ind_7(Cpu* c) {
+    BYTE addr = c->getHL();
+    bit_b_r(c, c->readByte(addr), 7);
+}
+
+static BYTE set_b_r(Cpu* c, unsigned char r) {
+
+    BYTE b = c->readByte(c->getPC());
+    c->incPC();
+
+    BYTE temp = (1 << b);
+
+    return (r |= b);
+}
+static void set_A(Cpu* c) {c->setA(set_b_r(c, c->getA()));}
+static void set_B(Cpu* c) {c->setB(set_b_r(c, c->getB()));}
+static void set_C(Cpu* c) {c->setC(set_b_r(c, c->getC()));}
+static void set_D(Cpu* c) {c->setD(set_b_r(c, c->getD()));}
+static void set_E(Cpu* c) {c->setE(set_b_r(c, c->getE()));}
+static void set_H(Cpu* c) {c->setH(set_b_r(c, c->getH()));}
+static void set_L(Cpu* c) {c->setL(set_b_r(c, c->getL()));}
+static void set_HL_ind(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = set_b_r(c, c->readByte(addr));
+    c->writeByte(addr, res);
+}
+
+static BYTE res_b_r(Cpu* c, unsigned char r) {
+
+    BYTE b = c->readByte(c->getPC());
+    c->incPC();
+    
+    BYTE temp = (1 << b);
+
+    return (r &= !b);
+}
+static void res_A(Cpu* c) {c->setA(res_b_r(c, c->getA()));}
+static void res_B(Cpu* c) {c->setB(res_b_r(c, c->getB()));}
+static void res_C(Cpu* c) {c->setC(res_b_r(c, c->getC()));}
+static void res_D(Cpu* c) {c->setD(res_b_r(c, c->getD()));}
+static void res_E(Cpu* c) {c->setE(res_b_r(c, c->getE()));}
+static void res_H(Cpu* c) {c->setH(res_b_r(c, c->getH()));}
+static void res_L(Cpu* c) {c->setL(res_b_r(c, c->getL()));}
+static void res_HL_ind(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = res_b_r(c, c->readByte(addr));
+    c->writeByte(addr, res);
+}
+
+static void jp(Cpu* c) {
+   
+    BYTE ls = c->readByte(c->getPC());
+    c->incPC();
+    BYTE ms = c->readByte(c->getPC());
+    
+    c->setPC((ms << 8) + ls);
+}
+static void jp_nz(Cpu* c) {
+    if(!c->isFlagZero())
+        jp(c);
+}
+static void jp_z(Cpu* c) {
+    if(c->isFlagZero())
+        jp(c);
+}
+static void jp_nc(Cpu* c) {
+    if(!c->isFlagCarry())
+        jp(c);
+}
+static void jp_c(Cpu* c) {
+    if(c->isFlagCarry())
+        jp(c);
+}
+static void jp_hl_ind(Cpu* c) {c->setPC(c->getHL());}
+static void jr(Cpu* c) {
+    signed char n = c->readByte(c->getPC());
+    c->setPC(c->getPC() + n);
+}
+static void jr_nz(Cpu* c) {
+    if(!c->isFlagZero())
+        jr(c);
+}
+static void jr_z(Cpu* c) {
+    if(c->isFlagZero())
+        jr(c);
+}
+static void jr_nc(Cpu* c) {
+    if(!c->isFlagCarry())
+        jr(c);
+}
+static void jr_c(Cpu* c) {
+    if(c->isFlagCarry())
+        jr(c);
+}
+static void call(Cpu* c) {
+    WORD oldPc = c->readWord(c->getPC());
+    c->pushWord(oldPc + 2);
+
+    jp(c);
+}
+static void call_nz(Cpu* c) {
+    if(!c->isFlagZero())
+        call(c);
+}
+static void call_z(Cpu* c) {
+    if(c->isFlagZero())
+        call(c);
+}
+static void call_nc(Cpu* c) {
+    if(!c->isFlagCarry())
+        call(c);
+}
+static void call_c(Cpu* c) {
+    if(c->isFlagCarry())
+        call(c);
+}
+static void rst(Cpu* c, unsigned char ls) {
+    c->pushWord(c->getPC());
+
+    c->setPC(0x0000 + ls);
+}
+static void rst_0(Cpu* c) {rst(c, 0x00);}
+static void rst_8(Cpu* c) {rst(c, 0x08);}
+static void rst_10(Cpu* c) {rst(c, 0x10);}
+static void rst_18(Cpu* c) {rst(c, 0x18);}
+static void rst_20(Cpu* c) {rst(c, 0x20);}
+static void rst_28(Cpu* c) {rst(c, 0x28);}
+static void rst_30(Cpu* c) {rst(c, 0x30);}
+static void rst_38(Cpu* c) {rst(c, 0x38);}
+
+static void ret(Cpu* c) {
+    WORD addr = c->popWord();
+    c->setPC(addr);
+}
+static void ret_nz(Cpu* c) {
+    if(!c->isFlagZero())
+        ret(c);
+}
+static void ret_z(Cpu* c) {
+    if(c->isFlagZero())
+        ret(c);
+}
+static void ret_nc(Cpu* c) {
+    if(!c->isFlagCarry())
+        ret(c);
+}
+static void ret_c(Cpu* c) {
+    if(c->isFlagCarry())
+        ret(c);
+}
+static void reti(Cpu* c) {
+    ret(c);
+    ei(c);
+}
+
+static void cb(Cpu* c) {
+    WORD oldPC = c->getPC();
+    c->incPC();
+
+    instrSetExt.at(oldPC).function();
+}
+
+
+
+
 
 

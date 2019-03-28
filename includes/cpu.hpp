@@ -82,6 +82,7 @@ class Cpu {
         //map for the instructions
         std::map<unsigned char, struct instruction> instrSet;
         void initInstructions(void);
+        std::map<unsigned char, struct instruction> instrSetCBPrefix;
 
 /*         std::map<unsigned char, struct instruction> instrSet;
         instruction getInstruction(unsigned char);
@@ -116,7 +117,7 @@ class Cpu {
         void reset(void);
         void step(void);
 
-        void push(WORD);
+        void pushWord(WORD);
         WORD popWord(void);
         void push(BYTE);
         BYTE popByte(void);
@@ -155,8 +156,10 @@ class Cpu {
         inline void setFlag(const BYTE n) {regAF.high |= n;}
         inline void resetFlag(const BYTE n) {regAF.high &= ~n;}
 
-        inline BYTE readByte(BYTE t_addr) {return mem->readByte(t_addr);}
-        inline void writeByte(BYTE t_addr, BYTE t_val) {mem->writeByte(t_addr, t_val);}
+        inline BYTE readByte(WORD t_addr) {return mem->readByte(t_addr);}
+        inline void writeByte(WORD t_addr, BYTE t_val) {mem->writeByte(t_addr, t_val);}
+        inline WORD readWord(WORD t_addr) {return mem->readWord(t_addr);}
+        inline void writeWord(WORD t_addr, BYTE t_val) {mem->writeWord(t_addr, t_val);}
 
         inline WORD getSP(void) const {return sp;}
         inline WORD getPC(void) const {return pc;}

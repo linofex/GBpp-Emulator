@@ -18,6 +18,7 @@ struct instruction {
 };
 //std::map<unsigned char, instruction> instrSet;
 void init(std::map<unsigned char, instruction>&);
+void initCBPrefix(std::map<unsigned char, instruction>&);
 //instruction getInstr(unsigned char);
 
 
@@ -252,7 +253,10 @@ static void load_A_n(Cpu*, unsigned char);
 
 
 
+//________________________________ CB Extended Instr _____________________________
 
+//------------------- CB -------------------
+static void cb(Cpu*);
 
 
 
@@ -289,10 +293,212 @@ static void ei(Cpu*);
 
 //________________________________ Rotates and shifts _____________________________
 
-//------------------- RLCA -------------------
-static void rlca(Cpu*);
-//------------------- RLA -------------------
-static void rla(Cpu*);
+//------------------- RLC n -------------------
+static BYTE rlc(Cpu*, unsigned char);
+static void rlc_A(Cpu*);
+static void rlc_B(Cpu*);
+static void rlc_C(Cpu*);
+static void rlc_D(Cpu*);
+static void rlc_E(Cpu*);
+static void rlc_H(Cpu*);
+static void rlc_L(Cpu*);
+static void rlc_HL_ind(Cpu*);
+//------------------- RL n -------------------
+static BYTE rl(Cpu*, unsigned char);
+static void rl_A(Cpu*);
+static void rl_B(Cpu*);
+static void rl_C(Cpu*);
+static void rl_D(Cpu*);
+static void rl_E(Cpu*);
+static void rl_H(Cpu*);
+static void rl_L(Cpu*);
+static void rl_HL_ind(Cpu*);
+//------------------- RRC n -------------------
+static BYTE rrc(Cpu*, unsigned char);
+static void rrc_A(Cpu*);
+static void rrc_B(Cpu*);
+static void rrc_C(Cpu*);
+static void rrc_D(Cpu*);
+static void rrc_E(Cpu*);
+static void rrc_H(Cpu*);
+static void rrc_L(Cpu*);
+static void rrc_HL_ind(Cpu*);
+//------------------- RR n -------------------
+static BYTE rr(Cpu*, unsigned char);
+static void rr_A(Cpu*);
+static void rr_B(Cpu*);
+static void rr_C(Cpu*);
+static void rr_D(Cpu*);
+static void rr_E(Cpu*);
+static void rr_H(Cpu*);
+static void rr_L(Cpu*);
+static void rr_HL_ind(Cpu*);
+//------------------- SLA n -------------------
+static BYTE sla(Cpu*, unsigned char);
+static void sla_A(Cpu*);
+static void sla_B(Cpu*);
+static void sla_C(Cpu*);
+static void sla_D(Cpu*);
+static void sla_E(Cpu*);
+static void sla_H(Cpu*);
+static void sla_L(Cpu*);
+static void sla_HL_ind(Cpu*);
+//------------------- SRA n -------------------
+static BYTE sra(Cpu*, unsigned char);
+static void sra_A(Cpu*);
+static void sra_B(Cpu*);
+static void sra_C(Cpu*);
+static void sra_D(Cpu*);
+static void sra_E(Cpu*);
+static void sra_H(Cpu*);
+static void sra_L(Cpu*);
+static void sra_HL_ind(Cpu*);
+//------------------- SRL n -------------------
+static BYTE srl(Cpu*, unsigned char);
+static void srl_A(Cpu*);
+static void srl_B(Cpu*);
+static void srl_C(Cpu*);
+static void srl_D(Cpu*);
+static void srl_E(Cpu*);
+static void srl_H(Cpu*);
+static void srl_L(Cpu*);
+static void srl_HL_ind(Cpu*);
+
+//________________________________ Bit Opcodes _____________________________
+
+//------------------- BIT b, r -------------------
+static void bit_b_r(Cpu*, unsigned char, unsigned char);
+static void bit_A_0(Cpu*);
+static void bit_A_1(Cpu*);
+static void bit_A_2(Cpu*);
+static void bit_A_3(Cpu*);
+static void bit_A_4(Cpu*);
+static void bit_A_5(Cpu*);
+static void bit_A_6(Cpu*);
+static void bit_A_7(Cpu*);
+
+static void bit_B_0(Cpu*);
+static void bit_B_1(Cpu*);
+static void bit_B_2(Cpu*);
+static void bit_B_3(Cpu*);
+static void bit_B_4(Cpu*);
+static void bit_B_5(Cpu*);
+static void bit_B_6(Cpu*);
+static void bit_B_7(Cpu*);
+
+static void bit_C_0(Cpu*);
+static void bit_C_1(Cpu*);
+static void bit_C_2(Cpu*);
+static void bit_C_3(Cpu*);
+static void bit_C_4(Cpu*);
+static void bit_C_5(Cpu*);
+static void bit_C_6(Cpu*);
+static void bit_C_7(Cpu*);
+
+static void bit_D_0(Cpu*);
+static void bit_D_1(Cpu*);
+static void bit_D_2(Cpu*);
+static void bit_D_3(Cpu*);
+static void bit_D_4(Cpu*);
+static void bit_D_5(Cpu*);
+static void bit_D_6(Cpu*);
+static void bit_D_7(Cpu*);
+
+static void bit_E_0(Cpu*);
+static void bit_E_1(Cpu*);
+static void bit_E_2(Cpu*);
+static void bit_E_3(Cpu*);
+static void bit_E_4(Cpu*);
+static void bit_E_5(Cpu*);
+static void bit_E_6(Cpu*);
+static void bit_E_7(Cpu*);
+
+static void bit_H_0(Cpu*);
+static void bit_H_1(Cpu*);
+static void bit_H_2(Cpu*);
+static void bit_H_3(Cpu*);
+static void bit_H_4(Cpu*);
+static void bit_H_5(Cpu*);
+static void bit_H_6(Cpu*);
+static void bit_H_7(Cpu*);
+
+static void bit_L(Cpu*);
+static void bit_a_HL_ind(Cpu*);
+//------------------- SET b, r -------------------
+static BYTE set_b_r(Cpu*, unsigned char);
+static void set_A(Cpu*);
+static void set_B(Cpu*);
+static void set_C(Cpu*);
+static void set_D(Cpu*);
+static void set_E(Cpu*);
+static void set_H(Cpu*);
+static void set_L(Cpu*);
+static void set_a_HL_ind(Cpu*);
+//------------------- RES b, r -------------------
+static BYTE res_b_r(Cpu*, unsigned char);
+static void res_A(Cpu*);
+static void res_B(Cpu*);
+static void res_C(Cpu*);
+static void res_D(Cpu*);
+static void res_E(Cpu*);
+static void res_H(Cpu*);
+static void res_L(Cpu*);
+static void res_a_HL_ind(Cpu*);
+
+//________________________________ Jumps _____________________________
+
+//------------------- JP nn -------------------
+static void jp(Cpu*);
+//------------------- JP cc, nn -------------------
+static void jp_nz(Cpu*);
+static void jp_z(Cpu*);
+static void jp_nc(Cpu*);
+static void jp_c(Cpu*);
+//------------------- JP (HL) -------------------
+static void jp_hl_ind(Cpu*);
+
+//------------------- JR n -------------------
+static void jr(Cpu*);
+//------------------- JR cc, nn -------------------
+static void jr_nz(Cpu*);
+static void jr_z(Cpu*);
+static void jr_nc(Cpu*);
+static void jr_c(Cpu*);
+
+//________________________________ Calls _____________________________
+
+//------------------- JP nn -------------------
+static void call(Cpu*);
+//------------------- CALL cc, nn -------------------
+static void call_nz(Cpu*);
+static void call_z(Cpu*);
+static void call_nc(Cpu*);
+static void call_c(Cpu*);
+
+//________________________________ Restarts _____________________________
+
+//------------------- RST n -------------------
+static void rst(Cpu*, unsigned char);
+static void rst_0(Cpu*);
+static void rst_8(Cpu*);
+static void rst_10(Cpu*);
+static void rst_18(Cpu*);
+static void rst_20(Cpu*);
+static void rst_28(Cpu*);
+static void rst_30(Cpu*);
+static void rst_38(Cpu*);
+//------------------- RET -------------------
+static void ret(Cpu*);
+//------------------- RET cc-------------------
+static void ret_nz(Cpu*);
+static void ret_z(Cpu*);
+static void ret_nc(Cpu*);
+static void ret_c(Cpu*);
+//------------------- RETI -------------------
+static void reti(Cpu*);
+
+
+
 
 
 

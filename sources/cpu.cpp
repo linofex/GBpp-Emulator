@@ -26,6 +26,9 @@ void Cpu::initInstructions() {
     initCBPrefix(instrSetCBPrefix);
 }
 
+struct instruction Cpu::getInstrSetCBPrefixAt(BYTE t_opcode) {
+    return instrSetCBPrefix.at(t_opcode);
+}
 
 void Cpu::step() {
     

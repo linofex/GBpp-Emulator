@@ -11,7 +11,6 @@ instruction::instruction(std::string name, int cycles, void (*f)(Cpu*)) {
 
 
 void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
-<<<<<<< HEAD
     instrSetCBPrefix.insert(std::make_pair(0x00, instruction("RLC B", 8, rlc_B)));
     instrSetCBPrefix.insert(std::make_pair(0x01, instruction("RLC C", 8, rlc_C)));
     instrSetCBPrefix.insert(std::make_pair(0x02, instruction("RLC D", 8, rlc_D)));
@@ -73,9 +72,6 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x37, instruction("SWAP A", 8,swap_B)));
        
 
-=======
-    //instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, 0, add_A_B)));  
->>>>>>> d01468de52802fa1105cde46f202a22d2dc4a121
 }
 
 void init(std::map<unsigned char, instruction>& instrSet) {
@@ -1483,11 +1479,7 @@ static void cb(Cpu* c) {
     WORD oldPC = c->getPC();
     c->incPC();
 
-<<<<<<< HEAD
-    c->instrSetCBPrefix.at(oldPC).function();
-=======
     c->getInstrSetCBPrefixAt(oldPC).function(c);
->>>>>>> d01468de52802fa1105cde46f202a22d2dc4a121
 }
 
 

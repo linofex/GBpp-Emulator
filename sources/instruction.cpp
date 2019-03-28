@@ -31,7 +31,67 @@ instruction instrSet2[2] = {
 //std::map<unsigned char, struct instruction> instrSet;
 
 void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
-     instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, 0, add_A_B)));  
+    instrSetCBPrefix.insert(std::make_pair(0x00, instruction("RLC B", 8, rlc_B)));
+    instrSetCBPrefix.insert(std::make_pair(0x01, instruction("RLC C", 8, rlc_C)));
+    instrSetCBPrefix.insert(std::make_pair(0x02, instruction("RLC D", 8, rlc_D)));
+    instrSetCBPrefix.insert(std::make_pair(0x03, instruction("RLC E", 8, rlc_E)));
+    instrSetCBPrefix.insert(std::make_pair(0x04, instruction("RLC H", 8, rlc_H)));
+    instrSetCBPrefix.insert(std::make_pair(0x05, instruction("RLC L", 8, rlc_L)));
+    instrSetCBPrefix.insert(std::make_pair(0x06, instruction("RLC (HL)", 16, rlc_HL_ind)));
+    instrSetCBPrefix.insert(std::make_pair(0x07, instruction("RLC A", 8, rlc_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x08, instruction("RRC B", 8, rrc_B)));
+    instrSetCBPrefix.insert(std::make_pair(0x09, instruction("RRC C", 8, rrc_C)));
+    instrSetCBPrefix.insert(std::make_pair(0x0A, instruction("RRC D", 8, rrc_D)));
+    instrSetCBPrefix.insert(std::make_pair(0x0B, instruction("RRC E", 8, rrc_E)));
+    instrSetCBPrefix.insert(std::make_pair(0x0C, instruction("RRC H", 8, rrc_H)));
+    instrSetCBPrefix.insert(std::make_pair(0x0D, instruction("RRC L", 8, rrc_L)));
+    instrSetCBPrefix.insert(std::make_pair(0x0E, instruction("RRC (HL)", 16, rrc_HL_ind)));
+    instrSetCBPrefix.insert(std::make_pair(0x0F, instruction("RRC A", 8, rrc_A)));
+
+    instrSetCBPrefix.insert(std::make_pair(0x10, instruction("RL B", 8, rl_B)));
+    instrSetCBPrefix.insert(std::make_pair(0x11, instruction("RL C", 8, rl_C)));
+    instrSetCBPrefix.insert(std::make_pair(0x12, instruction("RL D", 8, rl_D)));
+    instrSetCBPrefix.insert(std::make_pair(0x13, instruction("RL E", 8, rl_E)));
+    instrSetCBPrefix.insert(std::make_pair(0x14, instruction("RL H", 8, rl_H)));
+    instrSetCBPrefix.insert(std::make_pair(0x15, instruction("RL L", 8, rl_L)));
+    instrSetCBPrefix.insert(std::make_pair(0x16, instruction("RL (HL)", 16, rl_HL_ind)));
+    instrSetCBPrefix.insert(std::make_pair(0x17, instruction("RL A", 8, rl_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x18, instruction("RR B", 8, rr_B)));
+    instrSetCBPrefix.insert(std::make_pair(0x19, instruction("RR C", 8, rr_C)));
+    instrSetCBPrefix.insert(std::make_pair(0x1A, instruction("RR D", 8, rr_D)));
+    instrSetCBPrefix.insert(std::make_pair(0x1B, instruction("RR E", 8, rr_E)));
+    instrSetCBPrefix.insert(std::make_pair(0x1C, instruction("RR H", 8, rr_H)));
+    instrSetCBPrefix.insert(std::make_pair(0x1D, instruction("RR L", 8, rr_L)));
+    instrSetCBPrefix.insert(std::make_pair(0x1E, instruction("RR (HL)", 16, rr_HL_ind)));
+    instrSetCBPrefix.insert(std::make_pair(0x1F, instruction("RR A", 8, rr_A)));
+
+    instrSetCBPrefix.insert(std::make_pair(0x20, instruction("SLA B", 8, sla_B)));
+    instrSetCBPrefix.insert(std::make_pair(0x21, instruction("SLA C", 8, sla_C)));
+    instrSetCBPrefix.insert(std::make_pair(0x22, instruction("SLA D", 8, sla_D)));
+    instrSetCBPrefix.insert(std::make_pair(0x23, instruction("SLA E", 8, sla_E)));
+    instrSetCBPrefix.insert(std::make_pair(0x24, instruction("SLA H", 8, sla_H)));
+    instrSetCBPrefix.insert(std::make_pair(0x25, instruction("SLA L", 8, sla_L)));
+    instrSetCBPrefix.insert(std::make_pair(0x26, instruction("SLA (HL)", 16, sla_HL_ind)));
+    instrSetCBPrefix.insert(std::make_pair(0x27, instruction("SLA A", 8, sla_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x28, instruction("SRA B", 8, sra_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x29, instruction("SRA C", 8, sra_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x2A, instruction("SRA D", 8, sra_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x2B, instruction("SRA E", 8, sra_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x2C, instruction("SRA H", 8, sra_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x2D, instruction("SRA L", 8, sra_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x2E, instruction("SRA (HL)", 16, sra_A)));
+    instrSetCBPrefix.insert(std::make_pair(0x2F, instruction("SRA A", 8, sra_A)));
+
+    instrSetCBPrefix.insert(std::make_pair(0x30, instruction("SWAP B", 8,swap_B)));
+    instrSetCBPrefix.insert(std::make_pair(0x31, instruction("SWAP C", 8,swap_C)));
+    instrSetCBPrefix.insert(std::make_pair(0x32, instruction("SWAP D", 8,swap_D)));
+    instrSetCBPrefix.insert(std::make_pair(0x33, instruction("SWAP E", 8,swap_E)));
+    instrSetCBPrefix.insert(std::make_pair(0x34, instruction("SWAP H", 8,swap_H)));
+    instrSetCBPrefix.insert(std::make_pair(0x35, instruction("SWAP L", 8,swap_L)));
+    instrSetCBPrefix.insert(std::make_pair(0x36, instruction("SWAP (HL)", 16,swap_HL_ind)));
+    instrSetCBPrefix.insert(std::make_pair(0x37, instruction("SWAP A", 8,swap_B)));
+       
+
 }
 
 void init(std::map<unsigned char, instruction>& instrSet) {
@@ -1261,7 +1321,7 @@ static void cb(Cpu* c) {
     WORD oldPC = c->getPC();
     c->incPC();
 
-    instrSetExt.at(oldPC).function();
+    c->instrSetCBPrefix.at(oldPC).function();
 }
 
 

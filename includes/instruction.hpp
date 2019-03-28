@@ -271,7 +271,7 @@ static void swap_E(Cpu*);
 static void swap_H(Cpu*);
 static void swap_L(Cpu*);
 static void swap_HL_ind(Cpu*);
-//------------------- SWAP n -------------------
+//------------------- DAA -------------------
 static void daa(Cpu*);
 //------------------- CPL n -------------------
 static void cpl(Cpu*);
@@ -280,11 +280,11 @@ static void ccf(Cpu*);
 //------------------- SCF -------------------
 static void scf(Cpu*);
 //------------------- NOP -------------------
-static void nop(void);
+static void nop(Cpu*);
 //------------------- HALT -------------------
-static void halt(void);
+static void halt(Cpu*);
 //------------------- STOP -------------------
-static void stop(void);
+static void stop(Cpu*);
 //------------------- DI -------------------
 static void di(Cpu*);
 //------------------- EI -------------------

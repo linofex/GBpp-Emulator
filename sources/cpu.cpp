@@ -26,6 +26,10 @@ void Cpu::initInstructions() {
     initCBPrefix(instrSetCBPrefix);
 }
 
+struct instruction Cpu::getInstrSetAt(BYTE t_opcode) {
+    return instrSet.at(t_opcode);
+}
+
 struct instruction Cpu::getInstrSetCBPrefixAt(BYTE t_opcode) {
     return instrSetCBPrefix.at(t_opcode);
 }
@@ -102,6 +106,7 @@ void Cpu::reset() {
     hostOldTime = std::chrono::system_clock::now();
     targetOldTime = TARGETPERIOD * clockCycles;
     
+    intMasterEnable = false;
     Cpu::step();
 }
 

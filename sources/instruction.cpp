@@ -773,18 +773,38 @@ static void swap_HL_ind(Cpu* c) {
 }
 
 static void daa(Cpu* c) {
-    //manca-------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    unsigned char a_h = (c->getA() & 0xF0) >> 4;
+    unsigned char a_l = c->getA() & 0x0F;
+
+    c->resetFlag(flagH);
+    unsigned short res = (a_h * 10) + a_l;
+    
+    if(res == 0)
+        c->setFlag(flagZ);
+    else
+        c->resetFlag(flagZ);
+    
+    if(res > 256)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+    
+    c->setA(res);
 }
 
 static void cpl(Cpu* c) {
     c->setFlag(flagN);
     c->setFlag(flagH);
 
-    c->setA(~c->getA());
+    c->setA(~(c->getA()));
 }
 static void ccf(Cpu* c) {
-    int carry = c->isFlagCarry() ? 1 : 0;
-    c->setFlag(~carry);
+    unsigned char carry = c->isFlagCarry();
+    if(carry == 0)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+
     c->resetFlag(flagH);
     c->resetFlag(flagN);
 }
@@ -793,11 +813,17 @@ static void scf(Cpu* c) {
     c->resetFlag(flagH);
     c->resetFlag(flagN);
 }
-static void nop() {}
-static void halt() {}   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-static void stop() {}   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-static void di(Cpu* c) {}//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-static void ei(Cpu* c) {}//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+static void nop(Cpu* c) {}
+static void halt(Cpu* c) {
+    c->setPC(c->getPC() - 1);
+}
+static void stop() {}
+static void di(Cpu* c) {
+    c->resetIntMasterEnable();
+}
+static void ei(Cpu* c) {
+    c->setIntMasterEnable();
+}
 
 static BYTE rlc(Cpu* c, unsigned char a) {
     c->resetFlag(flagN);

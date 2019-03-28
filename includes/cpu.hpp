@@ -84,15 +84,8 @@ class Cpu {
         void initInstructions(void);
         std::map<unsigned char, struct instruction> instrSetCBPrefix;
 
-/*         std::map<unsigned char, struct instruction> instrSet;
-        instruction getInstruction(unsigned char);
-        void initInstructions(void);   */  
-        //void fillInstructions(void);
-        //instruction addInstruction(std::string, int, int, void*);
-
-        //std::vector<BYTE> intROM;
-        //bool checkCartridge(void);
-        //void loadInternalROM(void);
+        //interrupt master enable
+        bool intMasterEnable;       //an interrupt can only be served IFF this is TRUE
 
         //execution functions
         BYTE fetch(void);
@@ -116,6 +109,10 @@ class Cpu {
         
         void reset(void);
         void step(void);
+
+        inline bool isIntMasterEnable(void) const {return intMasterEnable;}
+        void setIntMasterEnable(void) {intMasterEnable = true;}
+        void resetIntMasterEnable(void) {intMasterEnable = false;}
 
         void pushWord(WORD);
         WORD popWord(void);
@@ -170,7 +167,8 @@ class Cpu {
         inline void decSP(void) {sp--;}
         inline void incSP(void) {sp++;}
 
-       struct instruction getInstrSetCBPrefixAt(BYTE);
+        struct instruction getInstrSetAt(BYTE);
+        struct instruction getInstrSetCBPrefixAt(BYTE);
         
 
         //--------------------- 8-bit arithmetic ---------------------

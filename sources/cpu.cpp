@@ -23,6 +23,7 @@ Cpu::~Cpu(void) {
 
 void Cpu::initInstructions() {
     init(instrSet);
+    initCBPrefix(instrSetCBPrefix);
 }
 
 
@@ -104,12 +105,15 @@ void Cpu::reset() {
 BYTE Cpu::fetch(void) {
     std::cout<<"fetch"<<std::endl;
     unsigned char opcode = 0x80;//mem->readByte(pc);
+    incPC();
+
     return opcode;
 }
 
 struct instruction Cpu::decode(BYTE opcode) {
     std::cout<<"decode"<<std::endl;
     std::cout<<"---------------------------------------------> "<<instrSet.size()<<std::endl;
+    
     return instrSet.at(0x80);
 }
 
@@ -222,7 +226,7 @@ void Cpu::sync() {
  
 }
 
-void Cpu::push(WORD t_val) {
+void Cpu::pushWord(WORD t_val) {
     mem->writeWord(getSP(), t_val);
     incSP();
     incSP();

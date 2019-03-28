@@ -169,6 +169,8 @@ class Cpu {
         inline void incPC(void) {pc++;}
         inline void decSP(void) {sp--;}
         inline void incSP(void) {sp++;}
+
+       struct instruction getInstrSetCBPrefixAt(BYTE);
         
 
         //--------------------- 8-bit arithmetic ---------------------

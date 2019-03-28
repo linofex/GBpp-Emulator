@@ -10,11 +10,10 @@
 struct instruction {
     std::string name;
     int cycles;
-    int paramNum;
     void (*function)(Cpu*);
 
     //constructor
-    instruction(std::string, int, int, void(*)(Cpu*));
+    instruction(std::string, int, void(*)(Cpu*));
 };
 //std::map<unsigned char, instruction> instrSet;
 void init(std::map<unsigned char, instruction>&);
@@ -271,7 +270,7 @@ static void swap_D(Cpu*);
 static void swap_E(Cpu*);
 static void swap_H(Cpu*);
 static void swap_L(Cpu*);
-static void swap_HL(Cpu*);
+static void swap_HL_ind(Cpu*);
 //------------------- SWAP n -------------------
 static void daa(Cpu*);
 //------------------- CPL n -------------------
@@ -366,7 +365,7 @@ static void srl_HL_ind(Cpu*);
 
 //________________________________ Bit Opcodes _____________________________
 
-//------------------- BIT b, r -------------------
+//------------------- BIT -------------------
 static void bit_b_r(Cpu*, unsigned char, unsigned char);
 static void bit_A_0(Cpu*);
 static void bit_A_1(Cpu*);
@@ -422,28 +421,171 @@ static void bit_H_5(Cpu*);
 static void bit_H_6(Cpu*);
 static void bit_H_7(Cpu*);
 
-static void bit_L(Cpu*);
-static void bit_a_HL_ind(Cpu*);
-//------------------- SET b, r -------------------
+static void bit_L_0(Cpu*);
+static void bit_L_1(Cpu*);
+static void bit_L_2(Cpu*);
+static void bit_L_3(Cpu*);
+static void bit_L_4(Cpu*);
+static void bit_L_5(Cpu*);
+static void bit_L_6(Cpu*);
+static void bit_L_7(Cpu*);
+
+static void bit_a_HL_ind_0(Cpu*);
+static void bit_a_HL_ind_1(Cpu*);
+static void bit_a_HL_ind_2(Cpu*);
+static void bit_a_HL_ind_3(Cpu*);
+static void bit_a_HL_ind_4(Cpu*);
+static void bit_a_HL_ind_5(Cpu*);
+static void bit_a_HL_ind_6(Cpu*);
+static void bit_a_HL_ind_7(Cpu*);
+
+//------------------- SET -------------------
 static BYTE set_b_r(Cpu*, unsigned char);
-static void set_A(Cpu*);
-static void set_B(Cpu*);
-static void set_C(Cpu*);
-static void set_D(Cpu*);
-static void set_E(Cpu*);
-static void set_H(Cpu*);
-static void set_L(Cpu*);
-static void set_a_HL_ind(Cpu*);
-//------------------- RES b, r -------------------
+static void set_A_0(Cpu*);
+static void set_A_1(Cpu*);
+static void set_A_2(Cpu*);
+static void set_A_3(Cpu*);
+static void set_A_4(Cpu*);
+static void set_A_5(Cpu*);
+static void set_A_6(Cpu*);
+static void set_A_7(Cpu*);
+
+static void set_B_0(Cpu*);
+static void set_B_1(Cpu*);
+static void set_B_2(Cpu*);
+static void set_B_3(Cpu*);
+static void set_B_4(Cpu*);
+static void set_B_5(Cpu*);
+static void set_B_6(Cpu*);
+static void set_B_7(Cpu*);
+
+static void set_C_0(Cpu*);
+static void set_C_1(Cpu*);
+static void set_C_2(Cpu*);
+static void set_C_3(Cpu*);
+static void set_C_4(Cpu*);
+static void set_C_5(Cpu*);
+static void set_C_6(Cpu*);
+static void set_C_7(Cpu*);
+
+static void set_D_0(Cpu*);
+static void set_D_1(Cpu*);
+static void set_D_2(Cpu*);
+static void set_D_3(Cpu*);
+static void set_D_4(Cpu*);
+static void set_D_5(Cpu*);
+static void set_D_6(Cpu*);
+static void set_D_7(Cpu*);
+
+static void set_E_0(Cpu*);
+static void set_E_1(Cpu*);
+static void set_E_2(Cpu*);
+static void set_E_3(Cpu*);
+static void set_E_4(Cpu*);
+static void set_E_5(Cpu*);
+static void set_E_6(Cpu*);
+static void set_E_7(Cpu*);
+
+static void set_H_0(Cpu*);
+static void set_H_1(Cpu*);
+static void set_H_2(Cpu*);
+static void set_H_3(Cpu*);
+static void set_H_4(Cpu*);
+static void set_H_5(Cpu*);
+static void set_H_6(Cpu*);
+static void set_H_7(Cpu*);
+
+static void set_L_0(Cpu*);
+static void set_L_1(Cpu*);
+static void set_L_2(Cpu*);
+static void set_L_3(Cpu*);
+static void set_L_4(Cpu*);
+static void set_L_5(Cpu*);
+static void set_L_6(Cpu*);
+static void set_L_7(Cpu*);
+
+static void set_HL_ind_0(Cpu*);
+static void set_HL_ind_1(Cpu*);
+static void set_HL_ind_2(Cpu*);
+static void set_HL_ind_3(Cpu*);
+static void set_HL_ind_4(Cpu*);
+static void set_HL_ind_5(Cpu*);
+static void set_HL_ind_6(Cpu*);
+static void set_HL_ind_7(Cpu*);
+
+//------------------- RES -------------------
 static BYTE res_b_r(Cpu*, unsigned char);
-static void res_A(Cpu*);
-static void res_B(Cpu*);
-static void res_C(Cpu*);
-static void res_D(Cpu*);
-static void res_E(Cpu*);
-static void res_H(Cpu*);
-static void res_L(Cpu*);
-static void res_a_HL_ind(Cpu*);
+static void res_A_0(Cpu*);
+static void res_A_1(Cpu*);
+static void res_A_2(Cpu*);
+static void res_A_3(Cpu*);
+static void res_A_4(Cpu*);
+static void res_A_5(Cpu*);
+static void res_A_6(Cpu*);
+static void res_A_7(Cpu*);
+
+static void res_B_0(Cpu*);
+static void res_B_1(Cpu*);
+static void res_B_2(Cpu*);
+static void res_B_3(Cpu*);
+static void res_B_4(Cpu*);
+static void res_B_5(Cpu*);
+static void res_B_6(Cpu*);
+static void res_B_7(Cpu*);
+
+static void res_C_0(Cpu*);
+static void res_C_1(Cpu*);
+static void res_C_2(Cpu*);
+static void res_C_3(Cpu*);
+static void res_C_4(Cpu*);
+static void res_C_5(Cpu*);
+static void res_C_6(Cpu*);
+static void res_C_7(Cpu*);
+
+static void res_D_0(Cpu*);
+static void res_D_1(Cpu*);
+static void res_D_2(Cpu*);
+static void res_D_3(Cpu*);
+static void res_D_4(Cpu*);
+static void res_D_5(Cpu*);
+static void res_D_6(Cpu*);
+static void res_D_7(Cpu*);
+
+static void res_E_0(Cpu*);
+static void res_E_1(Cpu*);
+static void res_E_2(Cpu*);
+static void res_E_3(Cpu*);
+static void res_E_4(Cpu*);
+static void res_E_5(Cpu*);
+static void res_E_6(Cpu*);
+static void res_E_7(Cpu*);
+
+static void res_H_0(Cpu*);
+static void res_H_1(Cpu*);
+static void res_H_2(Cpu*);
+static void res_H_3(Cpu*);
+static void res_H_4(Cpu*);
+static void res_H_5(Cpu*);
+static void res_H_6(Cpu*);
+static void res_H_7(Cpu*);
+
+static void res_L_0(Cpu*);
+static void res_L_1(Cpu*);
+static void res_L_2(Cpu*);
+static void res_L_3(Cpu*);
+static void res_L_4(Cpu*);
+static void res_L_5(Cpu*);
+static void res_L_6(Cpu*);
+static void res_L_7(Cpu*);
+
+static void res_HL_ind_0(Cpu*);
+static void res_HL_ind_1(Cpu*);
+static void res_HL_ind_2(Cpu*);
+static void res_HL_ind_3(Cpu*);
+static void res_HL_ind_4(Cpu*);
+static void res_HL_ind_5(Cpu*);
+static void res_HL_ind_6(Cpu*);
+static void res_HL_ind_7(Cpu*);
 
 //________________________________ Jumps _____________________________
 

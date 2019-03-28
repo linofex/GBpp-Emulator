@@ -3,34 +3,15 @@
 #include <map>
 #include <vector>
 
-instruction::instruction(std::string name, int cycles, int paramNum, void (*f)(Cpu*)) {
+instruction::instruction(std::string name, int cycles, void (*f)(Cpu*)) {
 	this->name = name;
     this->cycles = cycles;
-	this->paramNum = paramNum;
 	function = f;
 }
 
 
-//std::map<unsigned char, int> a;
-
-//a[0x80] = {20};
-
-//std::map<unsigned char, instruction> instrSet;
-
-//instruction i = instruction("ADD A, B", 4, 0, add_A_B);
-//instrSet[0x80] = i;
-
-/* instrSet[0x80] = instruction("ADD A, B", 4, 0, add_A_B);
-instrSet[0x81] = instruction("ADD A, C", 4, 0, add_A_C);
- */
-instruction instrSet2[2] = {
-	instruction("ADD_A_B", 4, 0, add_A_B),
-    instruction("ADD_A_C", 4, 0, add_A_C)
-}; 
-
-//std::map<unsigned char, struct instruction> instrSet;
-
 void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
+<<<<<<< HEAD
     instrSetCBPrefix.insert(std::make_pair(0x00, instruction("RLC B", 8, rlc_B)));
     instrSetCBPrefix.insert(std::make_pair(0x01, instruction("RLC C", 8, rlc_C)));
     instrSetCBPrefix.insert(std::make_pair(0x02, instruction("RLC D", 8, rlc_D)));
@@ -92,131 +73,134 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x37, instruction("SWAP A", 8,swap_B)));
        
 
+=======
+    //instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, 0, add_A_B)));  
+>>>>>>> d01468de52802fa1105cde46f202a22d2dc4a121
 }
 
 void init(std::map<unsigned char, instruction>& instrSet) {
     //std::cout<<typeid(i).name()<<std::endl;
-    instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, 0, add_A_B)));  
-    instrSet.insert(std::make_pair(0x81, instruction("ADD A, C", 4, 0, add_A_C)));
-    instrSet.insert(std::make_pair(0x82, instruction("ADD A, D", 4, 0, add_A_D)));
-    instrSet.insert(std::make_pair(0x83, instruction("ADD A, E", 4, 0, add_A_E)));  
-    instrSet.insert(std::make_pair(0x84, instruction("ADD A, H", 4, 0, add_A_H)));
-    instrSet.insert(std::make_pair(0x85, instruction("ADD A, L", 4, 0, add_A_L)));
-    instrSet.insert(std::make_pair(0x86, instruction("ADD A, (HL)", 8, 0, add_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0x87, instruction("ADD A, A", 4, 0, add_A_A)));
-    //instrSet.insert(std::make_pair(0xC6, instruction("ADD A, #", 8, 0, add_A_n))); ->>>>>>>>>>>>>> da rivedere il parametro unsigned char
+    instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, add_A_B)));  
+    instrSet.insert(std::make_pair(0x81, instruction("ADD A, C", 4, add_A_C)));
+    instrSet.insert(std::make_pair(0x82, instruction("ADD A, D", 4, add_A_D)));
+    instrSet.insert(std::make_pair(0x83, instruction("ADD A, E", 4, add_A_E)));  
+    instrSet.insert(std::make_pair(0x84, instruction("ADD A, H", 4, add_A_H)));
+    instrSet.insert(std::make_pair(0x85, instruction("ADD A, L", 4, add_A_L)));
+    instrSet.insert(std::make_pair(0x86, instruction("ADD A, (HL)", 8, add_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0x87, instruction("ADD A, A", 4, add_A_A)));
+    //instrSet.insert(std::make_pair(0xC6, instruction("ADD A, #", 8, add_A_n))); ->>>>>>>>>>>>>> da rivedere il parametro unsigned char
 
-    instrSet.insert(std::make_pair(0x88, instruction("ADC A, B", 4, 0, adc_A_B)));  
-    instrSet.insert(std::make_pair(0x89, instruction("ADC A, C", 4, 0, adc_A_C)));
-    instrSet.insert(std::make_pair(0x8A, instruction("ADC A, D", 4, 0, adc_A_D)));
-    instrSet.insert(std::make_pair(0x8B, instruction("ADC A, E", 4, 0, adc_A_E)));  
-    instrSet.insert(std::make_pair(0x8C, instruction("ADC A, H", 4, 0, adc_A_H)));
-    instrSet.insert(std::make_pair(0x8D, instruction("ADC A, L", 4, 0, adc_A_L)));
-    instrSet.insert(std::make_pair(0x8E, instruction("ADC A, (HL)", 8, 0, adc_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0x8F, instruction("ADC A, A", 4, 0, adc_A_A)));  
-    //instrSet.insert(std::make_pair(0xCE, instruction("ADC A, #", 8, 0, adc_A_n))); ->>>>>>>>>>>>>> da rivedere il parametro unsigned char
+    instrSet.insert(std::make_pair(0x88, instruction("ADC A, B", 4, adc_A_B)));  
+    instrSet.insert(std::make_pair(0x89, instruction("ADC A, C", 4, adc_A_C)));
+    instrSet.insert(std::make_pair(0x8A, instruction("ADC A, D", 4, adc_A_D)));
+    instrSet.insert(std::make_pair(0x8B, instruction("ADC A, E", 4, adc_A_E)));  
+    instrSet.insert(std::make_pair(0x8C, instruction("ADC A, H", 4, adc_A_H)));
+    instrSet.insert(std::make_pair(0x8D, instruction("ADC A, L", 4, adc_A_L)));
+    instrSet.insert(std::make_pair(0x8E, instruction("ADC A, (HL)", 8, adc_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0x8F, instruction("ADC A, A", 4, adc_A_A)));  
+    //instrSet.insert(std::make_pair(0xCE, instruction("ADC A, #", 8, adc_A_n))); ->>>>>>>>>>>>>> da rivedere il parametro unsigned char
 
-    instrSet.insert(std::make_pair(0x90, instruction("SUB A, B", 4, 0, sub_A_B)));  
-    instrSet.insert(std::make_pair(0x91, instruction("SUB A, C", 4, 0, sub_A_C)));
-    instrSet.insert(std::make_pair(0x92, instruction("SUB A, D", 4, 0, sub_A_D)));
-    instrSet.insert(std::make_pair(0x93, instruction("SUB A, E", 4, 0, sub_A_E)));  
-    instrSet.insert(std::make_pair(0x94, instruction("SUB A, H", 4, 0, sub_A_H)));
-    instrSet.insert(std::make_pair(0x95, instruction("SUB A, L", 4, 0, sub_A_L)));
-    instrSet.insert(std::make_pair(0x96, instruction("SUB A, (HL)", 8, 0, sub_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0x97, instruction("SUB A, A", 4, 0, sub_A_A)));  
-    //instrSet.insert(std::make_pair(0xD6, instruction("SUB A, #", 8, 0, sub_A_n))); ->>>>>>>>>>>>>> da rivedere il parametro unsigned char
+    instrSet.insert(std::make_pair(0x90, instruction("SUB A, B", 4, sub_A_B)));  
+    instrSet.insert(std::make_pair(0x91, instruction("SUB A, C", 4, sub_A_C)));
+    instrSet.insert(std::make_pair(0x92, instruction("SUB A, D", 4, sub_A_D)));
+    instrSet.insert(std::make_pair(0x93, instruction("SUB A, E", 4, sub_A_E)));  
+    instrSet.insert(std::make_pair(0x94, instruction("SUB A, H", 4, sub_A_H)));
+    instrSet.insert(std::make_pair(0x95, instruction("SUB A, L", 4, sub_A_L)));
+    instrSet.insert(std::make_pair(0x96, instruction("SUB A, (HL)", 8, sub_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0x97, instruction("SUB A, A", 4, sub_A_A)));  
+    //instrSet.insert(std::make_pair(0xD6, instruction("SUB A, #", 8, sub_A_n))); ->>>>>>>>>>>>>> da rivedere il parametro unsigned char
 
-    instrSet.insert(std::make_pair(0x98, instruction("SBC A, B", 4, 0, sbc_A_B)));  
-    instrSet.insert(std::make_pair(0x99, instruction("SBC A, C", 4, 0, sbc_A_C)));
-    instrSet.insert(std::make_pair(0x9A, instruction("SBC A, D", 4, 0, sbc_A_D)));
-    instrSet.insert(std::make_pair(0x9B, instruction("SBC A, E", 4, 0, sbc_A_E)));  
-    instrSet.insert(std::make_pair(0x9C, instruction("SBC A, H", 4, 0, sbc_A_H)));
-    instrSet.insert(std::make_pair(0x9D, instruction("SBC A, L", 4, 0, sbc_A_L)));
-    instrSet.insert(std::make_pair(0x9E, instruction("SBC A, (HL)", 8, 0, sbc_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0x9F, instruction("SBC A, A", 4, 0, sbc_A_A)));  
-    //instrSet.insert(std::make_pair(0xD6, instruction("SBC A, #", 8, 0, sbc_A_n))); ->>>>>>>>>>>>>> forse non esiste
+    instrSet.insert(std::make_pair(0x98, instruction("SBC A, B", 4, sbc_A_B)));  
+    instrSet.insert(std::make_pair(0x99, instruction("SBC A, C", 4, sbc_A_C)));
+    instrSet.insert(std::make_pair(0x9A, instruction("SBC A, D", 4, sbc_A_D)));
+    instrSet.insert(std::make_pair(0x9B, instruction("SBC A, E", 4, sbc_A_E)));  
+    instrSet.insert(std::make_pair(0x9C, instruction("SBC A, H", 4, sbc_A_H)));
+    instrSet.insert(std::make_pair(0x9D, instruction("SBC A, L", 4, sbc_A_L)));
+    instrSet.insert(std::make_pair(0x9E, instruction("SBC A, (HL)", 8, sbc_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0x9F, instruction("SBC A, A", 4, sbc_A_A)));  
+    //instrSet.insert(std::make_pair(0xD6, instruction("SBC A, #", 8, sbc_A_n))); ->>>>>>>>>>>>>> forse non esiste
 
-    instrSet.insert(std::make_pair(0xA0, instruction("AND A, B", 4, 0, and_A_B)));  
-    instrSet.insert(std::make_pair(0xA1, instruction("AND A, C", 4, 0, and_A_C)));
-    instrSet.insert(std::make_pair(0xA2, instruction("AND A, D", 4, 0, and_A_D)));
-    instrSet.insert(std::make_pair(0xA3, instruction("AND A, E", 4, 0, and_A_E)));  
-    instrSet.insert(std::make_pair(0xA4, instruction("AND A, H", 4, 0, and_A_H)));
-    instrSet.insert(std::make_pair(0xA5, instruction("AND A, L", 4, 0, and_A_L)));
-    instrSet.insert(std::make_pair(0xA6, instruction("AND A, (HL)", 8, 0, and_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0xA7, instruction("AND A, A", 4, 0, and_A_A))); 
-    //--------------instrSet.insert(std::make_pair(0xE6, instruction("AND A, #", 8, 0, and_A_n)));
+    instrSet.insert(std::make_pair(0xA0, instruction("AND A, B", 4, and_A_B)));  
+    instrSet.insert(std::make_pair(0xA1, instruction("AND A, C", 4, and_A_C)));
+    instrSet.insert(std::make_pair(0xA2, instruction("AND A, D", 4, and_A_D)));
+    instrSet.insert(std::make_pair(0xA3, instruction("AND A, E", 4, and_A_E)));  
+    instrSet.insert(std::make_pair(0xA4, instruction("AND A, H", 4, and_A_H)));
+    instrSet.insert(std::make_pair(0xA5, instruction("AND A, L", 4, and_A_L)));
+    instrSet.insert(std::make_pair(0xA6, instruction("AND A, (HL)", 8, and_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0xA7, instruction("AND A, A", 4, and_A_A))); 
+    //--------------instrSet.insert(std::make_pair(0xE6, instruction("AND A, #", 8, and_A_n)));
 
-    instrSet.insert(std::make_pair(0xB0, instruction("OR A, B", 4, 0, or_A_B)));  
-    instrSet.insert(std::make_pair(0xB1, instruction("OR A, C", 4, 0, or_A_C)));
-    instrSet.insert(std::make_pair(0xB2, instruction("OR A, D", 4, 0, or_A_D)));
-    instrSet.insert(std::make_pair(0xB3, instruction("OR A, E", 4, 0, or_A_E)));  
-    instrSet.insert(std::make_pair(0xB4, instruction("OR A, H", 4, 0, or_A_H)));
-    instrSet.insert(std::make_pair(0xB5, instruction("OR A, L", 4, 0, or_A_L)));
-    instrSet.insert(std::make_pair(0xB6, instruction("OR A, (HL)", 8, 0, or_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0xB7, instruction("OR A, A", 4, 0, or_A_A))); 
-    //-------------------------instrSet.insert(std::make_pair(0xF6, instruction("OR A, #", 8, 0, or_A_n)));
+    instrSet.insert(std::make_pair(0xB0, instruction("OR A, B", 4, or_A_B)));  
+    instrSet.insert(std::make_pair(0xB1, instruction("OR A, C", 4, or_A_C)));
+    instrSet.insert(std::make_pair(0xB2, instruction("OR A, D", 4, or_A_D)));
+    instrSet.insert(std::make_pair(0xB3, instruction("OR A, E", 4, or_A_E)));  
+    instrSet.insert(std::make_pair(0xB4, instruction("OR A, H", 4, or_A_H)));
+    instrSet.insert(std::make_pair(0xB5, instruction("OR A, L", 4, or_A_L)));
+    instrSet.insert(std::make_pair(0xB6, instruction("OR A, (HL)", 8, or_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0xB7, instruction("OR A, A", 4, or_A_A))); 
+    //-------------------------instrSet.insert(std::make_pair(0xF6, instruction("OR A, #", 8, or_A_n)));
 
-    instrSet.insert(std::make_pair(0xA8, instruction("XOR A, B", 4, 0, xor_A_B)));  
-    instrSet.insert(std::make_pair(0xA9, instruction("XOR A, C", 4, 0, xor_A_C)));
-    instrSet.insert(std::make_pair(0xAA, instruction("XOR A, D", 4, 0, xor_A_D)));
-    instrSet.insert(std::make_pair(0xAB, instruction("XOR A, E", 4, 0, xor_A_E)));  
-    instrSet.insert(std::make_pair(0xAC, instruction("XOR A, H", 4, 0, xor_A_H)));
-    instrSet.insert(std::make_pair(0xAD, instruction("XOR A, L", 4, 0, xor_A_L)));
-    instrSet.insert(std::make_pair(0xAE, instruction("XOR A, (HL)", 8, 0, xor_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0xAF, instruction("XOR A, A", 4, 0, xor_A_A))); 
-    //-------------------instrSet.insert(std::make_pair(0xEE, instruction("XOR A, #", 8, 0, xor_A_n)));
+    instrSet.insert(std::make_pair(0xA8, instruction("XOR A, B", 4, xor_A_B)));  
+    instrSet.insert(std::make_pair(0xA9, instruction("XOR A, C", 4, xor_A_C)));
+    instrSet.insert(std::make_pair(0xAA, instruction("XOR A, D", 4, xor_A_D)));
+    instrSet.insert(std::make_pair(0xAB, instruction("XOR A, E", 4, xor_A_E)));  
+    instrSet.insert(std::make_pair(0xAC, instruction("XOR A, H", 4, xor_A_H)));
+    instrSet.insert(std::make_pair(0xAD, instruction("XOR A, L", 4, xor_A_L)));
+    instrSet.insert(std::make_pair(0xAE, instruction("XOR A, (HL)", 8, xor_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0xAF, instruction("XOR A, A", 4, xor_A_A))); 
+    //-------------------instrSet.insert(std::make_pair(0xEE, instruction("XOR A, #", 8, xor_A_n)));
 
-    instrSet.insert(std::make_pair(0xB8, instruction("CP A, B", 4, 0, cp_A_B)));  
-    instrSet.insert(std::make_pair(0xB9, instruction("CP A, C", 4, 0, cp_A_C)));
-    instrSet.insert(std::make_pair(0xBA, instruction("CP A, D", 4, 0, cp_A_D)));
-    instrSet.insert(std::make_pair(0xBB, instruction("CP A, E", 4, 0, cp_A_E)));  
-    instrSet.insert(std::make_pair(0xBC, instruction("CP A, H", 4, 0, cp_A_H)));
-    instrSet.insert(std::make_pair(0xBD, instruction("CP A, L", 4, 0, cp_A_L)));
-    instrSet.insert(std::make_pair(0xBE, instruction("CP A, (HL)", 8, 0, cp_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0xBF, instruction("CP A, A", 4, 0, cp_A_A))); 
-    //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, 0, cp_A_n)));
+    instrSet.insert(std::make_pair(0xB8, instruction("CP A, B", 4, cp_A_B)));  
+    instrSet.insert(std::make_pair(0xB9, instruction("CP A, C", 4, cp_A_C)));
+    instrSet.insert(std::make_pair(0xBA, instruction("CP A, D", 4, cp_A_D)));
+    instrSet.insert(std::make_pair(0xBB, instruction("CP A, E", 4, cp_A_E)));  
+    instrSet.insert(std::make_pair(0xBC, instruction("CP A, H", 4, cp_A_H)));
+    instrSet.insert(std::make_pair(0xBD, instruction("CP A, L", 4, cp_A_L)));
+    instrSet.insert(std::make_pair(0xBE, instruction("CP A, (HL)", 8, cp_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0xBF, instruction("CP A, A", 4, cp_A_A))); 
+    //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, cp_A_n)));
 
-    instrSet.insert(std::make_pair(0x04, instruction("INC B", 4, 0, inc_B)));  
-    instrSet.insert(std::make_pair(0x0C, instruction("INC C", 4, 0, inc_C)));
-    instrSet.insert(std::make_pair(0x14, instruction("INC D", 4, 0, inc_D)));
-    instrSet.insert(std::make_pair(0x1C, instruction("INC E", 4, 0, inc_E)));  
-    instrSet.insert(std::make_pair(0x24, instruction("INC H", 4, 0, inc_H)));
-    instrSet.insert(std::make_pair(0x2C, instruction("INC L", 4, 0, inc_L)));
-    instrSet.insert(std::make_pair(0x34, instruction("INC (HL)", 12, 0, inc_HL_ind)));  
-    instrSet.insert(std::make_pair(0x3C, instruction("INC A", 4, 0, inc_A)));
+    instrSet.insert(std::make_pair(0x04, instruction("INC B", 4, inc_B)));  
+    instrSet.insert(std::make_pair(0x0C, instruction("INC C", 4, inc_C)));
+    instrSet.insert(std::make_pair(0x14, instruction("INC D", 4, inc_D)));
+    instrSet.insert(std::make_pair(0x1C, instruction("INC E", 4, inc_E)));  
+    instrSet.insert(std::make_pair(0x24, instruction("INC H", 4, inc_H)));
+    instrSet.insert(std::make_pair(0x2C, instruction("INC L", 4, inc_L)));
+    instrSet.insert(std::make_pair(0x34, instruction("INC (HL)", 12, inc_HL_ind)));  
+    instrSet.insert(std::make_pair(0x3C, instruction("INC A", 4, inc_A)));
 
-    instrSet.insert(std::make_pair(0x05, instruction("DEC B", 4, 0, dec_B)));  
-    instrSet.insert(std::make_pair(0x0D, instruction("DEC C", 4, 0, dec_C)));
-    instrSet.insert(std::make_pair(0x15, instruction("DEC D", 4, 0, dec_D)));
-    instrSet.insert(std::make_pair(0x1D, instruction("DEC E", 4, 0, dec_E)));  
-    instrSet.insert(std::make_pair(0x25, instruction("DEC H", 4, 0, dec_H)));
-    instrSet.insert(std::make_pair(0x2D, instruction("DEC L", 4, 0, dec_L)));
-    instrSet.insert(std::make_pair(0x35, instruction("DEC (HL)", 12, 0, dec_HL_ind)));  
-    instrSet.insert(std::make_pair(0x3D, instruction("DEC A", 4, 0, dec_A)));
+    instrSet.insert(std::make_pair(0x05, instruction("DEC B", 4, dec_B)));  
+    instrSet.insert(std::make_pair(0x0D, instruction("DEC C", 4, dec_C)));
+    instrSet.insert(std::make_pair(0x15, instruction("DEC D", 4, dec_D)));
+    instrSet.insert(std::make_pair(0x1D, instruction("DEC E", 4, dec_E)));  
+    instrSet.insert(std::make_pair(0x25, instruction("DEC H", 4, dec_H)));
+    instrSet.insert(std::make_pair(0x2D, instruction("DEC L", 4, dec_L)));
+    instrSet.insert(std::make_pair(0x35, instruction("DEC (HL)", 12, dec_HL_ind)));  
+    instrSet.insert(std::make_pair(0x3D, instruction("DEC A", 4, dec_A)));
 
-    instrSet.insert(std::make_pair(0x09, instruction("ADD HL, BC", 8, 0, add_HL_BC)));  
-    instrSet.insert(std::make_pair(0x19, instruction("ADD HL, DE", 8, 0, add_HL_DE)));
-    instrSet.insert(std::make_pair(0x29, instruction("ADD HL, HL", 8, 0, add_HL_HL)));
-    instrSet.insert(std::make_pair(0x39, instruction("ADD HL, SP", 8, 0, add_HL_SP)));  
+    instrSet.insert(std::make_pair(0x09, instruction("ADD HL, BC", 8, add_HL_BC)));  
+    instrSet.insert(std::make_pair(0x19, instruction("ADD HL, DE", 8, add_HL_DE)));
+    instrSet.insert(std::make_pair(0x29, instruction("ADD HL, HL", 8, add_HL_HL)));
+    instrSet.insert(std::make_pair(0x39, instruction("ADD HL, SP", 8, add_HL_SP)));  
 
-    //---------------------instrSet.insert(std::make_pair(0xE8, instruction("ADD SP, N", 16, 0, add_SP_n)));  
+    //---------------------instrSet.insert(std::make_pair(0xE8, instruction("ADD SP, N", 16, add_SP_n)));  
 
-    instrSet.insert(std::make_pair(0x03, instruction("INC BC", 8, 0, inc_BC)));  
-    instrSet.insert(std::make_pair(0x13, instruction("INC DE", 8, 0, inc_DE)));
-    instrSet.insert(std::make_pair(0x23, instruction("INC HL", 8, 0, inc_HL)));
-    instrSet.insert(std::make_pair(0x33, instruction("INC SP", 8, 0, inc_SP)));  
+    instrSet.insert(std::make_pair(0x03, instruction("INC BC", 8, inc_BC)));  
+    instrSet.insert(std::make_pair(0x13, instruction("INC DE", 8, inc_DE)));
+    instrSet.insert(std::make_pair(0x23, instruction("INC HL", 8, inc_HL)));
+    instrSet.insert(std::make_pair(0x33, instruction("INC SP", 8, inc_SP)));  
  
-    instrSet.insert(std::make_pair(0x0B, instruction("DEC BC", 4, 0, dec_BC)));
-    instrSet.insert(std::make_pair(0x1B, instruction("DEC DE", 4, 0, dec_DE)));
-    instrSet.insert(std::make_pair(0x2B, instruction("DEC HL", 12, 0, dec_HL)));  
-    instrSet.insert(std::make_pair(0x3B, instruction("DEC SP", 4, 0, dec_SP)));
+    instrSet.insert(std::make_pair(0x0B, instruction("DEC BC", 4, dec_BC)));
+    instrSet.insert(std::make_pair(0x1B, instruction("DEC DE", 4, dec_DE)));
+    instrSet.insert(std::make_pair(0x2B, instruction("DEC HL", 12, dec_HL)));  
+    instrSet.insert(std::make_pair(0x3B, instruction("DEC SP", 4, dec_SP)));
 
-    /* instrSet.insert(std::make_pair(0x06, instruction("LOAD B, n", 8, 0, load_B_n)));
-    instrSet.insert(std::make_pair(0x0E, instruction("LOAD C, n", 8, 0, load_C_n)));
-    instrSet.insert(std::make_pair(0x16, instruction("LOAD D, n", 8, 0, load_D_n)));  
-    instrSet.insert(std::make_pair(0x1E, instruction("LOAD E, n", 8, 0, load_E_n)));
-    instrSet.insert(std::make_pair(0x26, instruction("LOAD H, n", 8, 0, load_H_n)));
-    instrSet.insert(std::make_pair(0x2E, instruction("LOAD L, n", 8, 0, load_L_n)));   */
+    /* instrSet.insert(std::make_pair(0x06, instruction("LOAD B, n", 8, load_B_n)));
+    instrSet.insert(std::make_pair(0x0E, instruction("LOAD C, n", 8, load_C_n)));
+    instrSet.insert(std::make_pair(0x16, instruction("LOAD D, n", 8, load_D_n)));  
+    instrSet.insert(std::make_pair(0x1E, instruction("LOAD E, n", 8, load_E_n)));
+    instrSet.insert(std::make_pair(0x26, instruction("LOAD H, n", 8, load_H_n)));
+    instrSet.insert(std::make_pair(0x2E, instruction("LOAD L, n", 8, load_L_n)));   */
 
 
 
@@ -763,24 +747,15 @@ static void load_BC_ind_A(Cpu* c) {load_nn_ind_n(c, c->getBC());}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 BYTE swap_n(Cpu* c, unsigned char n) {
     c->resetFlag(flagN);
     c->resetFlag(flagH);
     c->resetFlag(flagC);
 
-    BYTE high = n & 0xFFFF0000;
-    BYTE low = n & 0x0000FFFF;
+    BYTE high = n & 0xF0;
+    high >>= 4;
+    BYTE low = n & 0x0F;
+    low <<= 4;
     if((high + low) == 0)
         c->setFlag(flagZ);
     else
@@ -795,7 +770,7 @@ static void swap_D(Cpu* c) {c->setA(swap_n(c, c->getD()));}
 static void swap_E(Cpu* c) {c->setA(swap_n(c, c->getE()));}
 static void swap_H(Cpu* c) {c->setA(swap_n(c, c->getH()));}
 static void swap_L(Cpu* c) {c->setA(swap_n(c, c->getL()));}
-static void swap_HL(Cpu* c) {
+static void swap_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
     c->setHL(swap_n(c, c->getHL()));    
@@ -1167,49 +1142,236 @@ static void bit_HL_ind_7(Cpu* c) {
     bit_b_r(c, c->readByte(addr), 7);
 }
 
-static BYTE set_b_r(Cpu* c, unsigned char r) {
+static BYTE set_b_r(Cpu* c, unsigned char r, unsigned char b) {
 
-    BYTE b = c->readByte(c->getPC());
+    //BYTE b = c->readByte(c->getPC());
     c->incPC();
 
     BYTE temp = (1 << b);
 
     return (r |= b);
 }
-static void set_A(Cpu* c) {c->setA(set_b_r(c, c->getA()));}
-static void set_B(Cpu* c) {c->setB(set_b_r(c, c->getB()));}
-static void set_C(Cpu* c) {c->setC(set_b_r(c, c->getC()));}
-static void set_D(Cpu* c) {c->setD(set_b_r(c, c->getD()));}
-static void set_E(Cpu* c) {c->setE(set_b_r(c, c->getE()));}
-static void set_H(Cpu* c) {c->setH(set_b_r(c, c->getH()));}
-static void set_L(Cpu* c) {c->setL(set_b_r(c, c->getL()));}
-static void set_HL_ind(Cpu* c) {
+static void set_A_0(Cpu* c) {c->setA(set_b_r(c, c->getA(), 0));}
+static void set_A_1(Cpu* c) {c->setA(set_b_r(c, c->getA(), 1));}
+static void set_A_2(Cpu* c) {c->setA(set_b_r(c, c->getA(), 2));}
+static void set_A_3(Cpu* c) {c->setA(set_b_r(c, c->getA(), 3));}
+static void set_A_4(Cpu* c) {c->setA(set_b_r(c, c->getA(), 4));}
+static void set_A_5(Cpu* c) {c->setA(set_b_r(c, c->getA(), 5));}
+static void set_A_6(Cpu* c) {c->setA(set_b_r(c, c->getA(), 6));}
+static void set_A_7(Cpu* c) {c->setA(set_b_r(c, c->getA(), 7));}
+
+
+static void set_B_0(Cpu* c) {c->setB(set_b_r(c, c->getB(), 0));}
+static void set_B_1(Cpu* c) {c->setB(set_b_r(c, c->getB(), 1));}
+static void set_B_2(Cpu* c) {c->setB(set_b_r(c, c->getB(), 2));}
+static void set_B_3(Cpu* c) {c->setB(set_b_r(c, c->getB(), 3));}
+static void set_B_4(Cpu* c) {c->setB(set_b_r(c, c->getB(), 4));}
+static void set_B_5(Cpu* c) {c->setB(set_b_r(c, c->getB(), 5));}
+static void set_B_6(Cpu* c) {c->setB(set_b_r(c, c->getB(), 6));}
+static void set_B_7(Cpu* c) {c->setB(set_b_r(c, c->getB(), 7));}
+
+static void set_C_0(Cpu* c) {c->setC(set_b_r(c, c->getC(), 0));}
+static void set_C_1(Cpu* c) {c->setC(set_b_r(c, c->getC(), 1));}
+static void set_C_2(Cpu* c) {c->setC(set_b_r(c, c->getC(), 2));}
+static void set_C_3(Cpu* c) {c->setC(set_b_r(c, c->getC(), 3));}
+static void set_C_4(Cpu* c) {c->setC(set_b_r(c, c->getC(), 4));}
+static void set_C_5(Cpu* c) {c->setC(set_b_r(c, c->getC(), 5));}
+static void set_C_6(Cpu* c) {c->setC(set_b_r(c, c->getC(), 6));}
+static void set_C_7(Cpu* c) {c->setC(set_b_r(c, c->getC(), 7));}
+
+static void set_D_0(Cpu* c) {c->setD(set_b_r(c, c->getD(), 0));}
+static void set_D_1(Cpu* c) {c->setD(set_b_r(c, c->getD(), 1));}
+static void set_D_2(Cpu* c) {c->setD(set_b_r(c, c->getD(), 2));}
+static void set_D_3(Cpu* c) {c->setD(set_b_r(c, c->getD(), 3));}
+static void set_D_4(Cpu* c) {c->setD(set_b_r(c, c->getD(), 4));}
+static void set_D_5(Cpu* c) {c->setD(set_b_r(c, c->getD(), 5));}
+static void set_D_6(Cpu* c) {c->setD(set_b_r(c, c->getD(), 6));}
+static void set_D_7(Cpu* c) {c->setD(set_b_r(c, c->getD(), 7));}
+
+
+static void set_E_0(Cpu* c) {c->setE(set_b_r(c, c->getE(), 0));}
+static void set_E_1(Cpu* c) {c->setE(set_b_r(c, c->getE(), 1));}
+static void set_E_2(Cpu* c) {c->setE(set_b_r(c, c->getE(), 2));}
+static void set_E_3(Cpu* c) {c->setE(set_b_r(c, c->getE(), 3));}
+static void set_E_4(Cpu* c) {c->setE(set_b_r(c, c->getE(), 4));}
+static void set_E_5(Cpu* c) {c->setE(set_b_r(c, c->getE(), 5));}
+static void set_E_6(Cpu* c) {c->setE(set_b_r(c, c->getE(), 6));}
+static void set_E_7(Cpu* c) {c->setE(set_b_r(c, c->getE(), 7));}
+
+
+static void set_H_0(Cpu* c) {c->setH(set_b_r(c, c->getH(), 0));}
+static void set_H_1(Cpu* c) {c->setH(set_b_r(c, c->getH(), 1));}
+static void set_H_2(Cpu* c) {c->setH(set_b_r(c, c->getH(), 2));}
+static void set_H_3(Cpu* c) {c->setH(set_b_r(c, c->getH(), 3));}
+static void set_H_4(Cpu* c) {c->setH(set_b_r(c, c->getH(), 4));}
+static void set_H_5(Cpu* c) {c->setH(set_b_r(c, c->getH(), 5));}
+static void set_H_6(Cpu* c) {c->setH(set_b_r(c, c->getH(), 6));}
+static void set_H_7(Cpu* c) {c->setH(set_b_r(c, c->getH(), 7));}
+
+static void set_L_0(Cpu* c) {c->setL(set_b_r(c, c->getL(), 0));}
+static void set_L_1(Cpu* c) {c->setL(set_b_r(c, c->getL(), 1));}
+static void set_L_2(Cpu* c) {c->setL(set_b_r(c, c->getL(), 2));}
+static void set_L_3(Cpu* c) {c->setL(set_b_r(c, c->getL(), 3));}
+static void set_L_4(Cpu* c) {c->setL(set_b_r(c, c->getL(), 4));}
+static void set_L_5(Cpu* c) {c->setL(set_b_r(c, c->getL(), 5));}
+static void set_L_6(Cpu* c) {c->setL(set_b_r(c, c->getL(), 6));}
+static void set_L_7(Cpu* c) {c->setL(set_b_r(c, c->getL(), 7));}
+
+static void set_HL_ind_0(Cpu* c) {
     BYTE addr = c->getHL();
-    BYTE res = set_b_r(c, c->readByte(addr));
+    BYTE res = set_b_r(c, c->readByte(addr), 0);
+    c->writeByte(addr, res);
+}
+static void set_HL_ind_1(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = set_b_r(c, c->readByte(addr), 1);
+    c->writeByte(addr, res);
+}
+static void set_HL_ind_2(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = set_b_r(c, c->readByte(addr), 2);
+    c->writeByte(addr, res);
+}
+static void set_HL_ind_3(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = set_b_r(c, c->readByte(addr), 3);
+    c->writeByte(addr, res);
+}
+static void set_HL_ind_4(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = set_b_r(c, c->readByte(addr), 4);
+    c->writeByte(addr, res);
+}
+static void set_HL_ind_5(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = set_b_r(c, c->readByte(addr), 5);
+    c->writeByte(addr, res);
+}
+static void set_HL_ind_6(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = set_b_r(c, c->readByte(addr), 6);
+    c->writeByte(addr, res);
+}
+static void set_HL_ind_7(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = set_b_r(c, c->readByte(addr), 7);
     c->writeByte(addr, res);
 }
 
-static BYTE res_b_r(Cpu* c, unsigned char r) {
 
-    BYTE b = c->readByte(c->getPC());
+static BYTE res_b_r(Cpu* c, unsigned char r, unsigned char b) {
+
+    //BYTE b = c->readByte(c->getPC());
     c->incPC();
     
     BYTE temp = (1 << b);
 
     return (r &= !b);
 }
-static void res_A(Cpu* c) {c->setA(res_b_r(c, c->getA()));}
-static void res_B(Cpu* c) {c->setB(res_b_r(c, c->getB()));}
-static void res_C(Cpu* c) {c->setC(res_b_r(c, c->getC()));}
-static void res_D(Cpu* c) {c->setD(res_b_r(c, c->getD()));}
-static void res_E(Cpu* c) {c->setE(res_b_r(c, c->getE()));}
-static void res_H(Cpu* c) {c->setH(res_b_r(c, c->getH()));}
-static void res_L(Cpu* c) {c->setL(res_b_r(c, c->getL()));}
-static void res_HL_ind(Cpu* c) {
+static void res_A_0(Cpu* c) {c->setA(res_b_r(c, c->getA(), 0));}
+static void res_A_1(Cpu* c) {c->setA(res_b_r(c, c->getA(), 1));}
+static void res_A_2(Cpu* c) {c->setA(res_b_r(c, c->getA(), 2));}
+static void res_A_3(Cpu* c) {c->setA(res_b_r(c, c->getA(), 3));}
+static void res_A_4(Cpu* c) {c->setA(res_b_r(c, c->getA(), 4));}
+static void res_A_5(Cpu* c) {c->setA(res_b_r(c, c->getA(), 5));}
+static void res_A_6(Cpu* c) {c->setA(res_b_r(c, c->getA(), 6));}
+static void res_A_7(Cpu* c) {c->setA(res_b_r(c, c->getA(), 7));}
+
+static void res_B_0(Cpu* c) {c->setB(res_b_r(c, c->getB(), 0));}
+static void res_B_1(Cpu* c) {c->setB(res_b_r(c, c->getB(), 1));}
+static void res_B_2(Cpu* c) {c->setB(res_b_r(c, c->getB(), 2));}
+static void res_B_3(Cpu* c) {c->setB(res_b_r(c, c->getB(), 3));}
+static void res_B_4(Cpu* c) {c->setB(res_b_r(c, c->getB(), 4));}
+static void res_B_5(Cpu* c) {c->setB(res_b_r(c, c->getB(), 5));}
+static void res_B_6(Cpu* c) {c->setB(res_b_r(c, c->getB(), 6));}
+static void res_B_7(Cpu* c) {c->setB(res_b_r(c, c->getB(), 7));}
+
+static void res_C_0(Cpu* c) {c->setC(res_b_r(c, c->getC(), 0));}
+static void res_C_1(Cpu* c) {c->setC(res_b_r(c, c->getC(), 1));}
+static void res_C_2(Cpu* c) {c->setC(res_b_r(c, c->getC(), 2));}
+static void res_C_3(Cpu* c) {c->setC(res_b_r(c, c->getC(), 3));}
+static void res_C_4(Cpu* c) {c->setC(res_b_r(c, c->getC(), 4));}
+static void res_C_5(Cpu* c) {c->setC(res_b_r(c, c->getC(), 5));}
+static void res_C_6(Cpu* c) {c->setC(res_b_r(c, c->getC(), 6));}
+static void res_C_7(Cpu* c) {c->setC(res_b_r(c, c->getC(), 7));}
+
+static void res_D_0(Cpu* c) {c->setD(res_b_r(c, c->getD(), 0));}
+static void res_D_1(Cpu* c) {c->setD(res_b_r(c, c->getD(), 1));}
+static void res_D_2(Cpu* c) {c->setD(res_b_r(c, c->getD(), 2));}
+static void res_D_3(Cpu* c) {c->setD(res_b_r(c, c->getD(), 3));}
+static void res_D_4(Cpu* c) {c->setD(res_b_r(c, c->getD(), 4));}
+static void res_D_5(Cpu* c) {c->setD(res_b_r(c, c->getD(), 5));}
+static void res_D_6(Cpu* c) {c->setD(res_b_r(c, c->getD(), 6));}
+static void res_D_7(Cpu* c) {c->setD(res_b_r(c, c->getD(), 7));}
+
+static void res_E_0(Cpu* c) {c->setE(res_b_r(c, c->getE(), 0));}
+static void res_E_1(Cpu* c) {c->setE(res_b_r(c, c->getE(), 1));}
+static void res_E_2(Cpu* c) {c->setE(res_b_r(c, c->getE(), 2));}
+static void res_E_3(Cpu* c) {c->setE(res_b_r(c, c->getE(), 3));}
+static void res_E_4(Cpu* c) {c->setE(res_b_r(c, c->getE(), 4));}
+static void res_E_5(Cpu* c) {c->setE(res_b_r(c, c->getE(), 5));}
+static void res_E_6(Cpu* c) {c->setE(res_b_r(c, c->getE(), 6));}
+static void res_E_7(Cpu* c) {c->setE(res_b_r(c, c->getE(), 7));}
+
+static void res_H_0(Cpu* c) {c->setH(res_b_r(c, c->getH(), 0));}
+static void res_H_1(Cpu* c) {c->setH(res_b_r(c, c->getH(), 1));}
+static void res_H_2(Cpu* c) {c->setH(res_b_r(c, c->getH(), 2));}
+static void res_H_3(Cpu* c) {c->setH(res_b_r(c, c->getH(), 3));}
+static void res_H_4(Cpu* c) {c->setH(res_b_r(c, c->getH(), 4));}
+static void res_H_5(Cpu* c) {c->setH(res_b_r(c, c->getH(), 5));}
+static void res_H_6(Cpu* c) {c->setH(res_b_r(c, c->getH(), 6));}
+static void res_H_7(Cpu* c) {c->setH(res_b_r(c, c->getH(), 7));}
+
+static void res_L_0(Cpu* c) {c->setL(res_b_r(c, c->getL(), 0));}
+static void res_L_1(Cpu* c) {c->setL(res_b_r(c, c->getL(), 1));}
+static void res_L_2(Cpu* c) {c->setL(res_b_r(c, c->getL(), 2));}
+static void res_L_3(Cpu* c) {c->setL(res_b_r(c, c->getL(), 3));}
+static void res_L_4(Cpu* c) {c->setL(res_b_r(c, c->getL(), 4));}
+static void res_L_5(Cpu* c) {c->setL(res_b_r(c, c->getL(), 5));}
+static void res_L_6(Cpu* c) {c->setL(res_b_r(c, c->getL(), 6));}
+static void res_L_7(Cpu* c) {c->setL(res_b_r(c, c->getL(), 7));}
+
+static void res_HL_ind_0(Cpu* c) {
     BYTE addr = c->getHL();
-    BYTE res = res_b_r(c, c->readByte(addr));
+    BYTE res = res_b_r(c, c->readByte(addr), 0);
     c->writeByte(addr, res);
 }
+static void res_HL_ind_1(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = res_b_r(c, c->readByte(addr), 1);
+    c->writeByte(addr, res);
+}
+static void res_HL_ind_2(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = res_b_r(c, c->readByte(addr), 2);
+    c->writeByte(addr, res);
+}
+static void res_HL_ind_3(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = res_b_r(c, c->readByte(addr), 3);
+    c->writeByte(addr, res);
+}
+static void res_HL_ind_4(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = res_b_r(c, c->readByte(addr), 4);
+    c->writeByte(addr, res);
+}
+static void res_HL_ind_5(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = res_b_r(c, c->readByte(addr), 5);
+    c->writeByte(addr, res);
+}
+static void res_HL_ind_6(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = res_b_r(c, c->readByte(addr), 6);
+    c->writeByte(addr, res);
+}
+static void res_HL_ind_7(Cpu* c) {
+    BYTE addr = c->getHL();
+    BYTE res = res_b_r(c, c->readByte(addr), 7);
+    c->writeByte(addr, res);
+}
+
 
 static void jp(Cpu* c) {
    
@@ -1257,8 +1419,8 @@ static void jr_c(Cpu* c) {
         jr(c);
 }
 static void call(Cpu* c) {
-    WORD oldPc = c->readWord(c->getPC());
-    c->pushWord(oldPc + 2);
+    WORD oldPC = c->readWord(c->getPC());
+    c->pushWord(oldPC + 2);
 
     jp(c);
 }
@@ -1321,7 +1483,11 @@ static void cb(Cpu* c) {
     WORD oldPC = c->getPC();
     c->incPC();
 
+<<<<<<< HEAD
     c->instrSetCBPrefix.at(oldPC).function();
+=======
+    c->getInstrSetCBPrefixAt(oldPC).function(c);
+>>>>>>> d01468de52802fa1105cde46f202a22d2dc4a121
 }
 
 

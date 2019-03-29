@@ -1,7 +1,7 @@
 
 #include "../includes/memory.hpp"
 #include <iostream>
-#include "../includes/cpu.hpp"
+//#include "../includes/cpu.hpp"
 
 /*
     unsigned char rom[32*KB];     // 0000-7FFF space where the rom is stored 
@@ -113,11 +113,11 @@ void Memory::writeWord(const WORD t_add, const WORD t_value){
     writeByte(t_add + 1, (t_value >> 8) & 0xFF);  // Second byte
 }
 
-void Memory::writeInStack(Cpu* t_cpu, WORD t_value){
+/* void Memory::writeInStack(Cpu* t_cpu, WORD t_value){
     // WORD sp = t_cpu;
     writeWord(t_cpu->getSP(), t_value);
-    t_cpu->dec_SP();
-}
+    t_cpu->decSP();
+} */
 
 void Memory::RequestInterrupt(const BYTE t_interrupt){
     BYTE irr = readByte(IRR_ADD);          // Read Interrupt Request Reister from memory at 0x0FF0F

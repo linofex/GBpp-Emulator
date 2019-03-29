@@ -71,7 +71,7 @@ static void sbc_A_H(Cpu*);
 static void sbc_A_L(Cpu*);
 static void sbc_A_A(Cpu*);
 static void sbc_A_HL_ind(Cpu*);
-//static void sbc_A_n(Cpu*, unsigned char); -> maybe does not exist
+static void sbc_A_n(Cpu*);
 //------------------- AND -------------------
 static void and_(Cpu*, unsigned char);
 static void and_A_B(Cpu*);
@@ -166,14 +166,16 @@ static void dec_BC(Cpu*);
 //________________________________ 8-bit Load _____________________________
 
 //------------------- LOAD nn, n -------------------
-static void load_B_n(Cpu*, unsigned char);
-static void load_C_n(Cpu*, unsigned char);
-static void load_D_n(Cpu*, unsigned char);
-static void load_E_n(Cpu*, unsigned char);
-static void load_H_n(Cpu*, unsigned char);
-static void load_L_n(Cpu*, unsigned char);
+static BYTE load_nn_n(Cpu*);
+static void load_A_n(Cpu*);
+static void load_B_n(Cpu*);
+static void load_C_n(Cpu*);
+static void load_D_n(Cpu*);
+static void load_E_n(Cpu*);
+static void load_H_n(Cpu*);
+static void load_L_n(Cpu*);
 
-//------------------- LOAD nn, n -------------------
+//------------------- LOAD r1, r2 -------------------
 static void load_A_A(Cpu*);
 static void load_A_B(Cpu*);
 static void load_A_C(Cpu*);
@@ -181,15 +183,16 @@ static void load_A_D(Cpu*);
 static void load_A_E(Cpu*);
 static void load_A_H(Cpu*);
 static void load_A_L(Cpu*);
-static void load_A_HL(Cpu*);
+static void load_A_HL_ind(Cpu*);
 
+static void load_B_A(Cpu*);
 static void load_B_B(Cpu*);
 static void load_B_C(Cpu*);
 static void load_B_D(Cpu*);
 static void load_B_E(Cpu*);
 static void load_B_H(Cpu*);
 static void load_B_L(Cpu*);
-static void load_B_HL(Cpu*);
+static void load_B_HL_ind(Cpu*);
 
 static void load_C_A(Cpu*);
 static void load_C_B(Cpu*);
@@ -198,15 +201,16 @@ static void load_C_D(Cpu*);
 static void load_C_E(Cpu*);
 static void load_C_H(Cpu*);
 static void load_C_L(Cpu*);
-static void load_C_HL(Cpu*);
+static void load_C_HL_ind(Cpu*);
 
+static void load_D_A(Cpu*);
 static void load_D_B(Cpu*);
 static void load_D_C(Cpu*);
 static void load_D_D(Cpu*);
 static void load_D_E(Cpu*);
 static void load_D_H(Cpu*);
 static void load_D_L(Cpu*);
-static void load_D_HL(Cpu*);
+static void load_D_HL_ind(Cpu*);
 
 static void load_E_A(Cpu*);
 static void load_E_B(Cpu*);
@@ -215,42 +219,106 @@ static void load_E_D(Cpu*);
 static void load_E_E(Cpu*);
 static void load_E_H(Cpu*);
 static void load_E_L(Cpu*);
-static void load_E_HL(Cpu*);
+static void load_E_HL_ind(Cpu*);
 
+static void load_H_A(Cpu*);
 static void load_H_B(Cpu*);
 static void load_H_C(Cpu*);
 static void load_H_D(Cpu*);
 static void load_H_E(Cpu*);
 static void load_H_H(Cpu*);
 static void load_H_L(Cpu*);
-static void load_H_HL(Cpu*);
+static void load_H_HL_ind(Cpu*);
 
+static void load_L_A(Cpu*);
 static void load_L_B(Cpu*);
 static void load_L_C(Cpu*);
 static void load_L_D(Cpu*);
 static void load_L_E(Cpu*);
 static void load_L_H(Cpu*);
 static void load_L_L(Cpu*);
-static void load_L_HL(Cpu*);
+static void load_L_HL_ind(Cpu*);
 
-static void load_HL_ind_x(Cpu* c, unsigned char);
+static void load_HL_ind_x(Cpu*, unsigned char);
+static void load_HL_ind_A(Cpu*);
 static void load_HL_ind_B(Cpu*);
 static void load_HL_ind_C(Cpu*);
 static void load_HL_ind_D(Cpu*);
 static void load_HL_ind_E(Cpu*);
 static void load_HL_ind_H(Cpu*);
 static void load_HL_ind_L(Cpu*);
-static void load_HL_ind_n(Cpu*, unsigned char);
+static void load_HL_ind_n(Cpu*);
 
-static void load_A_x_ind(Cpu* c, unsigned short);
+//------------------- LOAD A, (nn) -------------------
+static void load_A_x_ind(Cpu*, unsigned short);
 static void load_A_BC_ind(Cpu*);
 static void load_A_DE_ind(Cpu*);
-static void load_A_HL_ind(Cpu*);
-static void load_A_NN_ind(Cpu*, unsigned short);
-static void load_A_n(Cpu*, unsigned char);
+//static void load_A_HL_ind(Cpu*);
+static void load_A_NN_ind(Cpu*);
 
 
+//------------------- LOAD n, A -------------------
+static void load_xx_ind_A(Cpu*, unsigned char);
+static void load_BC_ind_A(Cpu*);
+static void load_DE_ind_A(Cpu*);
+//static void load_HL_ind_A(Cpu*);
+static void load_nn_ind_A(Cpu*);
 
+//------------------- LOAD A, (C) -------------------
+static void load_A_C_ind(Cpu*);
+//------------------- LOAD (C), A -------------------
+static void load_A_C_ind(Cpu*);
+
+/* //------------------- LOAD A, (HLD) -------------------
+static void load_A_HLD_ind(Cpu*);
+//------------------- LOAD A, (HL-) -------------------
+static void load_A_HL__ind(Cpu*); */
+//------------------- LOADD A, (HL) -------------------
+static void loadd_A_HL_ind(Cpu*);
+
+/* //------------------- LOAD (HLD), A -------------------
+static void load_HLD_ind_A(Cpu*);
+//------------------- LOAD A(HL-), A -------------------
+static void loadHL__ind_A(Cpu*); */
+//------------------- LOADD (HL), A -------------------
+static void loadd_HL_ind_A(Cpu*);
+
+//------------------- LOADI A, (HL) -------------------
+static void loadi_A_HL_ind(Cpu*);
+//------------------- LOADI (HL), A -------------------
+static void loadi_HL_ind_A(Cpu*);
+
+//------------------- LOADH (n), A -------------------
+static void loadh_n_ind_A(Cpu*);
+//------------------- LOADH A, (n) -------------------
+static void loadh_A_n_ind(Cpu*);
+
+//________________________________ 16-bit Load _____________________________
+
+//------------------- LOAD n, nn -------------------
+static BYTE load_n_nn(Cpu*);
+static void load_BC_nn(Cpu*);
+static void load_DE_nn(Cpu*);
+static void load_HL_nn(Cpu*);
+static void load_SP_nn(Cpu*);
+//------------------- LOAD SP, HL -------------------
+static void load_SP_HL(Cpu*);
+//------------------- LOADHL SP, n -------------------
+static void loadhl_SP_n(Cpu*);
+//------------------- LOAD nn, SP -------------------
+static void load_nn_SP(Cpu*);
+//------------------- PUSH nn -------------------
+static void push_nn(Cpu*, unsigned short);
+static void push_AF(Cpu*);
+static void push_BC(Cpu*);
+static void push_DE(Cpu*);
+static void push_HL(Cpu*);
+//------------------- POP nn -------------------
+static WORD pop_nn(Cpu*);
+static void pop_AF(Cpu*);
+static void pop_BC(Cpu*);
+static void pop_DE(Cpu*);
+static void pop_HL(Cpu*);
 
 //________________________________ CB Extended Instr _____________________________
 
@@ -271,7 +339,7 @@ static void swap_E(Cpu*);
 static void swap_H(Cpu*);
 static void swap_L(Cpu*);
 static void swap_HL_ind(Cpu*);
-//------------------- SWAP n -------------------
+//------------------- DAA -------------------
 static void daa(Cpu*);
 //------------------- CPL n -------------------
 static void cpl(Cpu*);
@@ -280,11 +348,11 @@ static void ccf(Cpu*);
 //------------------- SCF -------------------
 static void scf(Cpu*);
 //------------------- NOP -------------------
-static void nop(void);
+static void nop(Cpu*);
 //------------------- HALT -------------------
-static void halt(void);
+static void halt(Cpu*);
 //------------------- STOP -------------------
-static void stop(void);
+static void stop(Cpu*);
 //------------------- DI -------------------
 static void di(Cpu*);
 //------------------- EI -------------------

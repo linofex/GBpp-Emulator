@@ -9,11 +9,11 @@ class Memory;
 //namespace GBemulator{
     class InterruptHnadler{
         private:
-            bool intMasterEnable; // An interrupt can only be served IFF this is TRUE
+            //bool intMasterEnable; // An interrupt can only be served IFF this is TRUE
         public:
-            InterruptHnadler():intMasterEnable(true){}
-            void ServeInterrupt(const BYTE t_interrupt, Memory& t_memory, Cpu* t_cpu);
-            void DoInterrupt(Memory& t_memory, Cpu* t_cpu);
+            //InterruptHnadler(){}
+            static void ServeInterrupt(const BYTE t_interrupt, Memory& t_memory, Cpu* t_cpu);
+            static void DoInterrupt(Memory& t_memory, Cpu* t_cpu);
     };
 //}
 

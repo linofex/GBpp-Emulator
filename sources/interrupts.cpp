@@ -4,12 +4,14 @@
 
 
 void InterruptHnadler::ServeInterrupt(const BYTE t_interrupt, Memory& t_memory, Cpu* t_cpu){
-    intMasterEnable = false;                    // RETI and EI instructions enable it again
+    t_cpu->resetIntMasterEnable();                    // RETI and EI instructions enable it again
     BYTE irr = t_memory.readByte(IRR_ADD);          // Read Interrupt Request Reister from memory at 0x0FF0F
     t_memory.writeByte(IRR_ADD, irr ^ t_interrupt); // Reset the Interrupet flag to 0, since is served
 
     // Save PC in the stack
-    t_memory.writeInStack(t_cpu, t_cpu->getPC());
+    t_cpu->pushWord(t_cpu->getPC());
+    
+    //t_memory.writeInStack(t_cpu, t_cpu->getPC());
     // Point the PC to the interrupt routine
     switch (t_interrupt){
         case VBLANK:
@@ -27,7 +29,11 @@ void InterruptHnadler::ServeInterrupt(const BYTE t_interrupt, Memory& t_memory, 
 }
 
 void InterruptHnadler::DoInterrupt(Memory& t_memory, Cpu* t_cpu){
-    if (intMasterEnable){
+
+    if (t_cpu->isIntMasterEnable()){
+        if(t_cpu->getInstrSetAt(t_cpu->getPC()).name == "HALT")
+            t_cpu->incPC();
+
         BYTE ier = t_memory.readByte(IER_ADD); //Read Interrupt Enable Reister from memory at 0x0FF0F
         BYTE irr = t_memory.readByte(IRR_ADD); //Read Interrupt Request Reister from memory at 0x0FF0F
         

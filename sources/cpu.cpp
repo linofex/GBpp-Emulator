@@ -12,7 +12,7 @@
 Cpu::Cpu(void) { } 
 
 Cpu::Cpu(Memory* m) {
-    mem = m;
+    mem = m; //RICORDATELO
     Cpu::reset();
     std::cout<<"reset end"<<std::endl;
 }
@@ -34,7 +34,7 @@ struct instruction Cpu::getInstrSetCBPrefixAt(BYTE t_opcode) {
     return instrSetCBPrefix.at(t_opcode);
 }
 
-void Cpu::step() {
+BYTE Cpu::step() {
     
     unsigned char opcode = 0x80;//mem->readByte(pc);
    
@@ -42,7 +42,7 @@ void Cpu::step() {
 
     //BYTE opcode = Cpu::fetch();
     instruction instr = Cpu::decode(opcode);
-    Cpu::execute(instr);
+    return Cpu::execute(instr);
     
 }
 
@@ -100,14 +100,8 @@ void Cpu::reset() {
     mem->writeByte(0xFF4A, 0x00);
     mem->writeByte(0xFF4B, 0x00);
     mem->writeByte(0xFFFF, 0x00);
-
-    clockCycles = 0;
-    timerCounter = 1024;
-    hostOldTime = std::chrono::system_clock::now();
-    targetOldTime = TARGETPERIOD * clockCycles;
     
     intMasterEnable = false;
-    Cpu::step();
 }
 
 BYTE Cpu::fetch(void) {
@@ -125,114 +119,90 @@ struct instruction Cpu::decode(BYTE opcode) {
     return instrSet.at(0x80);
 }
 
-void Cpu::execute(instruction instr) {
+BYTE Cpu::execute(instruction instr) {
     std::cout<<"execute"<<std::endl;
     instr.function(this);
 
     //update the clock cycles counter
-    clockCycles += instr.cycles;
-
-    Cpu::updateTimers(instr.cycles);
-    Cpu::sync();
-
+    return instr.cycles;
     //check for interrupts >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 }
 
-void Cpu::updateTimers(int cycles) {
-    Cpu::stepTimer(cycles);
-    Cpu::stepDivider(cycles);
-}
+// void Cpu::updateTimers(int cycles) {
+//     Cpu::stepTimer(cycles);
+//     Cpu::stepDivider(cycles);
+// }
 
-bool Cpu::isTimerOn() {
-    BYTE tmc = mem->readByte(TMC);
-    return ((tmc >> 2) & 1);
-}
+// bool Cpu::isTimerOn() {
+//     BYTE tmc = mem->readByte(TMC);
+//     return ((tmc >> 2) & 1);
+// }
 
-void Cpu::setTimer() {
+// void Cpu::setTimer() {
     
-    if(!isTimerOn())
-        return;
+//     if(!isTimerOn())
+//         return;
 
-    int oldTimer = mem->readByte(TMC);   //timer controller register
-    int newTimer = 0;
+//     int oldTimer = mem->readByte(TMC);   //timer controller register
+//     int newTimer = 0;
 
-    //00: 4096Hz    01: 262144Hz    10: 65536Hz     11: 16384Hz
-    switch(oldTimer & 0x03) {
-        case 0:
-            newTimer = 1024; // 1024 = CLOCK/4096Hz
-            break;
-        case 1:
-            newTimer = 16;   //   16 = CLOCK/262144Hz
-            break;
-        case 2:
-            newTimer = 64;   //   64 = CLOCK/65536Hz
-            break;
-        case 3:
-            newTimer = 256;  //  256 = CLOCK/16384Hz
-            break;
-        default:
-            exit(1);
-            std::cout<<"Invalid timer"<<std::endl;
-            break; 
-    }
+//     //00: 4096Hz    01: 262144Hz    10: 65536Hz     11: 16384Hz
+//     switch(oldTimer & 0x03) {
+//         case 0:
+//             newTimer = 1024; // 1024 = CLOCK/4096Hz
+//             break;
+//         case 1:
+//             newTimer = 16;   //   16 = CLOCK/262144Hz
+//             break;
+//         case 2:
+//             newTimer = 64;   //   64 = CLOCK/65536Hz
+//             break;
+//         case 3:
+//             newTimer = 256;  //  256 = CLOCK/16384Hz
+//             break;
+//         default:
+//             exit(1);
+//             std::cout<<"Invalid timer"<<std::endl;
+//             break; 
+//     }
 
-    timerCounter = newTimer;
-}
+//     timerCounter = newTimer;
+// }
 
-void Cpu::stepDivider(int cycles) {
+// void Cpu::stepDivider(int cycles) {
     
-    //divider always done
-    dividerCounter += cycles;
+//     //divider always done
+//     dividerCounter += cycles;
     
-    if(dividerCounter >= 0xFF) {   //next is an overflow (255)
-        dividerCounter = 0x00;
-        mem->writeByte(DIVIDER, dividerCounter);
-    }
-}
+//     if(dividerCounter >= 0xFF) {   //next is an overflow (255)
+//         dividerCounter = 0x00;
+//         mem->writeByte(DIVIDER, dividerCounter);
+//     }
+// }
 
-void Cpu::stepTimer(int cycles) {
+// void Cpu::stepTimer(int cycles) {
     
-    if(!isTimerOn())
-        return;
+//     if(!isTimerOn())
+//         return;
 
-    timerCounter -= cycles;
-    if(timerCounter <= 0) {
-        //timer is reset again to the value specified by the timer controller TMC
-        Cpu::setTimer();
-        BYTE tima = mem->readByte(TIMA);
+//     timerCounter -= cycles;
+//     if(timerCounter <= 0) {
+//         //timer is reset again to the value specified by the timer controller TMC
+//         Cpu::setTimer();
+//         BYTE tima = mem->readByte(TIMA);
 
-        if(tima == 0xFF) {              //next is an overflow (255)
-            BYTE tma = mem->readByte(TMA);
-            mem->writeByte(TIMA, tma);
+//         if(tima == 0xFF) {              //next is an overflow (255)
+//             BYTE tma = mem->readByte(TMA);
+//             mem->writeByte(TIMA, tma);
 
-            //send timer interrupt ______________________________>>>>>>>>>>>>>>>>>>>>>>>>
+//             //send timer interrupt ______________________________>>>>>>>>>>>>>>>>>>>>>>>>
 
-        } else {            //increment the counter
-            mem->writeByte(TIMA, tima + 1);
-        }
-    }
-}
+//         } else {            //increment the counter
+//             mem->writeByte(TIMA, tima + 1);
+//         }
+//     }
+// }
 
-void Cpu::sync() {
-
-    std::chrono::time_point<std::chrono::system_clock>hostNewTime = std::chrono::system_clock::now();
-    std::chrono::duration<double> hostElapsedTimeC = hostNewTime - hostOldTime;
-    unsigned int hostElapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(hostElapsedTimeC).count();
-    std::cout<<"The host elapsed time is: "<<'\t'<<hostElapsedTime<<std::endl;
-
-    unsigned int targetNewTime = TARGETPERIOD * clockCycles;
-    unsigned int targetElapsedTime = targetNewTime - targetOldTime;
-    std::cout<<"The target elapsed time is: "<<'\t'<<targetElapsedTime<<std::endl;
-    
-
-    if((targetElapsedTime - hostElapsedTime) > (2/10^3))     //2 ms
-        std::cout<<"The diff is: "<<'\t'<<targetElapsedTime - hostElapsedTime<<std::endl;
-        //Sleep(diff);
-
-    hostOldTime = hostNewTime;
-    targetOldTime = targetNewTime;
- 
-}
 
 void Cpu::pushWord(WORD t_val) {
     mem->writeWord(getSP(), t_val);

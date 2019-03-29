@@ -5,11 +5,6 @@
 #include "instruction.hpp"
 #include <string>
 #include <vector>
-#include <chrono>
-#include <ctime>
-
-typedef unsigned char BYTE;        //8 bit
-typedef unsigned short WORD;       //16 bits
 
 //regAF.reg -> AF, regAF.high -> A, regAF.low -> F
 union REGISTER {
@@ -20,19 +15,6 @@ union REGISTER {
     };
 };
 
-//#define internalROMSize 48
-//#define internalROMName "comparison.txt"
-
-//clock
-#define CLOCK 4194304
-#define TARGETPERIOD 0.000238418     //1000/(4194304)
-#define HOSTPERIOD 1/(25*10^9)      //0.4 ns
-
-//locations for the timers
-#define DIVIDER 0xFF04
-#define TIMA 0xFF05
-#define TMA 0xFF06
-#define TMC 0xFF07
 
 //flag register F (only 4 bit are used) |Z|N|H|C|x|x|x|x|
 #define flagZ 7
@@ -68,17 +50,6 @@ class Cpu {
         REGISTER regDE;
         REGISTER regHL;
     
-        //clock cycles passed
-        WORD clockCycles;
-
-        //timer
-        WORD timerCounter;
-        WORD dividerCounter;
-
-        std::chrono::time_point<std::chrono::system_clock> hostOldTime;
-        //std::chrono::time_point<std::chrono::system_clock> targetOldTime;
-        unsigned int targetOldTime;
-
         //map for the instructions
         std::map<unsigned char, struct instruction> instrSet;
         void initInstructions(void);
@@ -90,17 +61,8 @@ class Cpu {
         //execution functions
         BYTE fetch(void);
         struct instruction decode(BYTE);
-        void execute(instruction);
-
-        //timing functions
-        void stepTimer(int);
-        void stepDivider(int);
-        void updateTimers(int);
-        void setTimer(void);
-        inline WORD getTimer(){return timerCounter;};
-        void sync(void);
-        bool isTimerOn(void);
-
+        BYTE execute(instruction);
+   
 
     public:
         Cpu(void);
@@ -108,7 +70,7 @@ class Cpu {
         ~Cpu(void);
         
         void reset(void);
-        void step(void);
+        BYTE step(void);
 
         inline bool isIntMasterEnable(void) const {return intMasterEnable;}
         void setIntMasterEnable(void) {intMasterEnable = true;}

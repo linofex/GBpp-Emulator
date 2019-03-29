@@ -9,11 +9,11 @@
 
 struct instruction {
     std::string name;
-    int cycles;
+    BYTE cycles;
     void (*function)(Cpu*);
 
     //constructor
-    instruction(std::string, int, void(*)(Cpu*));
+    instruction(std::string, BYTE, void(*)(Cpu*));
 };
 //std::map<unsigned char, instruction> instrSet;
 void init(std::map<unsigned char, instruction>&);

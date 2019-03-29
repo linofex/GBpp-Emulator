@@ -3,7 +3,7 @@
 #include <map>
 #include <vector>
 
-instruction::instruction(std::string name, int cycles, void (*f)(Cpu*)) {
+instruction::instruction(std::string name, BYTE cycles, void (*f)(Cpu*)) {
 	this->name = name;
     this->cycles = cycles;
 	function = f;
@@ -206,17 +206,6 @@ void init(std::map<unsigned char, instruction>& instrSet) {
 
 }
 
-/* instruction getInstr(unsigned char opcode) {
-    unsigned char temp = 0x80;
-    return instrSet2[0];
-} */
-
-
-/* BYTE getBitIndex(BYTE r) {
-    std::vector<BYTE> v = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
-    return v.at(r);
-} */
-
 //----------------------- EMPTY -------------------------------------
 static void not_defined() {
     std::cout<<"Instruction not defined"<<std::endl;
@@ -229,23 +218,23 @@ static void add(Cpu* c, unsigned char n) {
    unsigned short res = c->getA() + n;
     
     if(res == 0)        //sum = 0
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
 
     c->setA(res);
 
-    c->resetFlag(flagN);
+    c->resetFlag(FLAG_N);
         
     if(res > 0x00FF)  //sum overflow
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
         
     if(((n & 0x0F) + (c->getA() & 0x0F)) > 0x0F)    //if carry from bit 3
-        c->setFlag(flagH);
+        c->setFlag(FLAG_H);
     else
-        c->resetFlag(flagH);
+        c->resetFlag(FLAG_H);
 
     std::cout<<"fine add"<<std::endl;
     
@@ -270,7 +259,7 @@ static void add_A_HL_ind(Cpu* c) {
 }
 
 static void adc(Cpu* c, unsigned char n) {
-    unsigned char carry = c->isFlagCarry();  //carry = 1 or 0
+    unsigned char carry = c->isFLAG_Carry();  //carry = 1 or 0
     add(c, n + carry);
 }
 static void adc_A_B(Cpu* c) {adc(c, c->getB());}
@@ -295,23 +284,23 @@ static void sub(Cpu* c, unsigned char n) {
     signed short res = c->getA() - n;
 
     if(res == 0)        //sub = 0
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
 
     c->setA(res);
     
-    c->setFlag(flagN);
+    c->setFlag(FLAG_N);
         
     if(res < 0)  //sub with borrow
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
         
     if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if borrow from bit 3
-        c->setFlag(flagH);
+        c->setFlag(FLAG_H);
     else
-        c->resetFlag(flagH);
+        c->resetFlag(FLAG_H);
 }
 static void sub_A_B(Cpu* c) {sub(c, c->getB());}
 static void sub_A_C(Cpu* c) {sub(c, c->getC());}
@@ -332,7 +321,7 @@ static void sub_A_HL_ind(Cpu* c) {
 }
 
 static void sbc(Cpu* c, unsigned char n) {
-    unsigned char carry = c->isFlagCarry() ? 1 : 0;  //carry = 1 or 0
+    unsigned char carry = c->isFLAG_Carry() ? 1 : 0;  //carry = 1 or 0
     sub(c, n + carry);
 }
 static void sbc_A_B(Cpu* c) {sbc(c, c->getB());}
@@ -357,15 +346,15 @@ static void and_(Cpu* c, unsigned char n) {
     unsigned char res = c->getA() & n;
 
     if(res == 0)        //and = 0
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
 
     c->setA(res);
     
-    c->setFlag(flagH);
-    c->resetFlag(flagC);
-    c->resetFlag(flagN);    
+    c->setFlag(FLAG_H);
+    c->resetFlag(FLAG_C);
+    c->resetFlag(FLAG_N);    
 }
 static void and_A_B(Cpu* c) {and_(c, c->getB());}
 static void and_A_C(Cpu* c) {and_(c, c->getC());}
@@ -389,15 +378,15 @@ static void or_(Cpu* c, unsigned char n) {
     unsigned char res = c->getA() | n;
 
     if(res == 0)        //or = 0
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
 
     c->setA(res);
     
-    c->resetFlag(flagH);
-    c->resetFlag(flagC);
-    c->resetFlag(flagN);
+    c->resetFlag(FLAG_H);
+    c->resetFlag(FLAG_C);
+    c->resetFlag(FLAG_N);
 }
 static void or_A_B(Cpu* c) {or_(c, c->getB());}
 static void or_A_C(Cpu* c) {or_(c, c->getC());}
@@ -421,15 +410,15 @@ static void xor_(Cpu* c, unsigned char n) {
     unsigned char res = c->getA() ^ n;
 
     if(res == 0)        //xor = 0
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
 
     c->setA(res);
     
-    c->resetFlag(flagH);
-    c->resetFlag(flagC);
-    c->resetFlag(flagN);        
+    c->resetFlag(FLAG_H);
+    c->resetFlag(FLAG_C);
+    c->resetFlag(FLAG_N);        
 }
 static void xor_A_B(Cpu* c) {xor_(c, c->getB());}
 static void xor_A_C(Cpu* c) {xor_(c, c->getC());}
@@ -453,21 +442,21 @@ static void cp(Cpu* c, unsigned char n) {
     signed short res = c->getA() - n;
 
     if(res == 0)        //sub = 0
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
-    c->setFlag(flagN);
+    c->setFlag(FLAG_N);
         
     if(res < 0)  //sub with borrow
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
         
     if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if borrow from bit 3
-        c->setFlag(flagH);
+        c->setFlag(FLAG_H);
     else
-        c->resetFlag(flagH);
+        c->resetFlag(FLAG_H);
 }
 static void cp_A_B(Cpu* c) {cp(c, c->getB());}
 static void cp_A_C(Cpu* c) {cp(c, c->getC());}
@@ -491,16 +480,16 @@ static BYTE inc(Cpu* c, unsigned char n) {
     unsigned short res = n + 1;
 
     if(res == 0)        //res = 0
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
-    c->resetFlag(flagN);
+    c->resetFlag(FLAG_N);
         
     if((res & 0x0F) > 0x0F)    //if carry from bit 3
-        c->setFlag(flagH);
+        c->setFlag(FLAG_H);
     else
-        c->resetFlag(flagH);
+        c->resetFlag(FLAG_H);
 
     return (unsigned char) res;
 }
@@ -521,16 +510,16 @@ static BYTE dec(Cpu* c, unsigned char n) {
     unsigned short res = n - 1;
 
     if(res == 0)        //res = 0
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
-    c->setFlag(flagN);
+    c->setFlag(FLAG_N);
         
     if((res & 0x0F) < 0)    //if borrow from bit 3
-        c->setFlag(flagH);
+        c->setFlag(FLAG_H);
     else
-        c->resetFlag(flagH);
+        c->resetFlag(FLAG_H);
 
     return (unsigned char) res;
 }
@@ -553,17 +542,17 @@ static void add_HL(Cpu* c, WORD val) {
 
     c->setHL((unsigned short) res);
  
-    c->resetFlag(flagN);
+    c->resetFlag(FLAG_N);
 
     if(res & 0xFFFF0000)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
     
     if(((c->getHL() & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF)
-        c->setFlag(flagH);
+        c->setFlag(FLAG_H);
 	else
-        c->resetFlag(flagH);
+        c->resetFlag(FLAG_H);
 }
 static void add_HL_BC(Cpu* c) {add_HL(c, c->getBC());};
 static void add_HL_DE(Cpu* c) {add_HL(c, c->getDE());};
@@ -575,24 +564,24 @@ static void add_SP_n(Cpu* c) {
     unsigned char n = c->readByte(c->getPC());
     c->incPC();
 
-    c->resetFlag(flagZ);
-    c->resetFlag(flagN);
+    c->resetFlag(FLAG_Z);
+    c->resetFlag(FLAG_N);
 
     unsigned long res = c->getSP() + n;
 
     c->setSP((unsigned short) res);
  
-    c->resetFlag(flagN);
+    c->resetFlag(FLAG_N);
 
     if(res & 0xFFFF0000)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
     
     if(((c->getSP() & 0x0F) + (n & 0x0F)) > 0x0F)
-        c->setFlag(flagH);
+        c->setFlag(FLAG_H);
 	else
-        c->resetFlag(flagH);
+        c->resetFlag(FLAG_H);
 
 };
 
@@ -839,18 +828,18 @@ static void loadhl_SP_n(Cpu* c) {
     c->incPC();
 
     int res = c->getSP() + n;
-    c->resetFlag(flagZ);
-    c->resetFlag(flagN);
+    c->resetFlag(FLAG_Z);
+    c->resetFlag(FLAG_N);
 
     if(((c->getSP() & 0x0F) + (n & 0x0F)) > 0x0F)
-        c->setFlag(flagH);
+        c->setFlag(FLAG_H);
     else
-        c->resetFlag(flagH);
+        c->resetFlag(FLAG_H);
     
     if(res > 0x0000FFFF)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
 
     c->setHL((unsigned short)res);
 }
@@ -892,18 +881,18 @@ static void pop_HL(Cpu* c) {c->setHL(pop_nn(c));}
 
 
 BYTE swap_n(Cpu* c, unsigned char n) {
-    c->resetFlag(flagN);
-    c->resetFlag(flagH);
-    c->resetFlag(flagC);
+    c->resetFlag(FLAG_N);
+    c->resetFlag(FLAG_H);
+    c->resetFlag(FLAG_C);
 
     BYTE high = n & 0xF0;
     high >>= 4;
     BYTE low = n & 0x0F;
     low <<= 4;
     if((high + low) == 0)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     return high + low;
 }
 
@@ -924,42 +913,42 @@ static void daa(Cpu* c) {
     unsigned char a_h = (c->getA() & 0xF0) >> 4;
     unsigned char a_l = c->getA() & 0x0F;
 
-    c->resetFlag(flagH);
+    c->resetFlag(FLAG_H);
     unsigned short res = (a_h * 10) + a_l;
     
     if(res == 0)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
     if(res > 256)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
     
     c->setA(res);
 }
 
 static void cpl(Cpu* c) {
-    c->setFlag(flagN);
-    c->setFlag(flagH);
+    c->setFlag(FLAG_N);
+    c->setFlag(FLAG_H);
 
     c->setA(~(c->getA()));
 }
 static void ccf(Cpu* c) {
-    unsigned char carry = c->isFlagCarry();
+    unsigned char carry = c->isFLAG_Carry();
     if(carry == 0)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
 
-    c->resetFlag(flagH);
-    c->resetFlag(flagN);
+    c->resetFlag(FLAG_H);
+    c->resetFlag(FLAG_N);
 }
 static void scf(Cpu* c) {
-    c->setFlag(flagC);
-    c->resetFlag(flagH);
-    c->resetFlag(flagN);
+    c->setFlag(FLAG_C);
+    c->resetFlag(FLAG_H);
+    c->resetFlag(FLAG_N);
 }
 static void nop(Cpu* c) {}
 static void halt(Cpu* c) {
@@ -974,18 +963,18 @@ static void ei(Cpu* c) {
 }
 
 static BYTE rlc(Cpu* c, unsigned char a) {
-    c->resetFlag(flagN);
-    c->resetFlag(flagH);
+    c->resetFlag(FLAG_N);
+    c->resetFlag(FLAG_H);
 
     BYTE carry = ((a & 0x80) >> 7);
-    (carry == 1) ? c->setFlag(flagC) : c->resetFlag(flagC);
+    (carry == 1) ? c->setFlag(FLAG_C) : c->resetFlag(FLAG_C);
 
     a <<= 1;
     a += carry;
     if(a == 0)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
     return a;
 }
@@ -1003,23 +992,23 @@ static void rlc_HL_ind(Cpu* c) {
 }
 
 static BYTE rl(Cpu* c, unsigned char a) {
-    c->resetFlag(flagN);
-    c->resetFlag(flagH);
+    c->resetFlag(FLAG_N);
+    c->resetFlag(FLAG_H);
 
     BYTE a_7 = ((a & 0x80) >> 7);
     a <<= 1;
-    unsigned char carry = c->isFlagCarry();
+    unsigned char carry = c->isFLAG_Carry();
     a+= carry;
     
     if(a_7 == 1)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
 
     if(a == 0)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
     return a;
 }
@@ -1037,18 +1026,18 @@ static void rl_HL_ind(Cpu* c) {
 }
 
 static BYTE rrc(Cpu* c, unsigned char a) {
-    c->resetFlag(flagN);
-    c->resetFlag(flagH);
+    c->resetFlag(FLAG_N);
+    c->resetFlag(FLAG_H);
 
     BYTE carry = (a & 0x01);
-    (carry == 1) ? c->setFlag(flagC) : c->resetFlag(flagC);
+    (carry == 1) ? c->setFlag(FLAG_C) : c->resetFlag(FLAG_C);
 
     a >>= 1;
     a += (carry << 7);
     if(a == 0)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
     return a;
 }
@@ -1066,23 +1055,23 @@ static void rrc_HL_ind(Cpu* c) {
 }
 
 static BYTE rr(Cpu* c, unsigned char a) {
-    c->resetFlag(flagN);
-    c->resetFlag(flagH);
+    c->resetFlag(FLAG_N);
+    c->resetFlag(FLAG_H);
 
     BYTE a_0 = (a & 0x01);
     a >>= 1;
-    unsigned char carry = c->isFlagCarry();
+    unsigned char carry = c->isFLAG_Carry();
     a+= (carry << 7);
     
     if(a_0 == 1)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
 
     if(a == 0)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
     return a;
 }
@@ -1100,21 +1089,21 @@ static void rr_HL_ind(Cpu* c) {
 }
 
 static BYTE sla(Cpu* c, unsigned char a) {
-    c->resetFlag(flagN);
-    c->resetFlag(flagH);
+    c->resetFlag(FLAG_N);
+    c->resetFlag(FLAG_H);
 
     BYTE a_7 = ((a & 0x80) >> 7);
     a <<= 1;
     
     if(a_7 == 1)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
 
     if(a == 0)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
     return a;
 }
@@ -1132,24 +1121,24 @@ static void sla_HL_ind(Cpu* c) {
 }
 
 static BYTE sra(Cpu* c, unsigned char a) {
-    c->resetFlag(flagN);
-    c->resetFlag(flagH);
+    c->resetFlag(FLAG_N);
+    c->resetFlag(FLAG_H);
 
     BYTE a_7 = (a & 0x80);
     BYTE a_0 = (a & 0x01);
     a >>= 1;
 
     if(a_0 == 1)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
 
     a |= a_7;
 
     if(a == 0)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
     return a;
 }
@@ -1167,21 +1156,21 @@ static void sra_HL_ind(Cpu* c) {
 }
 
 static BYTE srl(Cpu* c, unsigned char a) {
-    c->resetFlag(flagN);
-    c->resetFlag(flagH);
+    c->resetFlag(FLAG_N);
+    c->resetFlag(FLAG_H);
 
     BYTE a_0 = (a & 0x01);
     a >>= 1;
 
     if(a_0 == 1)
-        c->setFlag(flagC);
+        c->setFlag(FLAG_C);
     else
-        c->resetFlag(flagC);
+        c->resetFlag(FLAG_C);
 
     if(a == 0)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
     
     return a;
 }
@@ -1199,17 +1188,17 @@ static void srl_HL_ind(Cpu* c) {
 }
 
 static void bit_b_r(Cpu* c, unsigned char r, unsigned char b) {
-    c->resetFlag(flagN);
-    c->setFlag(flagH);
+    c->resetFlag(FLAG_N);
+    c->setFlag(FLAG_H);
 
     //BYTE b = c->readByte(c->getPC());
     c->incPC();
 
     b = (b >> r) & 0x01;
     if(!b)
-        c->setFlag(flagZ);
+        c->setFlag(FLAG_Z);
     else
-        c->resetFlag(flagZ);
+        c->resetFlag(FLAG_Z);
 }
 static void bit_A_0(Cpu* c) {bit_b_r(c, c->getA(), 0);}
 static void bit_A_1(Cpu* c) {bit_b_r(c, c->getA(), 1);}
@@ -1552,19 +1541,19 @@ static void jp(Cpu* c) {
     c->setPC((ms << 8) + ls);
 }
 static void jp_nz(Cpu* c) {
-    if(!c->isFlagZero())
+    if(!c->isFLAG_Zero())
         jp(c);
 }
 static void jp_z(Cpu* c) {
-    if(c->isFlagZero())
+    if(c->isFLAG_Zero())
         jp(c);
 }
 static void jp_nc(Cpu* c) {
-    if(!c->isFlagCarry())
+    if(!c->isFLAG_Carry())
         jp(c);
 }
 static void jp_c(Cpu* c) {
-    if(c->isFlagCarry())
+    if(c->isFLAG_Carry())
         jp(c);
 }
 static void jp_hl_ind(Cpu* c) {c->setPC(c->getHL());}
@@ -1573,19 +1562,19 @@ static void jr(Cpu* c) {
     c->setPC(c->getPC() + n);
 }
 static void jr_nz(Cpu* c) {
-    if(!c->isFlagZero())
+    if(!c->isFLAG_Zero())
         jr(c);
 }
 static void jr_z(Cpu* c) {
-    if(c->isFlagZero())
+    if(c->isFLAG_Zero())
         jr(c);
 }
 static void jr_nc(Cpu* c) {
-    if(!c->isFlagCarry())
+    if(!c->isFLAG_Carry())
         jr(c);
 }
 static void jr_c(Cpu* c) {
-    if(c->isFlagCarry())
+    if(c->isFLAG_Carry())
         jr(c);
 }
 static void call(Cpu* c) {
@@ -1595,19 +1584,19 @@ static void call(Cpu* c) {
     jp(c);
 }
 static void call_nz(Cpu* c) {
-    if(!c->isFlagZero())
+    if(!c->isFLAG_Zero())
         call(c);
 }
 static void call_z(Cpu* c) {
-    if(c->isFlagZero())
+    if(c->isFLAG_Zero())
         call(c);
 }
 static void call_nc(Cpu* c) {
-    if(!c->isFlagCarry())
+    if(!c->isFLAG_Carry())
         call(c);
 }
 static void call_c(Cpu* c) {
-    if(c->isFlagCarry())
+    if(c->isFLAG_Carry())
         call(c);
 }
 static void rst(Cpu* c, unsigned char ls) {
@@ -1629,19 +1618,19 @@ static void ret(Cpu* c) {
     c->setPC(addr);
 }
 static void ret_nz(Cpu* c) {
-    if(!c->isFlagZero())
+    if(!c->isFLAG_Zero())
         ret(c);
 }
 static void ret_z(Cpu* c) {
-    if(c->isFlagZero())
+    if(c->isFLAG_Zero())
         ret(c);
 }
 static void ret_nc(Cpu* c) {
-    if(!c->isFlagCarry())
+    if(!c->isFLAG_Carry())
         ret(c);
 }
 static void ret_c(Cpu* c) {
-    if(c->isFlagCarry())
+    if(c->isFLAG_Carry())
         ret(c);
 }
 static void reti(Cpu* c) {

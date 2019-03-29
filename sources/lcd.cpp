@@ -12,7 +12,7 @@ Lcd::Lcd(Memory* t_memory/* , Gpu* gpu_ */) {
 }
 
 bool Lcd::isLCDEnabled() {
-    return (memory->readByte(LCDSTATUS) >> 7);
+    return (memory->readByte(LCDCONTROL) >> 7);
 }
 BYTE Lcd::getLCDMode() {
     return (memory->readByte(LCDSTATUS) & 0x03);
@@ -62,6 +62,12 @@ void Lcd::lcdStep(int cycles) {
     }
 }
 void Lcd::setLCDStatus() {
+    if(!isLCDEnabled()){
+        Lcd::setLCDMode(MODE1);
+        Lcd::setScanline(0);
+        remainingCycles = 456;
+        return;
+    }
 
     unsigned char oldMode = Lcd::getLCDMode();
 
@@ -80,6 +86,9 @@ void Lcd::setLCDStatus() {
     if((oldMode != newMode) && (newMode != MODE3))
         if(Lcd::testInterrupt(newMode))
             InterruptHandler::requestInterrupt(memory, LCD);
+    if(testCoincidence()){
+        InterruptHandler::requestInterrupt(memory, LCD);
+    }
 }
 bool Lcd::testInterrupt(BYTE t_mode) {
     switch(t_mode) {
@@ -99,3 +108,19 @@ bool Lcd::testInterrupt(BYTE t_mode) {
     return false;
 }
 
+bool Lcd::testCoincidence(){
+    BYTE lcdstatus = memory->readByte(LCDSTATUS);
+    bool coincidenceFlag = false;
+    if(memory->readByte(LCDLY) == memory->readByte(LCDLYC)){
+        lcdstatus |= 0X04; //set bit 2 to 1
+        coincidenceFlag = true;
+    }
+    else{
+        lcdstatus &= 0XFB; //set bit 2 to 0
+    }
+    memory->writeByte(LCDSTATUS, lcdstatus);
+    if(coincidenceFlag && (lcdstatus & 0x40)){ // check coincidence enable bit 6
+        return true;    //request interrupt
+    }
+    return false; // do nothing
+}

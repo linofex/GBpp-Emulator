@@ -9,7 +9,9 @@ void InterruptHnadler::ServeInterrupt(const BYTE t_interrupt, Memory& t_memory, 
     t_memory.writeByte(IRR_ADD, irr ^ t_interrupt); // Reset the Interrupet flag to 0, since is served
 
     // Save PC in the stack
-    t_memory.writeInStack(t_cpu, t_cpu->getPC());
+    t_cpu->pushWord(t_cpu->getPC());
+    
+    //t_memory.writeInStack(t_cpu, t_cpu->getPC());
     // Point the PC to the interrupt routine
     switch (t_interrupt){
         case VBLANK:

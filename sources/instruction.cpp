@@ -114,7 +114,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0x9D, instruction("SBC A, L", 4, sbc_A_L)));
     instrSet.insert(std::make_pair(0x9E, instruction("SBC A, (HL)", 8, sbc_A_HL_ind)));  
     instrSet.insert(std::make_pair(0x9F, instruction("SBC A, A", 4, sbc_A_A)));  
-    //instrSet.insert(std::make_pair(0xD6, instruction("SBC A, #", 8, sbc_A_n))); ->>>>>>>>>>>>>> forse non esiste
+    instrSet.insert(std::make_pair(0xDE, instruction("SBC A, #", 8, sbc_A_n)));
 
     instrSet.insert(std::make_pair(0xA0, instruction("AND A, B", 4, and_A_B)));  
     instrSet.insert(std::make_pair(0xA1, instruction("AND A, C", 4, and_A_C)));
@@ -226,7 +226,7 @@ static void not_defined() {
 static void add(Cpu* c, unsigned char n) {
    std::cout<<"inizio add"<<std::endl;
 
-   int res = c->getA() + (int) n;
+   unsigned short res = c->getA() + n;
     
     if(res == 0)        //sum = 0
         c->setFlag(flagZ);
@@ -235,12 +235,9 @@ static void add(Cpu* c, unsigned char n) {
 
     c->setA(res);
 
-    // if(res < 0)     //sum < 0
-    //    setFlag(flagN);
-    //else
-    //    resetFlag(flagN);
+    c->resetFlag(flagN);
         
-    if(res > 255)  //sum overflow
+    if(res > 0x00FF)  //sum overflow
         c->setFlag(flagC);
     else
         c->resetFlag(flagC);
@@ -273,7 +270,7 @@ static void add_A_HL_ind(Cpu* c) {
 }
 
 static void adc(Cpu* c, unsigned char n) {
-    int carry = c->isFlagCarry() ? 1 : 0;  //carry = 1 or 0
+    unsigned char carry = c->isFlagCarry();  //carry = 1 or 0
     add(c, n + carry);
 }
 static void adc_A_B(Cpu* c) {adc(c, c->getB());}
@@ -295,7 +292,7 @@ static void adc_A_HL_ind(Cpu* c) {
 }
 
 static void sub(Cpu* c, unsigned char n) {
-    int res = c->getA() - (int) n;
+    signed short res = c->getA() - n;
 
     if(res == 0)        //sub = 0
         c->setFlag(flagZ);
@@ -311,7 +308,7 @@ static void sub(Cpu* c, unsigned char n) {
     else
         c->resetFlag(flagC);
         
-    if(((n & 0x0F) + (c->getA() & 0x0F)) < 0)    //if borrow from bit 3
+    if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if borrow from bit 3
         c->setFlag(flagH);
     else
         c->resetFlag(flagH);
@@ -335,7 +332,7 @@ static void sub_A_HL_ind(Cpu* c) {
 }
 
 static void sbc(Cpu* c, unsigned char n) {
-    int carry = c->isFlagCarry() ? 1 : 0;  //carry = 1 or 0
+    unsigned char carry = c->isFlagCarry() ? 1 : 0;  //carry = 1 or 0
     sub(c, n + carry);
 }
 static void sbc_A_B(Cpu* c) {sbc(c, c->getB());}
@@ -345,7 +342,11 @@ static void sbc_A_E(Cpu* c) {sbc(c, c->getE());}
 static void sbc_A_H(Cpu* c) {sbc(c, c->getH());}
 static void sbc_A_L(Cpu* c) {sbc(c, c->getL());}
 static void sbc_A_A(Cpu* c) {sbc(c, c->getA());}
-//static void sbc_A_n(Cpu* c, unsigned char n) {sbc(c, n);} -> maybe does not exists
+static void sbc_A_n(Cpu* c) {
+    unsigned char data = c->readByte(c->getPC());
+    c->incPC();
+    sbc(c, data);
+}
 static void sbc_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
@@ -353,7 +354,7 @@ static void sbc_A_HL_ind(Cpu* c) {
 }
 
 static void and_(Cpu* c, unsigned char n) {
-    int res = c->getA() & (int) n;
+    unsigned char res = c->getA() & n;
 
     if(res == 0)        //and = 0
         c->setFlag(flagZ);
@@ -385,7 +386,7 @@ static void and_A_HL_ind(Cpu* c) {
 }
 
 static void or_(Cpu* c, unsigned char n) {
-    int res = c->getA() | (int) n;
+    unsigned char res = c->getA() | n;
 
     if(res == 0)        //or = 0
         c->setFlag(flagZ);
@@ -417,8 +418,7 @@ static void or_A_HL_ind(Cpu* c) {
 }
 
 static void xor_(Cpu* c, unsigned char n) {
-    int res;
-    res = res ? !n : n;
+    unsigned char res = c->getA() ^ n;
 
     if(res == 0)        //xor = 0
         c->setFlag(flagZ);
@@ -450,7 +450,7 @@ static void xor_A_HL_ind(Cpu* c) {
 }
 
 static void cp(Cpu* c, unsigned char n) {
-    int res = c->getA() - (int) n;
+    signed short res = c->getA() - n;
 
     if(res == 0)        //sub = 0
         c->setFlag(flagZ);
@@ -464,7 +464,7 @@ static void cp(Cpu* c, unsigned char n) {
     else
         c->resetFlag(flagC);
         
-    if(((n & 0x0F) + (c->getA() & 0x0F)) < 0)    //if borrow from bit 3
+    if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if borrow from bit 3
         c->setFlag(flagH);
     else
         c->resetFlag(flagH);
@@ -488,7 +488,7 @@ static void cp_A_HL_ind(Cpu* c) {
 }
 
 static BYTE inc(Cpu* c, unsigned char n) {
-    int res = n + 1;
+    unsigned short res = n + 1;
 
     if(res == 0)        //res = 0
         c->setFlag(flagZ);
@@ -502,7 +502,7 @@ static BYTE inc(Cpu* c, unsigned char n) {
     else
         c->resetFlag(flagH);
 
-    return res;
+    return (unsigned char) res;
 }
 static void inc_A(Cpu* c) {c->setA(inc(c, c->getA()));}
 static void inc_B(Cpu* c) {c->setA(inc(c, c->getB()));}
@@ -518,7 +518,7 @@ static void inc_HL_ind(Cpu* c) {
 }
 
 static BYTE dec(Cpu* c, unsigned char n) {
-    int res = n - 1;
+    unsigned short res = n - 1;
 
     if(res == 0)        //res = 0
         c->setFlag(flagZ);
@@ -532,7 +532,7 @@ static BYTE dec(Cpu* c, unsigned char n) {
     else
         c->resetFlag(flagH);
 
-    return res;
+    return (unsigned char) res;
 }
 static void dec_A(Cpu* c) {c->setA(dec(c, c->getA()));}
 static void dec_B(Cpu* c) {c->setA(dec(c, c->getB()));}
@@ -547,11 +547,11 @@ static void dec_HL_ind(Cpu* c) {
     c->setA(dec(c, n));
 }
 
-static void add_HL(Cpu* c, BYTE val) {
+static void add_HL(Cpu* c, WORD val) {
     
     unsigned long res = c->getHL() + val;
 
-    c->setHL((unsigned short)(res & 0xFFFF));
+    c->setHL((unsigned short) res);
  
     c->resetFlag(flagN);
 
@@ -560,7 +560,7 @@ static void add_HL(Cpu* c, BYTE val) {
     else
         c->resetFlag(flagC);
     
-    if(((c->getHL() & 0x0F) + (val & 0x0F)) > 0x0F)
+    if(((c->getHL() & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF)
         c->setFlag(flagH);
 	else
         c->resetFlag(flagH);
@@ -580,7 +580,7 @@ static void add_SP_n(Cpu* c) {
 
     unsigned long res = c->getSP() + n;
 
-    c->setSP((unsigned short)(res & 0xFFFF));
+    c->setSP((unsigned short) res);
  
     c->resetFlag(flagN);
 
@@ -597,22 +597,27 @@ static void add_SP_n(Cpu* c) {
 };
 
 static void inc_HL(Cpu* c) {c->setHL(c->getHL() + 1);};
-static void inc_SP(Cpu* c) {c->setSP(c->getSP() + 1);};
+static void inc_SP(Cpu* c) {c->incSP();};
 static void inc_DE(Cpu* c) {c->setDE(c->getDE() + 1);};
 static void inc_BC(Cpu* c) {c->setBC(c->getBC() + 1);};
 
 static void dec_HL(Cpu* c) {c->setHL(c->getHL() - 1);};
-static void dec_SP(Cpu* c) {c->setSP(c->getSP() - 1);};
+static void dec_SP(Cpu* c) {c->decSP();};
 static void dec_DE(Cpu* c) {c->setDE(c->getDE() - 1);};
 static void dec_BC(Cpu* c) {c->setBC(c->getBC() - 1);};
 
-
-static void load_B_n(Cpu* c, unsigned char n) {c->setB(n);}
-static void load_C_n(Cpu* c, unsigned char n) {c->setC(n);}
-static void load_D_n(Cpu* c, unsigned char n) {c->setD(n);}
-static void load_E_n(Cpu* c, unsigned char n) {c->setE(n);}
-static void load_H_n(Cpu* c, unsigned char n) {c->setH(n);}
-static void load_L_n(Cpu* c, unsigned char n) {c->setL(n);}
+static BYTE load_nn_n(Cpu* c) {
+    BYTE n = c->readByte(c->getPC());
+    c->incPC();
+    return n;
+}
+static void load_A_n(Cpu* c) {c->setA(load_nn_n(c));}
+static void load_B_n(Cpu* c) {c->setB(load_nn_n(c));}
+static void load_C_n(Cpu* c) {c->setC(load_nn_n(c));}
+static void load_D_n(Cpu* c) {c->setD(load_nn_n(c));}
+static void load_E_n(Cpu* c) {c->setE(load_nn_n(c));}
+static void load_H_n(Cpu* c) {c->setH(load_nn_n(c));}
+static void load_L_n(Cpu* c) {c->setL(load_nn_n(c));}
 
 static void load_A_A(Cpu* c) {c->setA(c->getA());}
 static void load_A_B(Cpu* c) {c->setA(c->getB());}
@@ -627,6 +632,7 @@ static void load_A_HL_ind(Cpu* c) {
     c->setA(n);
 }
 
+static void load_B_A(Cpu* c) {c->setB(c->getA());}
 static void load_B_B(Cpu* c) {c->setB(c->getB());}
 static void load_B_C(Cpu* c) {c->setB(c->getC());}
 static void load_B_D(Cpu* c) {c->setB(c->getD());}
@@ -639,6 +645,7 @@ static void load_B_HL_ind(Cpu* c) {
     c->setB(n);
 }
 
+static void load_C_A(Cpu* c) {c->setC(c->getA());}
 static void load_C_B(Cpu* c) {c->setC(c->getB());}
 static void load_C_C(Cpu* c) {c->setC(c->getC());}
 static void load_C_D(Cpu* c) {c->setC(c->getD());}
@@ -651,6 +658,7 @@ static void load_C_HL_ind(Cpu* c) {
     c->setC(n);
 }
 
+static void load_D_A(Cpu* c) {c->setD(c->getA());}
 static void load_D_B(Cpu* c) {c->setD(c->getB());}
 static void load_D_C(Cpu* c) {c->setD(c->getC());}
 static void load_D_D(Cpu* c) {c->setD(c->getD());}
@@ -663,6 +671,7 @@ static void load_D_HL_ind(Cpu* c) {
     c->setD(n);
 }
 
+static void load_E_A(Cpu* c) {c->setE(c->getA());}
 static void load_E_B(Cpu* c) {c->setE(c->getB());}
 static void load_E_C(Cpu* c) {c->setE(c->getC());}
 static void load_E_D(Cpu* c) {c->setE(c->getD());}
@@ -675,6 +684,7 @@ static void load_E_HL_ind(Cpu* c) {
     c->setE(n);
 }
 
+static void load_H_A(Cpu* c) {c->setH(c->getA());}
 static void load_H_B(Cpu* c) {c->setH(c->getB());}
 static void load_H_C(Cpu* c) {c->setH(c->getC());}
 static void load_H_D(Cpu* c) {c->setH(c->getD());}
@@ -687,6 +697,7 @@ static void load_H_HL_ind(Cpu* c) {
     c->setH(n);
 }
 
+static void load_L_A(Cpu* c) {c->setL(c->getA());}
 static void load_L_B(Cpu* c) {c->setL(c->getB());}
 static void load_L_C(Cpu* c) {c->setL(c->getC());}
 static void load_L_D(Cpu* c) {c->setL(c->getD());}
@@ -703,13 +714,18 @@ static void load_HL_ind_x(Cpu* c, unsigned char n) {
     WORD addr = c->getHL();
     c->writeByte(addr, n);
 }
+static void load_HL_ind_A(Cpu* c) {load_HL_ind_x(c, c->getA());}
 static void load_HL_ind_B(Cpu* c) {load_HL_ind_x(c, c->getB());}
 static void load_HL_ind_C(Cpu* c) {load_HL_ind_x(c, c->getC());}
 static void load_HL_ind_D(Cpu* c) {load_HL_ind_x(c, c->getD());}
 static void load_HL_ind_E(Cpu* c) {load_HL_ind_x(c, c->getE());}
 static void load_HL_ind_H(Cpu* c) {load_HL_ind_x(c, c->getH());}
 static void load_HL_ind_L(Cpu* c) {load_HL_ind_x(c, c->getL());}
-static void load_HL_ind_n(Cpu* c, unsigned char n) {load_HL_ind_x(c, n);}
+static void load_HL_ind_n(Cpu* c) {
+    BYTE n = c->readByte(c->getPC());
+    load_HL_ind_x(c, n);
+}
+
 
 static void load_A_x_ind(Cpu* c, unsigned short  n) {
     unsigned char res = c->readByte(n);
@@ -718,29 +734,161 @@ static void load_A_x_ind(Cpu* c, unsigned short  n) {
 static void load_A_BC_ind(Cpu* c) {load_A_x_ind(c, c->getBC());}
 static void load_A_DE_ind(Cpu* c) {load_A_x_ind(c, c->getDE());}
 //static void load_A_HL_ind(Cpu* c) {load_A_x_ind(c, c->getHL());}
-static void load_A_nn_ind(Cpu* c, unsigned short nn) {load_A_x_ind(c, nn);}
+static void load_A_nn_ind(Cpu* c) {
+    WORD nn = c->readWord(c->getPC());
+    c->incPC();
+    c->incPC();    
+    load_A_x_ind(c, nn);
+}
+
 
 static void load_A_n(Cpu* c, unsigned char n) {c->setA(n);}
 
 //static void load_A_HL_ind(Cpu* c) {load_A_x_ind(c, c->getHL());}
 
-static void load_B_A(Cpu* c) {c->setB(c->getA());}
+/* static void load_B_A(Cpu* c) {c->setB(c->getA());}
 static void load_C_A(Cpu* c) {c->setC(c->getA());}
 static void load_D_A(Cpu* c) {c->setD(c->getA());}
 static void load_E_A(Cpu* c) {c->setE(c->getA());}
 static void load_H_A(Cpu* c) {c->setH(c->getA());}
-static void load_L_A(Cpu* c) {c->setL(c->getA());}
+static void load_L_A(Cpu* c) {c->setL(c->getA());} */
 
-static void load_nn_ind_n(Cpu* c, unsigned short addr) {
+static void load_xx_ind_A(Cpu* c, unsigned short addr) {
     c->writeByte(addr, c->getA());
 }
-static void load_BC_ind_A(Cpu* c) {load_nn_ind_n(c, c->getBC());}
+static void load_BC_ind_A(Cpu* c) {load_xx_ind_A(c, c->getBC());}
+static void load_DE_ind_A(Cpu* c) {load_xx_ind_A(c, c->getDE());}
+//static void load_HL_ind_A(Cpu* c) {load_xx_ind_A(c, c->getHL());}
+static void load_nn_ind_A(Cpu* c) {
+    WORD nn = c->readWord(c->getPC());
+    c->incPC();
+    c->incPC();
+    load_xx_ind_A(c, nn);
+}
 
+static void load_A_C_ind(Cpu* c) {
+    WORD res = c->readByte( 0xFF00 + c->getC());
+    c->setA(res);
+}
 
+static void load_C_ind_A(Cpu* c) {
+    WORD addr = c->getC() + 0xFF00;
+    c->writeByte(addr, c->getA());
+}
 
-//..............................................69..............................................
+/* static void load_A_HLD_ind(Cpu* c) {
+    loadd_A_HL_ind(c);
+}
+static void load_A_HL__ind(Cpu* c) {
+    loadd_A_HL_ind(c);
+} */
+static void loadd_A_HL_ind(Cpu* c) {
+    load_A_HL_ind(c);
+    dec_HL(c);
+}
 
+/* static void load_HLD_ind_A(Cpu* c) {
+    loadd_HL_ind_A(c);
+}
+static void loadHL__ind_A(Cpu* c) {
+    loadd_HL_ind_A(c);
+} */
+static void loadd_HL_ind_A(Cpu* c) {
+    load_HL_ind_A(c);
+    dec_HL(c);
+}
 
+static void loadi_A_HL_ind(Cpu* c) {
+    load_A_HL_ind(c);
+    inc_HL(c);
+}
+
+static void loadi_HL_ind_A(Cpu* c) {
+    load_HL_ind_A(c);
+    inc_HL(c);
+}
+
+static void loadh_n_ind_A(Cpu* c) {
+    BYTE n = c->readByte(c->getPC());
+    c->incPC();
+    c->writeByte(0xFF00 + n, c->getA());
+}
+
+static void loadh_A_n_ind(Cpu* c) {
+    BYTE n = c->readByte(c->getPC());
+    c->incPC();
+    c->setA(0xFF00 + n);
+}
+
+static BYTE load_n_nn(Cpu* c) {
+    WORD nn = c->readWord(c->getPC());
+    c->incPC();
+    c->incPC();
+    return nn;
+}
+static void load_BC_nn(Cpu* c) {c->setBC(load_n_nn(c));}
+static void load_DE_nn(Cpu* c) {c->setDE(load_n_nn(c));}
+static void load_HL_nn(Cpu* c) {c->setHL(load_n_nn(c));}
+static void load_SP_nn(Cpu* c) {c->setSP(load_n_nn(c));}
+
+static void load_SP_HL(Cpu* c) {
+    c->setSP(c->getHL());
+}
+static void loadhl_SP_n(Cpu* c) {
+    BYTE n = c->readByte(c->getPC());
+    c->incPC();
+
+    int res = c->getSP() + n;
+    c->resetFlag(flagZ);
+    c->resetFlag(flagN);
+
+    if(((c->getSP() & 0x0F) + (n & 0x0F)) > 0x0F)
+        c->setFlag(flagH);
+    else
+        c->resetFlag(flagH);
+    
+    if(res > 0x0000FFFF)
+        c->setFlag(flagC);
+    else
+        c->resetFlag(flagC);
+
+    c->setHL((unsigned short)res);
+}
+static void load_nn_SP(Cpu* c) {
+    WORD nn = c->readWord(c->getPC());
+    c->incPC();
+    c->incPC();
+
+    c->writeWord(nn, c->getSP());
+}
+static void push_nn(Cpu* c, unsigned short nn) {
+    c->writeWord(c->getSP(), nn);
+    c->decSP();
+    c->decSP();
+}
+static void push_AF(Cpu* c) {
+    push_nn(c, c->getAF());
+}
+static void push_BC(Cpu* c) {
+    push_nn(c, c->getBC());
+}
+static void push_DE(Cpu* c) {
+    push_nn(c, c->getDE());
+}
+static void push_HL(Cpu* c) {
+    push_nn(c, c->getHL());
+}
+
+static WORD pop_nn(Cpu* c) {
+    WORD nn = c->readWord(c->getSP());
+    c->incSP();
+    c->incSP();
+    return nn;
+}
+static void pop_AF(Cpu* c) {c->setAF(pop_nn(c));}
+static void pop_BC(Cpu* c) {c->setBC(pop_nn(c));}
+static void pop_DE(Cpu* c) {c->setDE(pop_nn(c));}
+static void pop_HL(Cpu* c) {c->setHL(pop_nn(c));}
 
 
 BYTE swap_n(Cpu* c, unsigned char n) {

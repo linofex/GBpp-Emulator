@@ -12,11 +12,12 @@
 // #define TMC 0xFF07
 
 class Memory;
-    unsigned long timerCounter;
-    unsigned long dividerCounter;
 
 class Timer{
     Memory* memory;
+    unsigned long timerCounter;
+    unsigned long dividerCounter;
+    
 public:
     Timer(Memory*);
     void updateTimers(unsigned long);

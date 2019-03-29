@@ -1,16 +1,6 @@
 #ifndef LCD_H
 #define LCD_H
 
-#define LCDCONTROL  0xFF40
-#define LCDSTATUS   0xFF41
-#define LCDLY       0xFF44
-#define LCDLYC      0xFF45
-
-#define MODE0 0x00
-#define MODE1 0x01
-#define MODE2 0x10
-#define MODE3 0x11
-
 #include "utility.hpp"
 
 class Memory;
@@ -28,6 +18,7 @@ class Lcd {
         unsigned char getScanline(void);
         void setScanline(BYTE);
         bool testInterrupt(BYTE);
+        bool testCoincidence(void);
 
     public:
         Lcd(void);

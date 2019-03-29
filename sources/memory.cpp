@@ -1,5 +1,7 @@
 
 #include "../includes/memory.hpp"
+#include "../includes/dma.hpp"
+
 #include <iostream>
 //#include "../includes/cpu.hpp"
 
@@ -96,7 +98,11 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
     }
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
-         ioPorts[t_add & 0x007F] = t_value; //
+        ioPorts[t_add & 0x007F] = t_value; //
+        if(t_add == 0xFF46){
+            startDMATransfer(this); //start DMA transfer
+            return;
+        }
     }
     // high speed ram
     else if(t_add >= 0xFF80 && t_add < 0xFFFF){

@@ -7,13 +7,14 @@ class Cpu;
 class Memory;
 
 //namespace GBemulator{
-    class InterruptHnadler{
+    class InterruptHandler{
         private:
             //bool intMasterEnable; // An interrupt can only be served IFF this is TRUE
         public:
             //InterruptHnadler(){}
-            static void ServeInterrupt(const BYTE t_interrupt, Memory& t_memory, Cpu* t_cpu);
-            static void DoInterrupt(Memory& t_memory, Cpu* t_cpu);
+            static void serveInterrupt(const BYTE, Memory*, Cpu*);
+            static void doInterrupt(Memory*, Cpu*);
+            static void requestInterrupt(Memory*, const BYTE);
     };
 //}
 

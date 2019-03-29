@@ -1,34 +1,36 @@
 #include "../includes/lcd.hpp"
 #include "../includes/memory.hpp"
+#include"../includes/interrupts.hpp"
+
 
 Lcd::Lcd() {}
 
-Lcd::Lcd(Memory* mem_/* , Gpu* gpu_ */) {
-    mem = mem_;
+Lcd::Lcd(Memory* t_memory/* , Gpu* gpu_ */) {
+    memory = t_memory;
     //gpu = gpu_;
     remainingCycles = 456;
 }
 
 bool Lcd::isLCDEnabled() {
-    return (mem->readByte(LCDSTATUS) >> 7);
+    return (memory->readByte(LCDSTATUS) >> 7);
 }
 BYTE Lcd::getLCDMode() {
-    return (mem->readByte(LCDSTATUS) & 0x03);
+    return (memory->readByte(LCDSTATUS) & 0x03);
 }
 BYTE Lcd::getLCDModeRegister() {
-    return mem->readByte(LCDSTATUS);
+    return memory->readByte(LCDSTATUS);
 }
 void Lcd::setLCDMode(BYTE t_val) {
     unsigned char mode = Lcd::getLCDModeRegister() & 0xFC;   //11111100
     unsigned char newMode = mode | t_val;
 
-    mem->writeByte(LCDSTATUS, newMode);
+    memory->writeByte(LCDSTATUS, newMode);
 }
 unsigned char Lcd::getScanline() {
-    return (mem->readByte(LCDLY));
+    return (memory->readByte(LCDLY));
 }
 void Lcd::setScanline(BYTE t_val) {
-    mem->writeByte(LCDLY, t_val);
+    memory->writeByte(LCDLY, t_val);
 }
 void Lcd::lcdStep(int cycles) {
     
@@ -49,7 +51,7 @@ void Lcd::lcdStep(int cycles) {
             Lcd::setScanline(currentLine++);
         }
         else if(currentLine == 144) {   //VBLANK interrupt request
-            mem->RequestInterrupt(VBLANK);
+            InterruptHandler::requestInterrupt(memory, VBLANK);
             Lcd::setScanline(currentLine++);
         }
         else if(currentLine == 154) {   //invisible scanlines [144, 153]
@@ -77,7 +79,7 @@ void Lcd::setLCDStatus() {
 
     if((oldMode != newMode) && (newMode != MODE3))
         if(Lcd::testInterrupt(newMode))
-            mem->RequestInterrupt(LCD);
+            InterruptHandler::requestInterrupt(memory, LCD);
 }
 bool Lcd::testInterrupt(BYTE t_mode) {
     switch(t_mode) {

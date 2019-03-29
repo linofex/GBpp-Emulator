@@ -21,7 +21,7 @@
             
             Cpu cpu;
             Memory memory;
-            InterruptHnadler interruptHnadler;
+            //InterruptHandler interruptHandler;
             Rom rom;
             Timer timer;
             std::vector<BYTE> testRom;

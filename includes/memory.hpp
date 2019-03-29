@@ -36,7 +36,6 @@ class Cpu;
 
             void writeInStack(Cpu* t_cpu, WORD t_value);
 
-            void RequestInterrupt(const BYTE t_interrupt);
             ~Memory();
     };
 

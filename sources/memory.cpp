@@ -119,11 +119,6 @@ void Memory::writeWord(const WORD t_add, const WORD t_value){
     t_cpu->decSP();
 } */
 
-void Memory::RequestInterrupt(const BYTE t_interrupt){
-    BYTE irr = readByte(IRR_ADD);          // Read Interrupt Request Reister from memory at 0x0FF0F
-    writeByte(IRR_ADD, irr | t_interrupt); // Set the Interrupt flag to 1, since requested
-}
-
 Memory::~Memory(){
     std::cout << "MEMORY distruttore\n";
 }

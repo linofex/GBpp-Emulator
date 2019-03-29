@@ -1,6 +1,9 @@
 #include"../includes/timer.hpp"
 #include"../includes/utility.hpp"
 #include"../includes/memory.hpp"
+#include"../includes/interrupts.hpp"
+
+
 Timer::Timer(Memory* t_mem): memory(t_mem){
     timerCounter = 1024;
     dividerCounter = 00;
@@ -69,7 +72,7 @@ void Timer::stepTimer(unsigned long t_cycles) {
         if(tima == 0xFF) {              //next is an overflow (255)
             BYTE tma = memory->readByte(TMA);
             memory->writeByte(TIMA, tma);
-            memory->RequestInterrupt(TIMER); //send timer interrupt
+            InterruptHandler::requestInterrupt(memory, TIMER); //send timer interrupt
         } else {            //increment the counter
             memory->writeByte(TIMA, tima + 1);
         }

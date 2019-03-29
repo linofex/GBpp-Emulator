@@ -18,7 +18,7 @@ class Memory;
 
 class Lcd {
     private:
-        Memory* mem;
+        Memory* memory;
         //Gpu* gpu;
 
         unsigned char currentLine;

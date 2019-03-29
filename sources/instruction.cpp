@@ -486,7 +486,7 @@ static BYTE inc(Cpu* c, unsigned char n) {
     
     c->resetFlag(FLAG_N);
         
-    if((res & 0x0F) > 0x0F)    //if carry from bit 3
+    if(((n & 0x0F) + 1) > 0x0F)    //if carry from bit 3
         c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);
@@ -516,7 +516,7 @@ static BYTE dec(Cpu* c, unsigned char n) {
     
     c->setFlag(FLAG_N);
         
-    if((res & 0x0F) < 0)    //if borrow from bit 3
+    if(((n & 0x0F)- 1) < 0)    //if borrow from bit 3
         c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);

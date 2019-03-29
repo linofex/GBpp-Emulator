@@ -33,7 +33,10 @@ bool GameBoy::LoadGame(){
 }
 
 void GameBoy::PlayGame(){
-	//clockCycles += cpu.step();
+
+	BYTE instructionCycles = cpu.step();
+	
+	clockCycles += instructionCycles;
         
 }
 
@@ -57,7 +60,7 @@ void GameBoy::PrintRomInfo(){
 	// rom.PrintDestCode();
 	// rom.PrintLicenseCodeOld();
 	// rom.PrintLicenseCodeNew();
-		rom.PrintNintendoGraphic();
+	rom.PrintNintendoGraphic();
 	//rom.PrintBeginPoint();
 }
 bool GameBoy::CheckCartridge(){
@@ -65,7 +68,7 @@ bool GameBoy::CheckCartridge(){
 }
 
 void GameBoy::sync(){
-	std::chrono::time_point<std::chrono::system_clock>hostNewTime = std::chrono::system_clock::now();
+	std::chrono::time_point<std::chrono::system_clock> hostNewTime = std::chrono::system_clock::now();
     std::chrono::duration<double> hostElapsedTimeC = hostNewTime - hostOldTime;
     unsigned int hostElapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(hostElapsedTimeC).count();
     std::cout<<"The host elapsed time is: "<<'\t'<<hostElapsedTime<<std::endl;

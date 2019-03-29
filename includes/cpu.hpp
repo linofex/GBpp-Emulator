@@ -1,32 +1,23 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "utility.hpp"
 #include "memory.hpp"
 #include "instruction.hpp"
 #include <string>
 #include <vector>
 
-//regAF.reg -> AF, regAF.high -> A, regAF.low -> F
-union REGISTER {
-    WORD reg;
-    struct {
-        BYTE low;
-        BYTE high;
-    };
-};
-
-
-//flag register F (only 4 bit are used) |Z|N|H|C|x|x|x|x|
-#define flagZ 7
-#define flagN 6
-#define flagH 5
-#define flagC 4
+/* //flag register F (only 4 bit are used) |Z|N|H|C|x|x|x|x|
+#define FLAG_Z 7
+#define FLAG_N 6
+#define FLAG_H 5
+#define FLAG_C 4 */
 
 //functions on flags register
-/*#define isFlagZero(void)(regAF.high & (1 << flagZ))
-#define isFlagNeg(void) (regAF.high & (1 << flagN))
-#define isFlagHalfCarry(void) (regAF.high & (1 << flagH))
-#define isFlagCarry(void) (regAF.high & (1 << flagC))
+/*#define isFLAG_Zero(void)(regAF.high & (1 << FLAG_Z))
+#define isFLAG_Neg(void) (regAF.high & (1 << FLAG_N))
+#define isFLAG_HalfCarry(void) (regAF.high & (1 << FLAG_H))
+#define isFLAG_Carry(void) (regAF.high & (1 << FLAG_C))
 
 #define setFlag(n) (regAF.high |= n)
 #define resetFlag(n) (regAF.high &= ~n)
@@ -107,10 +98,10 @@ class Cpu {
         inline void setDE(const WORD t_de) {regDE.reg = t_de;}
         inline void setSP(const WORD t_sp) {sp = t_sp;}
 
-        inline BYTE isFlagZero(void) {return regAF.low & (1 << flagZ);}
-        inline BYTE isFlagNeg(void) {return regAF.low & (1 << flagN);}
-        inline BYTE isFlagHalfCarry(void) {return regAF.low & (1 << flagH);}
-        inline BYTE isFlagCarry(void) {return regAF.low & (1 << flagC);}
+        inline BYTE isFLAG_Zero(void) {return regAF.low & (1 << FLAG_Z);}
+        inline BYTE isFLAG_Neg(void) {return regAF.low & (1 << FLAG_N);}
+        inline BYTE isFLAG_HalfCarry(void) {return regAF.low & (1 << FLAG_H);}
+        inline BYTE isFLAG_Carry(void) {return regAF.low & (1 << FLAG_C);}
 
         inline void setFlag(const BYTE n) {regAF.high |= n;}
         inline void resetFlag(const BYTE n) {regAF.high &= ~n;}
@@ -132,30 +123,6 @@ class Cpu {
         struct instruction getInstrSetAt(BYTE);
         struct instruction getInstrSetCBPrefixAt(BYTE);
         
-
-
-        /* //--------------------- 16-bit arithmetic ---------------------
-        void addWord(unsigned short);
-        //void add_HL_BC(void);
-        void add_HL_DE(void);
-        void add_HL_HL(void);
-        void add_HL_SP(void);
-
-        void add_SP_n(signed char); */
-
-        //void incWord(unsigned char*);
-        //void inc_BC(void);
-        //void inc_DE(void);
-        //void inc_HL(void);
-        //void inc_SP(void);
-
-        //void decWord(unsigned char*);
-        //void dec_BC(void);
-        // dec_DE(void);
-        //void dec_HL(void);
-        //void dec_SP(void);
-
-
 };
 
 #endif

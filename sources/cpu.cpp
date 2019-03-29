@@ -115,6 +115,7 @@ BYTE Cpu::fetch(void) {
 struct instruction Cpu::decode(BYTE opcode) {
     std::cout<<"decode"<<std::endl;
     std::cout<<"---------------------------------------------> "<<instrSet.size()<<std::endl;
+    std::cout<<"---------------------------------------------> "<<instrSetCBPrefix.size()<<std::endl;
     
     return instrSet.at(0x80);
 }
@@ -123,86 +124,9 @@ BYTE Cpu::execute(instruction instr) {
     std::cout<<"execute"<<std::endl;
     instr.function(this);
 
-    //update the clock cycles counter
+    //return clock cycles to update the counter
     return instr.cycles;
-    //check for interrupts >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 }
-
-// void Cpu::updateTimers(int cycles) {
-//     Cpu::stepTimer(cycles);
-//     Cpu::stepDivider(cycles);
-// }
-
-// bool Cpu::isTimerOn() {
-//     BYTE tmc = mem->readByte(TMC);
-//     return ((tmc >> 2) & 1);
-// }
-
-// void Cpu::setTimer() {
-    
-//     if(!isTimerOn())
-//         return;
-
-//     int oldTimer = mem->readByte(TMC);   //timer controller register
-//     int newTimer = 0;
-
-//     //00: 4096Hz    01: 262144Hz    10: 65536Hz     11: 16384Hz
-//     switch(oldTimer & 0x03) {
-//         case 0:
-//             newTimer = 1024; // 1024 = CLOCK/4096Hz
-//             break;
-//         case 1:
-//             newTimer = 16;   //   16 = CLOCK/262144Hz
-//             break;
-//         case 2:
-//             newTimer = 64;   //   64 = CLOCK/65536Hz
-//             break;
-//         case 3:
-//             newTimer = 256;  //  256 = CLOCK/16384Hz
-//             break;
-//         default:
-//             exit(1);
-//             std::cout<<"Invalid timer"<<std::endl;
-//             break; 
-//     }
-
-//     timerCounter = newTimer;
-// }
-
-// void Cpu::stepDivider(int cycles) {
-    
-//     //divider always done
-//     dividerCounter += cycles;
-    
-//     if(dividerCounter >= 0xFF) {   //next is an overflow (255)
-//         dividerCounter = 0x00;
-//         mem->writeByte(DIVIDER, dividerCounter);
-//     }
-// }
-
-// void Cpu::stepTimer(int cycles) {
-    
-//     if(!isTimerOn())
-//         return;
-
-//     timerCounter -= cycles;
-//     if(timerCounter <= 0) {
-//         //timer is reset again to the value specified by the timer controller TMC
-//         Cpu::setTimer();
-//         BYTE tima = mem->readByte(TIMA);
-
-//         if(tima == 0xFF) {              //next is an overflow (255)
-//             BYTE tma = mem->readByte(TMA);
-//             mem->writeByte(TIMA, tma);
-
-//             //send timer interrupt ______________________________>>>>>>>>>>>>>>>>>>>>>>>>
-
-//         } else {            //increment the counter
-//             mem->writeByte(TIMA, tima + 1);
-//         }
-//     }
-// }
-
 
 void Cpu::pushWord(WORD t_val) {
     mem->writeWord(getSP(), t_val);

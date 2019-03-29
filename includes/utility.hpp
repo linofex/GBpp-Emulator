@@ -10,6 +10,21 @@ typedef unsigned short WORD; // 16bit
 #define TIMER   0x04
 #define JOYPAD  0x10  
 
+//flag register F (only 4 bit are used) |Z|N|H|C|x|x|x|x|
+#define FLAG_Z 7
+#define FLAG_N 6
+#define FLAG_H 5
+#define FLAG_C 4
+
+//regAF.reg -> AF, regAF.high -> A, regAF.low -> F
+union REGISTER {
+    WORD reg;
+    struct {
+        BYTE low;
+        BYTE high;
+    };
+};
+
 // interrupt routines addresses
 #define VBLANK_ADD  0x40
 #define LCD_ADD     0x48

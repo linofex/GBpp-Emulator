@@ -43,11 +43,24 @@ union REGISTER {
 #define TMC 0xFF07
 
 //#if defined MEMORY_H
-    #define KB 0x400    // 1024B
-    #define IER_ADD 0xFFFF  // Interrupt Enable Register address
-    #define IRR_ADD 0xFF0F  // Interrupt Request Register address
+#define KB 0x400    // 1024B
+#define IER_ADD 0xFFFF  // Interrupt Enable Register address
+#define IRR_ADD 0xFF0F  // Interrupt Request Register address
 //#endif
 
+// LCD Registers
+#define LCDCONTROL  0xFF40
+#define LCDSTATUS   0xFF41
+#define LCDLY       0xFF44
+#define LCDLYC      0xFF45
 
+// LCD modes
+#define MODE0 0x00
+#define MODE1 0x01
+#define MODE2 0x10
+#define MODE3 0x11
+
+// DMA
+#define DMA 0xFF46
 
 #endif

@@ -6,6 +6,7 @@
 #include "instruction.hpp"
 #include <string>
 #include <vector>
+#include <set>
 
 /* //flag register F (only 4 bit are used) |Z|N|H|C|x|x|x|x|
 #define FLAG_Z 7
@@ -54,6 +55,7 @@ class Cpu {
         struct instruction decode(BYTE);
         BYTE execute(instruction);
    
+        void printCpuState(void);
 
     public:
         Cpu(void);
@@ -62,6 +64,8 @@ class Cpu {
         
         void reset(void);
         BYTE step(void);
+        void stepDebug(std::set<BYTE>*);
+        
 
         inline bool isIntMasterEnable(void) const {return intMasterEnable;}
         void setIntMasterEnable(void) {intMasterEnable = true;}

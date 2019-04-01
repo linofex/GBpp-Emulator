@@ -34,12 +34,12 @@ bool GameBoy::LoadGame(){
 }
 
 void GameBoy::PlayGame(){
-
+	std::set<BYTE> old_opcode;
 	for(;;) {
-		BYTE instructionCycles = cpu.step();
-	
-		clockCycles += instructionCycles;
-		system("PAUSE");
+//		BYTE instructionCycles = cpu.step();
+		cpu.stepDebug(&old_opcode);
+//		clockCycles += instructionCycles;
+		getchar();
 	}
 }
 

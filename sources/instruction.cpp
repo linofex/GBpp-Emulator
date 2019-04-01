@@ -924,16 +924,16 @@ static BYTE inc(Cpu* c, unsigned char n) {
     return (unsigned char) res;
 }
 static void inc_A(Cpu* c) {c->setA(inc(c, c->getA()));}
-static void inc_B(Cpu* c) {c->setA(inc(c, c->getB()));}
-static void inc_C(Cpu* c) {c->setA(inc(c, c->getC()));}
-static void inc_D(Cpu* c) {c->setA(inc(c, c->getD()));}
-static void inc_E(Cpu* c) {c->setA(inc(c, c->getE()));}
-static void inc_H(Cpu* c) {c->setA(inc(c, c->getH()));}
-static void inc_L(Cpu* c) {c->setA(inc(c, c->getL()));}
+static void inc_B(Cpu* c) {c->setB(inc(c, c->getB()));}
+static void inc_C(Cpu* c) {c->setC(inc(c, c->getC()));}
+static void inc_D(Cpu* c) {c->setD(inc(c, c->getD()));}
+static void inc_E(Cpu* c) {c->setE(inc(c, c->getE()));}
+static void inc_H(Cpu* c) {c->setH(inc(c, c->getH()));}
+static void inc_L(Cpu* c) {c->setL(inc(c, c->getL()));}
 static void inc_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
-    c->setA(inc(c, n));
+    c->setHL(inc(c, n));
 }
 
 static BYTE dec(Cpu* c, unsigned char n) {
@@ -954,16 +954,16 @@ static BYTE dec(Cpu* c, unsigned char n) {
     return (unsigned char) res;
 }
 static void dec_A(Cpu* c) {c->setA(dec(c, c->getA()));}
-static void dec_B(Cpu* c) {c->setA(dec(c, c->getB()));}
-static void dec_C(Cpu* c) {c->setA(dec(c, c->getC()));}
-static void dec_D(Cpu* c) {c->setA(dec(c, c->getD()));}
-static void dec_E(Cpu* c) {c->setA(dec(c, c->getE()));}
-static void dec_H(Cpu* c) {c->setA(dec(c, c->getH()));}
-static void dec_L(Cpu* c) {c->setA(dec(c, c->getL()));}
+static void dec_B(Cpu* c) {c->setB(dec(c, c->getB()));}
+static void dec_C(Cpu* c) {c->setC(dec(c, c->getC()));}
+static void dec_D(Cpu* c) {c->setD(dec(c, c->getD()));}
+static void dec_E(Cpu* c) {c->setE(dec(c, c->getE()));}
+static void dec_H(Cpu* c) {c->setH(dec(c, c->getH()));}
+static void dec_L(Cpu* c) {c->setL(dec(c, c->getL()));}
 static void dec_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
-    c->setA(dec(c, n));
+    c->setHL(dec(c, n));
 }
 
 static void add_HL(Cpu* c, WORD val) {

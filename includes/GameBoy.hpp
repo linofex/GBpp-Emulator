@@ -18,9 +18,8 @@
 //namespace GBemulator{
     class GameBoy{
         private:
-            
-            Cpu cpu;
             Memory memory;
+            Cpu cpu;
             //InterruptHandler interruptHandler;
             Rom rom;
             Timer timer;

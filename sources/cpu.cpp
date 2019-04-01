@@ -36,12 +36,14 @@ struct instruction Cpu::getInstrSetCBPrefixAt(BYTE t_opcode) {
 
 BYTE Cpu::step() {
     
-    unsigned char opcode = 0x80;//mem->readByte(pc);
+    //unsigned char opcode = mem->readByte(pc);
    
     //std::cout<<i.name<<'\t'<<i.cycles<<'\t'<<i.paramNum<<'\t'<<i.function<<std::endl;
 
-    //BYTE opcode = Cpu::fetch();
+    BYTE opcode = Cpu::fetch();
+    std::cout<<std::hex<<(int)opcode<<std::endl;
     instruction instr = Cpu::decode(opcode);
+    std::cout<<instr.name<<'\t'<<(int)instr.cycles<<'\t'<<instr.function<<std::endl;
     return Cpu::execute(instr);
     
 }
@@ -67,6 +69,8 @@ void Cpu::reset() {
     //fill the instructions map
     Cpu::initInstructions();
     std::cout<<"initInstructions done"<<std::endl;
+    std::cout<<"---------------------------------------------> "<<instrSet.size()<<std::endl;
+    std::cout<<"---------------------------------------------> "<<instrSetCBPrefix.size()<<std::endl;
 
     //initialization of I/O registers in the internal RAM
     mem->writeByte(0xFF05, 0x00);	//mem->writeByte
@@ -102,11 +106,13 @@ void Cpu::reset() {
     mem->writeByte(0xFFFF, 0x00);
     
     intMasterEnable = false;
+    //Cpu::step();        //for debug
 }
 
 BYTE Cpu::fetch(void) {
     std::cout<<"fetch"<<std::endl;
-    unsigned char opcode = 0x80;//mem->readByte(pc);
+    //unsigned char opcode = 0x80;//
+    BYTE opcode = mem->readByte(pc);
     incPC();
 
     return opcode;
@@ -114,10 +120,9 @@ BYTE Cpu::fetch(void) {
 
 struct instruction Cpu::decode(BYTE opcode) {
     std::cout<<"decode"<<std::endl;
-    std::cout<<"---------------------------------------------> "<<instrSet.size()<<std::endl;
-    std::cout<<"---------------------------------------------> "<<instrSetCBPrefix.size()<<std::endl;
     
-    return instrSet.at(0x80);
+    //return instrSet.at(0x80);
+    return instrSet.at(opcode);
 }
 
 BYTE Cpu::execute(instruction instr) {

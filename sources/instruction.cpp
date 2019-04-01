@@ -113,23 +113,6 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x5E, instruction("BIT 3 (HL)", 16, bit_HL_ind_3)));
     instrSetCBPrefix.insert(std::make_pair(0x5F, instruction("BIT 3 A", 8, bit_A_3)));
 
-    instrSetCBPrefix.insert(std::make_pair(0x50, instruction("BIT 2 B", 8, bit_B_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x51, instruction("BIT 2 C", 8, bit_C_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x52, instruction("BIT 2 D", 8, bit_D_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x53, instruction("BIT 2 E", 8, bit_E_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x54, instruction("BIT 2 H", 8, bit_H_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x55, instruction("BIT 2 L", 8, bit_L_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x56, instruction("BIT 2 (HL)", 16, bit_HL_ind_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x57, instruction("BIT 2 A", 8, bit_A_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x58, instruction("BIT 3 B", 8, bit_B_3)));
-    instrSetCBPrefix.insert(std::make_pair(0x59, instruction("BIT 3 C", 8, bit_C_3)));
-    instrSetCBPrefix.insert(std::make_pair(0x5A, instruction("BIT 3 D", 8, bit_D_3)));
-    instrSetCBPrefix.insert(std::make_pair(0x5B, instruction("BIT 3 E", 8, bit_E_3)));
-    instrSetCBPrefix.insert(std::make_pair(0x5C, instruction("BIT 3 H", 8, bit_H_3)));
-    instrSetCBPrefix.insert(std::make_pair(0x5D, instruction("BIT 3 L", 8, bit_L_3)));
-    instrSetCBPrefix.insert(std::make_pair(0x5E, instruction("BIT 3 (HL)", 16, bit_HL_ind_3)));
-    instrSetCBPrefix.insert(std::make_pair(0x5F, instruction("BIT 3 A", 8, bit_A_3)));
-
     instrSetCBPrefix.insert(std::make_pair(0x60, instruction("BIT 4 B", 8, bit_B_4)));
     instrSetCBPrefix.insert(std::make_pair(0x61, instruction("BIT 4 C", 8, bit_C_4)));
     instrSetCBPrefix.insert(std::make_pair(0x62, instruction("BIT 4 D", 8, bit_D_4)));
@@ -233,7 +216,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xBF, instruction("RES 7 A", 8, res_A_7)));
 
     instrSetCBPrefix.insert(std::make_pair(0xC0, instruction("SET 0 B", 8, set_B_0)));
-    instrSetCBPrefix.insert(std::make_pair(0xc1, instruction("SET 0 C", 8, set_C_0)));
+    instrSetCBPrefix.insert(std::make_pair(0xC1, instruction("SET 0 C", 8, set_C_0)));
     instrSetCBPrefix.insert(std::make_pair(0xC2, instruction("SET 0 D", 8, set_D_0)));
     instrSetCBPrefix.insert(std::make_pair(0xC3, instruction("SET 0 E", 8, set_E_0)));
     instrSetCBPrefix.insert(std::make_pair(0xC4, instruction("SET 0 H", 8, set_H_0)));
@@ -267,6 +250,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xDF, instruction("SET 3 A", 8, set_A_3)));
 
     instrSetCBPrefix.insert(std::make_pair(0xE0, instruction("SET 4 B", 8, set_B_4)));
+    instrSetCBPrefix.insert(std::make_pair(0xE1, instruction("SET 4 C", 8, set_C_4)));
     instrSetCBPrefix.insert(std::make_pair(0xE2, instruction("SET 4 D", 8, set_D_4)));
     instrSetCBPrefix.insert(std::make_pair(0xE3, instruction("SET 4 E", 8, set_E_4)));
     instrSetCBPrefix.insert(std::make_pair(0xE4, instruction("SET 4 H", 8, set_H_4)));
@@ -307,49 +291,70 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
 void init(std::map<unsigned char, instruction>& instrSet) {
 
     instrSet.insert(std::make_pair(0x00, instruction("NOP", 4, nop)));
-   //? instrSet.insert(std::make_pair(0x01, instruction("LD BC", 12, load_BC_nn)));
+    instrSet.insert(std::make_pair(0x01, instruction("LD BC", 12, load_BC_nn)));
     instrSet.insert(std::make_pair(0x02, instruction("LD (BC), A", 8, load_BC_ind_A)));
-    
-    
-    //? instrSet.insert(std::make_pair(0x06, instruction("LD B ", 8, )));
+    instrSet.insert(std::make_pair(0x06, instruction("LD B, d8", 8, load_B_n)));
     instrSet.insert(std::make_pair(0x07, instruction("RLCA", 4, rlc_A)));
-   //?  instrSet.insert(std::make_pair(0x08, instruction("LD (a16), SP", 20)));
-
+    instrSet.insert(std::make_pair(0x08, instruction("LD (a16), SP", 20, load_nn_SP)));
+    instrSet.insert(std::make_pair(0x09, instruction("ADD HL, BC", 8, add_HL_BC))); 
     instrSet.insert(std::make_pair(0x0A, instruction("LD A, (BC)", 8, load_A_BC_ind)));
-    
-   
-    //? instrSet.insert(std::make_pair(0x0E, instruction("NOP", 4, nop)));
+    instrSet.insert(std::make_pair(0x0B, instruction("DEC BC", 4, dec_BC)));
+    instrSet.insert(std::make_pair(0x0C, instruction("INC C", 4, inc_C)));
+    instrSet.insert(std::make_pair(0x0D, instruction("DEC C", 4, dec_C)));
+    instrSet.insert(std::make_pair(0x0E, instruction("LD C, d8", 8, load_C_n)));
     instrSet.insert(std::make_pair(0x0F, instruction("RRCA", 4, rrc_A)));
 
-    instrSet.insert(std::make_pair(0x10, instruction("SOP", 4, stop)));
-    //? instrSet.insert(std::make_pair(0x11, instruction("LD DE, d16", 12, rrc_A)));
+    instrSet.insert(std::make_pair(0x10, instruction("STOP", 4, stop)));
+    instrSet.insert(std::make_pair(0x11, instruction("LD DE, d16", 12, load_DE_nn)));
     instrSet.insert(std::make_pair(0x12, instruction("LD (DE), A", 8, load_DE_ind_A)));
-    //? instrSet.insert(std::make_pair(0x16, instruction("LD D, d8", 8, rrc_A)));
+    instrSet.insert(std::make_pair(0x13, instruction("INC DE", 8, inc_DE)));
+    instrSet.insert(std::make_pair(0x14, instruction("INC D", 4, inc_D)));
+    instrSet.insert(std::make_pair(0x15, instruction("DEC D", 4, dec_D)));  
+    instrSet.insert(std::make_pair(0x16, instruction("LD D, d8", 8, load_D_n)));
     instrSet.insert(std::make_pair(0x17, instruction("RLA", 4, rl_A)));
-    //? instrSet.insert(std::make_pair(0x18, instruction("JR r8", 4, jr)));
-    //? instrSet.insert(std::make_pair(0x1E, instruction("LD E, d8", 8, rrc_A)));
+    instrSet.insert(std::make_pair(0x18, instruction("JR r8", 8, jr)));
+    instrSet.insert(std::make_pair(0x19, instruction("ADD HL, DE", 8, add_HL_DE)));
+    instrSet.insert(std::make_pair(0x1A, instruction("LD A, (DE)", 8, load_A_DE_ind)));
+    instrSet.insert(std::make_pair(0x1B, instruction("DEC DE", 4, dec_DE)));
+    instrSet.insert(std::make_pair(0x1C, instruction("INC E", 4, inc_E)));
+    instrSet.insert(std::make_pair(0x1D, instruction("DEC E", 4, dec_E)));
+    instrSet.insert(std::make_pair(0x1E, instruction("LD E, d8", 8, load_E_n)));
     instrSet.insert(std::make_pair(0x1F, instruction("RRA", 4, rr_A)));
-    
-    // instrSet.insert(std::make_pair(0x20, instruction("RRCA", 4, rrc_A)));
-    // instrSet.insert(std::make_pair(0x21, instruction("RRCA", 4, rrc_A)));
-    instrSet.insert(std::make_pair(0x22, instruction("LD (HL+), A", 8, load_HL_ind_A)));
-    // instrSet.insert(std::make_pair(0x26, instruction("RRCA", 4, rrc_A)));
+
+    instrSet.insert(std::make_pair(0x20, instruction("JR NZ, r8", 8, jr_nz)));
+    instrSet.insert(std::make_pair(0x21, instruction("LD HL, d16", 8, load_HL_nn)));
+    instrSet.insert(std::make_pair(0x22, instruction("LD (HL+), A", 8, loadi_HL_ind_A)));
+    instrSet.insert(std::make_pair(0x23, instruction("INC HL", 8, inc_HL)));
+    instrSet.insert(std::make_pair(0x24, instruction("INC H", 4, inc_H)));
+    instrSet.insert(std::make_pair(0x25, instruction("DEC H", 4, dec_H)));
+    instrSet.insert(std::make_pair(0x26, instruction("LOAD H, n", 8, load_H_n)));
     instrSet.insert(std::make_pair(0x27, instruction("DAA", 4, daa)));
-    // instrSet.insert(std::make_pair(0x28, instruction("RRCA", 4, rrc_A)));
-    instrSet.insert(std::make_pair(0x2A, instruction("LD A, (HL+)", 8, load_A_HL_ind)));
-    // instrSet.insert(std::make_pair(0x2E, instruction("RRCA", 4, rrc_A)));
+    instrSet.insert(std::make_pair(0x28, instruction("JR Z r8", 8, jr_z)));
+    instrSet.insert(std::make_pair(0x29, instruction("ADD HL, HL", 8, add_HL_HL)));
+    instrSet.insert(std::make_pair(0x2A, instruction("LD A, (HL+)", 8, loadi_A_HL_ind)));
+    instrSet.insert(std::make_pair(0x2B, instruction("DEC HL", 12, dec_HL))); 
+    instrSet.insert(std::make_pair(0x2C, instruction("INC L", 4, inc_L)));
+    instrSet.insert(std::make_pair(0x2D, instruction("DEC L", 4, dec_L)));
+    instrSet.insert(std::make_pair(0x2E, instruction("LOAD L, n", 8, load_L_n)));
     instrSet.insert(std::make_pair(0x2F, instruction("CPL", 4, cpl)));
 
-    // instrSet.insert(std::make_pair(0x30, instruction("DAA", 4, daa)));
-    // instrSet.insert(std::make_pair(0x31, instruction("DAA", 4, daa)));
-    instrSet.insert(std::make_pair(0x32, instruction("LD (HL-), A ", 8, load_HL_ind_A)));
-    // instrSet.insert(std::make_pair(0x36, instruction("DAA", 4, daa)));
-    instrSet.insert(std::make_pair(0x37, instruction("SCF", 4, scf)));
-    // instrSet.insert(std::make_pair(0x38, instruction("DAA", 4, daa)));
-    instrSet.insert(std::make_pair(0x3A, instruction("LD A, (HL-)", 8, load_A_HL_ind)));
-    //instrSet.insert(std::make_pair(0x3E, instruction("DAA", 4, daa)));
-    instrSet.insert(std::make_pair(0x3F, instruction("CCF", 4, ccf)));
 
+    instrSet.insert(std::make_pair(0x30, instruction("JR NC, r8 ", 8, jp_nc)));
+    instrSet.insert(std::make_pair(0x31, instruction("LD SP, d16 ", 12, loadd_HL_ind_A)));
+    instrSet.insert(std::make_pair(0x32, instruction("LD (HL-), A ", 8, loadd_HL_ind_A)));
+    instrSet.insert(std::make_pair(0x33, instruction("INC SP", 8, inc_SP)));  
+    instrSet.insert(std::make_pair(0x34, instruction("INC (HL)", 12, inc_HL_ind)));  
+    instrSet.insert(std::make_pair(0x35, instruction("DEC (HL)", 12, dec_HL_ind)));  
+    instrSet.insert(std::make_pair(0x36, instruction("LD (HL), d8", 8, load_HL_ind_n)));
+    instrSet.insert(std::make_pair(0x37, instruction("SCF", 4, scf)));
+    instrSet.insert(std::make_pair(0x38, instruction("JR C, r8", 8, jp_c)));
+    instrSet.insert(std::make_pair(0x39, instruction("ADD HL, SP", 8, add_HL_SP)));  
+    instrSet.insert(std::make_pair(0x3A, instruction("LD A, (HL-)", 8, loadd_A_HL_ind)));
+    instrSet.insert(std::make_pair(0x3B, instruction("DEC SP", 4, dec_SP)));
+    instrSet.insert(std::make_pair(0x3C, instruction("INC A", 4, inc_A)));
+    instrSet.insert(std::make_pair(0x3D, instruction("DEC A", 4, dec_A)));
+    instrSet.insert(std::make_pair(0x3E, instruction("LD A, d8", 8, load_A_n)));    
+    instrSet.insert(std::make_pair(0x3F, instruction("CCF", 4, ccf)));
     
     instrSet.insert(std::make_pair(0x40, instruction("LD B, B", 4, load_B_B)));  
     instrSet.insert(std::make_pair(0x41, instruction("LD B, C", 4, load_B_C)));
@@ -418,23 +423,6 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0x7D, instruction("LD A, L", 4, load_A_L)));
     instrSet.insert(std::make_pair(0x7E, instruction("LD A, (HL)", 8, load_A_HL_ind)));  
     instrSet.insert(std::make_pair(0x7F, instruction("LD A, A", 4, load_A_A)));
-
-    
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
     
     //std::cout<<typeid(i).name()<<std::endl;
     instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, add_A_B)));  
@@ -486,6 +474,16 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0xA6, instruction("AND A, (HL)", 8, and_A_HL_ind)));  
     instrSet.insert(std::make_pair(0xA7, instruction("AND A, A", 4, and_A_A))); 
     //--------------instrSet.insert(std::make_pair(0xE6, instruction("AND A, #", 8, and_A_n)));
+    
+    instrSet.insert(std::make_pair(0xA8, instruction("XOR A, B", 4, xor_A_B)));  
+    instrSet.insert(std::make_pair(0xA9, instruction("XOR A, C", 4, xor_A_C)));
+    instrSet.insert(std::make_pair(0xAA, instruction("XOR A, D", 4, xor_A_D)));
+    instrSet.insert(std::make_pair(0xAB, instruction("XOR A, E", 4, xor_A_E)));  
+    instrSet.insert(std::make_pair(0xAC, instruction("XOR A, H", 4, xor_A_H)));
+    instrSet.insert(std::make_pair(0xAD, instruction("XOR A, L", 4, xor_A_L)));
+    instrSet.insert(std::make_pair(0xAE, instruction("XOR A, (HL)", 8, xor_A_HL_ind)));  
+    instrSet.insert(std::make_pair(0xAF, instruction("XOR A, A", 4, xor_A_A))); 
+    //-------------------instrSet.insert(std::make_pair(0xEE, instruction("XOR A, #", 8, xor_A_n)));
 
     instrSet.insert(std::make_pair(0xB0, instruction("OR A, B", 4, or_A_B)));  
     instrSet.insert(std::make_pair(0xB1, instruction("OR A, C", 4, or_A_C)));
@@ -497,16 +495,6 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0xB7, instruction("OR A, A", 4, or_A_A))); 
     //-------------------------instrSet.insert(std::make_pair(0xF6, instruction("OR A, #", 8, or_A_n)));
 
-    instrSet.insert(std::make_pair(0xA8, instruction("XOR A, B", 4, xor_A_B)));  
-    instrSet.insert(std::make_pair(0xA9, instruction("XOR A, C", 4, xor_A_C)));
-    instrSet.insert(std::make_pair(0xAA, instruction("XOR A, D", 4, xor_A_D)));
-    instrSet.insert(std::make_pair(0xAB, instruction("XOR A, E", 4, xor_A_E)));  
-    instrSet.insert(std::make_pair(0xAC, instruction("XOR A, H", 4, xor_A_H)));
-    instrSet.insert(std::make_pair(0xAD, instruction("XOR A, L", 4, xor_A_L)));
-    instrSet.insert(std::make_pair(0xAE, instruction("XOR A, (HL)", 8, xor_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0xAF, instruction("XOR A, A", 4, xor_A_A))); 
-    //-------------------instrSet.insert(std::make_pair(0xEE, instruction("XOR A, #", 8, xor_A_n)));
-
     instrSet.insert(std::make_pair(0xB8, instruction("CP A, B", 4, cp_A_B)));  
     instrSet.insert(std::make_pair(0xB9, instruction("CP A, C", 4, cp_A_C)));
     instrSet.insert(std::make_pair(0xBA, instruction("CP A, D", 4, cp_A_D)));
@@ -517,43 +505,119 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0xBF, instruction("CP A, A", 4, cp_A_A))); 
     //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, cp_A_n)));
 
+    instrSet.insert(std::make_pair(0xC0, instruction("RET NZ", 8, ret_nz)));  
+    instrSet.insert(std::make_pair(0xC1, instruction("POP BC", 12, pop_BC)));
+    instrSet.insert(std::make_pair(0xC2, instruction("JP NZ, a16", 8, jp_nz)));
+    instrSet.insert(std::make_pair(0xC3, instruction("JP a16", 8, jp)));  
+    instrSet.insert(std::make_pair(0xC4, instruction("CALL NZ, a16", 12, call_nz)));
+    instrSet.insert(std::make_pair(0xC5, instruction("PUSH BC", 16, push_BC)));
+    instrSet.insert(std::make_pair(0xC6, instruction("ADD A, d8", 8, add_A_n)));  
+    instrSet.insert(std::make_pair(0xC7, instruction("RST 00", 32, rst_0)));
+    //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, cp_A_n)));
+
+    instrSet.insert(std::make_pair(0xC8, instruction("RET Z", 8, ret_z)));  
+    instrSet.insert(std::make_pair(0xC9, instruction("RET", 8, ret)));
+    instrSet.insert(std::make_pair(0xCA, instruction("JP Z, a16", 12, jp_z)));
+    instrSet.insert(std::make_pair(0xCB, instruction("CB Prefix", 4, cb)));  
+    instrSet.insert(std::make_pair(0xCC, instruction("CALL Z, a16", 12, call_z)));
+    instrSet.insert(std::make_pair(0xCD, instruction("CALL a16", 12, call)));
+    instrSet.insert(std::make_pair(0xCE, instruction("ADC A, d8", 8, adc_A_n)));  
+    instrSet.insert(std::make_pair(0xCF, instruction("RST 08", 32, rst_8))); 
+
+    instrSet.insert(std::make_pair(0xD0, instruction("RET NC", 8, ret_nc)));  
+    instrSet.insert(std::make_pair(0xD1, instruction("POP DE", 12, pop_DE)));
+    instrSet.insert(std::make_pair(0xD2, instruction("JP NC, a16", 8, jp_nc)));
+    instrSet.insert(std::make_pair(0xD3, instruction("UNDEFINED", 0, not_defined)));
+    instrSet.insert(std::make_pair(0xD4, instruction("CALL NC, a16", 12, call_nc)));
+    instrSet.insert(std::make_pair(0xD5, instruction("PUSH DE", 16, push_DE)));
+    instrSet.insert(std::make_pair(0xD6, instruction("SUB A, d8", 8, sub_A_n)));  
+    instrSet.insert(std::make_pair(0xD7, instruction("RST 10", 32, rst_10)));
+    //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, cp_A_n)));
+
+    instrSet.insert(std::make_pair(0xD8, instruction("RET c", 8, ret_c)));  
+    instrSet.insert(std::make_pair(0xD9, instruction("RETI", 8, reti)));
+    instrSet.insert(std::make_pair(0xDA, instruction("JP C, a16", 12, jp_c)));
+    instrSet.insert(std::make_pair(0xDB, instruction("UNDEFINED", 0, not_defined)));  
+    instrSet.insert(std::make_pair(0xDC, instruction("CALL C, a16", 12, call_c)));
+    instrSet.insert(std::make_pair(0xDD, instruction("UNDEFINED", 0, not_defined)));
+    instrSet.insert(std::make_pair(0xDE, instruction("SBC A, d8", 8, sbc_A_n)));  
+    instrSet.insert(std::make_pair(0xDF, instruction("RST 18", 32, rst_18))); 
+
+    instrSet.insert(std::make_pair(0xE0, instruction("LDH a8, A", 12, loadh_n_ind_A)));  
+    instrSet.insert(std::make_pair(0xE1, instruction("POP HL", 12, pop_HL)));
+    instrSet.insert(std::make_pair(0xE2, instruction("LD (C), A", 8, load_C_ind_A)));
+    instrSet.insert(std::make_pair(0xE3, instruction("UNDEFINED", 0, not_defined)));
+    instrSet.insert(std::make_pair(0xE4, instruction("UNDEFINED", 0, not_defined)));
+    instrSet.insert(std::make_pair(0xE5, instruction("PUSH HL", 16, push_HL)));
+    instrSet.insert(std::make_pair(0xE6, instruction("AND A, d8", 8, and_A_n)));  
+    instrSet.insert(std::make_pair(0xE7, instruction("RST 20", 32, rst_20)));
+    //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, cp_A_n)));
+
+    instrSet.insert(std::make_pair(0xE8, instruction("ADD SP, r8", 16, add_SP_n)));  
+    instrSet.insert(std::make_pair(0xE9, instruction("JP (HL)", 4, jp_hl_ind)));
+    instrSet.insert(std::make_pair(0xEA, instruction("LD a16, A", 16, load_nn_ind_A)));
+    instrSet.insert(std::make_pair(0xEB, instruction("UNDEFINED", 0, not_defined)));  
+    instrSet.insert(std::make_pair(0xEC, instruction("UNDEFINED", 0, not_defined)));
+    instrSet.insert(std::make_pair(0xED, instruction("UNDEFINED", 0, not_defined)));
+    instrSet.insert(std::make_pair(0xEE, instruction("XOR A, d8", 8, xor_A_n)));  
+    instrSet.insert(std::make_pair(0xEF, instruction("RST 28", 32, rst_28))); 
+
+    instrSet.insert(std::make_pair(0xF0, instruction("LDH A, a8", 12, loadh_A_n_ind)));  
+    instrSet.insert(std::make_pair(0xF1, instruction("POP AF", 12, pop_AF)));
+    instrSet.insert(std::make_pair(0xF2, instruction("LD A, (C)", 8, load_A_C_ind)));
+    instrSet.insert(std::make_pair(0xF3, instruction("DI", 4, di)));
+    instrSet.insert(std::make_pair(0xF4, instruction("UNDEFINED", 0, not_defined)));
+    instrSet.insert(std::make_pair(0xF5, instruction("PUSH AF", 16, push_AF)));
+    instrSet.insert(std::make_pair(0xF6, instruction("OR A, d8", 8, or_A_n)));  
+    instrSet.insert(std::make_pair(0xF7, instruction("RST 30", 32, rst_30)));
+    //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, cp_A_n)));
+
+    instrSet.insert(std::make_pair(0xF8, instruction("LD HL, SP+r8", 12, loadhl_SP_n))); 
+    instrSet.insert(std::make_pair(0xF9, instruction("LD SP, HL", 8, load_SP_HL)));
+    instrSet.insert(std::make_pair(0xFA, instruction("LD A, a16", 16, load_A_n)));
+    instrSet.insert(std::make_pair(0xFB, instruction("EI", 4, ei)));
+    instrSet.insert(std::make_pair(0xFD, instruction("UNDEFINED", 0, not_defined)));
+    instrSet.insert(std::make_pair(0xFC, instruction("UNDEFINED", 0, not_defined))); 
+    instrSet.insert(std::make_pair(0xFE, instruction("XOR A, d8", 8, xor_A_n)));  
+    instrSet.insert(std::make_pair(0xFF, instruction("RST 28", 32, rst_28))); 
+
+
+
+
+
+
+
+
+
+
+
+
     instrSet.insert(std::make_pair(0x04, instruction("INC B", 4, inc_B)));  
     instrSet.insert(std::make_pair(0x0C, instruction("INC C", 4, inc_C)));
-    instrSet.insert(std::make_pair(0x14, instruction("INC D", 4, inc_D)));
+
     instrSet.insert(std::make_pair(0x1C, instruction("INC E", 4, inc_E)));  
-    instrSet.insert(std::make_pair(0x24, instruction("INC H", 4, inc_H)));
-    instrSet.insert(std::make_pair(0x2C, instruction("INC L", 4, inc_L)));
-    instrSet.insert(std::make_pair(0x34, instruction("INC (HL)", 12, inc_HL_ind)));  
-    instrSet.insert(std::make_pair(0x3C, instruction("INC A", 4, inc_A)));
-
+    
+    
+  
     instrSet.insert(std::make_pair(0x05, instruction("DEC B", 4, dec_B)));  
-    instrSet.insert(std::make_pair(0x0D, instruction("DEC C", 4, dec_C)));
-    instrSet.insert(std::make_pair(0x15, instruction("DEC D", 4, dec_D)));
+    
+    
     instrSet.insert(std::make_pair(0x1D, instruction("DEC E", 4, dec_E)));  
-    instrSet.insert(std::make_pair(0x25, instruction("DEC H", 4, dec_H)));
-    instrSet.insert(std::make_pair(0x2D, instruction("DEC L", 4, dec_L)));
-    instrSet.insert(std::make_pair(0x35, instruction("DEC (HL)", 12, dec_HL_ind)));  
-    instrSet.insert(std::make_pair(0x3D, instruction("DEC A", 4, dec_A)));
-
-    instrSet.insert(std::make_pair(0x09, instruction("ADD HL, BC", 8, add_HL_BC)));  
-    instrSet.insert(std::make_pair(0x19, instruction("ADD HL, DE", 8, add_HL_DE)));
-    instrSet.insert(std::make_pair(0x29, instruction("ADD HL, HL", 8, add_HL_HL)));
-    instrSet.insert(std::make_pair(0x39, instruction("ADD HL, SP", 8, add_HL_SP)));  
+    
+  
 
     //---------------------instrSet.insert(std::make_pair(0xE8, instruction("ADD SP, N", 16, add_SP_n)));  
 
     instrSet.insert(std::make_pair(0x03, instruction("INC BC", 8, inc_BC)));  
-    instrSet.insert(std::make_pair(0x13, instruction("INC DE", 8, inc_DE)));
-    instrSet.insert(std::make_pair(0x23, instruction("INC HL", 8, inc_HL)));
-    instrSet.insert(std::make_pair(0x33, instruction("INC SP", 8, inc_SP)));  
+    
+    
  
-    instrSet.insert(std::make_pair(0x0B, instruction("DEC BC", 4, dec_BC)));
+    
     instrSet.insert(std::make_pair(0x1B, instruction("DEC DE", 4, dec_DE)));
-    instrSet.insert(std::make_pair(0x2B, instruction("DEC HL", 12, dec_HL)));  
-    instrSet.insert(std::make_pair(0x3B, instruction("DEC SP", 4, dec_SP)));
+     
 
 
-
+    
 
 
 
@@ -561,7 +625,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0x0E, instruction("LOAD C, n", 8, load_C_n)));
     instrSet.insert(std::make_pair(0x16, instruction("LOAD D, n", 8, load_D_n)));  
     instrSet.insert(std::make_pair(0x1E, instruction("LOAD E, n", 8, load_E_n)));
-    instrSet.insert(std::make_pair(0x26, instruction("LOAD H, n", 8, load_H_n)));
+    
     instrSet.insert(std::make_pair(0x2E, instruction("LOAD L, n", 8, load_L_n)));   */
 
 
@@ -573,7 +637,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
 }
 
 //----------------------- EMPTY -------------------------------------
-static void not_defined() {
+static void not_defined(Cpu* c) {
     std::cout<<"Instruction not defined"<<std::endl;
 }
 
@@ -1320,7 +1384,7 @@ static void nop(Cpu* c) {}
 static void halt(Cpu* c) {
     c->setPC(c->getPC() - 1);
 }
-static void stop() {}
+static void stop(Cpu* c) {}
 static void di(Cpu* c) {
     c->resetIntMasterEnable();
 }
@@ -1922,7 +1986,10 @@ static void jp_c(Cpu* c) {
     if(c->isFLAG_Carry())
         jp(c);
 }
-static void jp_hl_ind(Cpu* c) {c->setPC(c->getHL());}
+static void jp_hl_ind(Cpu* c) {
+    WORD newPc = c->readWord(c->getHL());
+    c->setPC(newPc);
+    }
 static void jr(Cpu* c) {
     signed char n = c->readByte(c->getPC());
     c->setPC(c->getPC() + n);

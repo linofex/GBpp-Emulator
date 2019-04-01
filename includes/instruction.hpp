@@ -24,7 +24,7 @@ void initCBPrefix(std::map<unsigned char, instruction>&);
 //________________________________ 8/bit Arithmetic_____________________________
 
 //------------------- NOT_DEFINED -------------------
-static void not_defined(void);
+static void not_defined(Cpu*);
 
 //------------------- ADD -------------------
 static void add(Cpu*, unsigned char);
@@ -267,7 +267,7 @@ static void load_nn_ind_A(Cpu*);
 //------------------- LOAD A, (C) -------------------
 static void load_A_C_ind(Cpu*);
 //------------------- LOAD (C), A -------------------
-static void load_A_C_ind(Cpu*);
+static void load_C_ind_A(Cpu*);
 
 /* //------------------- LOAD A, (HLD) -------------------
 static void load_A_HLD_ind(Cpu*);
@@ -324,8 +324,6 @@ static void pop_HL(Cpu*);
 
 //------------------- CB -------------------
 static void cb(Cpu*);
-
-
 
 //________________________________ Miscellaneous _____________________________
 
@@ -498,14 +496,14 @@ static void bit_L_5(Cpu*);
 static void bit_L_6(Cpu*);
 static void bit_L_7(Cpu*);
 
-static void bit_a_HL_ind_0(Cpu*);
-static void bit_a_HL_ind_1(Cpu*);
-static void bit_a_HL_ind_2(Cpu*);
-static void bit_a_HL_ind_3(Cpu*);
-static void bit_a_HL_ind_4(Cpu*);
-static void bit_a_HL_ind_5(Cpu*);
-static void bit_a_HL_ind_6(Cpu*);
-static void bit_a_HL_ind_7(Cpu*);
+static void bit_HL_ind_0(Cpu*);
+static void bit_HL_ind_1(Cpu*);
+static void bit_HL_ind_2(Cpu*);
+static void bit_HL_ind_3(Cpu*);
+static void bit_HL_ind_4(Cpu*);
+static void bit_HL_ind_5(Cpu*);
+static void bit_HL_ind_6(Cpu*);
+static void bit_HL_ind_7(Cpu*);
 
 //------------------- SET -------------------
 static BYTE set_b_r(Cpu*, unsigned char);

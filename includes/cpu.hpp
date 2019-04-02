@@ -104,13 +104,13 @@ class Cpu {
         inline void setDE(const WORD t_de) {regDE.reg = t_de;}
         inline void setSP(const WORD t_sp) {sp = t_sp;}
 
-        inline BYTE isFLAG_Zero(void) {return regAF.low & (1 << FLAG_Z);}
-        inline BYTE isFLAG_Neg(void) {return regAF.low & (1 << FLAG_N);}
-        inline BYTE isFLAG_HalfCarry(void) {return regAF.low & (1 << FLAG_H);}
-        inline BYTE isFLAG_Carry(void) {return regAF.low & (1 << FLAG_C);}
+        inline BYTE isFLAG_Zero(void) {return (regAF.low & FLAG_Z);}
+        inline BYTE isFLAG_Neg(void) {return (regAF.low &  FLAG_N);}
+        inline BYTE isFLAG_HalfCarry(void) {return (regAF.low & FLAG_H);}
+        inline BYTE isFLAG_Carry(void) {return (regAF.low &  FLAG_C);}
 
-        inline void setFlag(const BYTE n) {regAF.high |= n;}
-        inline void resetFlag(const BYTE n) {regAF.high &= ~n;}
+        inline void setFlag(const BYTE n) {regAF.low |= n;}
+        inline void resetFlag(const BYTE n) {regAF.low &= ~n;}
 
         inline BYTE readByte(WORD t_addr) {return mem->readByte(t_addr);}
         inline void writeByte(WORD t_addr, BYTE t_val) {mem->writeByte(t_addr, t_val);}

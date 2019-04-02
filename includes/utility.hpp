@@ -11,10 +11,10 @@ typedef unsigned short WORD; // 16bit
 #define JOYPAD  0x10  
 
 //flag register F (only 4 bit are used) |Z|N|H|C|x|x|x|x|
-#define FLAG_Z 7
-#define FLAG_N 6
-#define FLAG_H 5
-#define FLAG_C 4
+#define FLAG_Z 0x80 // bit 7
+#define FLAG_N 0x40 // bit 6
+#define FLAG_H 0x20 // bit 5
+#define FLAG_C 0x10 // bit 4
 
 //regAF.reg -> AF, regAF.high -> A, regAF.low -> F
 union REGISTER {

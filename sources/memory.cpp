@@ -1,17 +1,18 @@
 
 #include "../includes/memory.hpp"
 #include "../includes/dma.hpp"
-
 #include <iostream>
 //#include "../includes/cpu.hpp"
 
 /*
+    According to PanDoc http://bgb.bircd.org/pandocs.htm#memorymap 
     unsigned char rom[32*KB];     // 0000-7FFF space where the rom is stored 
     unsigned char vRam[8*KB];     // 8000-9FFF space where video memory is stored
     unsigned char eRam[8*KB];     // A000-BFFF in cartridge space
     unsigned char wram[8*KB];     // C000-CFFF space of work ram 
     unsigned char echowRam[8*KB]; // E000-FDFF echo space of the internal ram
-    unsigned char OAM[160*B];     // FE00-FE9F space  where sprite attributes reside (Sprite Attribute Table)
+    unsigned char OAM[160*B];     // FE00-FE9F space where sprite attributes reside (Sprite Attribute Table)
+                                  // FEA0-FEFF not Usable
     unsigned char ioPorts[127*B]; // FF00-FF7F I/O ports
     unsigned char hRam[127*B];    // FF80-FFFE high ram
     unsigned char IEReg;          // Interrupt Enable Register
@@ -24,7 +25,7 @@ Memory::Memory():
     wRam(8*KB, 0x00),
     echowRam(8*KB,0x00),
     OAM(160,0x00),
-    ioPorts(127, 0x00),
+    ioPorts(128, 0x00),
     hRam(127,0x00){}
 
 BYTE Memory::readByte(const WORD t_add) const {
@@ -49,8 +50,11 @@ BYTE Memory::readByte(const WORD t_add) const {
         return eRam.at(t_add & 0x1FFF); // from 0 to 8191 (8KB)
     }
     // OAM
-    else if (t_add >= 0xFE00 && t_add < 0xFF00){
-        return OAM.at(t_add & 0x00FF); // from 0 to 159 (8KB)
+    else if (t_add >= 0xFE00 && t_add < 0xFEA0){
+        return OAM.at(t_add & 0x00FF); // from 0 to 159
+    }
+    else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
+      std::cerr << "[ERROR] MEMORY location not usable!\n";
     }
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
@@ -93,9 +97,13 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
          eRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
     }
     // OAM
-    else if (t_add >= 0xFE00 && t_add < 0xFF00){
+    else if (t_add >= 0xFE00 && t_add < 0xFEA0){
          OAM[t_add & 0x00FF] = t_value; // from 0 to 159 (8KB)
     }
+    // else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
+    //  non usata
+    // }
+
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
         ioPorts[t_add & 0x007F] = t_value; //

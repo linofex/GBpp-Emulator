@@ -11,6 +11,7 @@ void InterruptHandler::serveInterrupt(const BYTE t_interrupt, Memory* t_memory, 
     // Save PC in the stack
     t_cpu->pushWord(t_cpu->getPC());
     
+    t_cpu->resethalt(); // power on the CPU
     //t_memory.writeInStack(t_cpu, t_cpu->getPC());
     // Point the PC to the interrupt routine
     switch (t_interrupt){
@@ -25,6 +26,7 @@ void InterruptHandler::serveInterrupt(const BYTE t_interrupt, Memory* t_memory, 
             break;
         case JOYPAD:
             t_cpu->setPC(JOYPAD_ADD);
+            t_cpu->resetStop();
     }
 }
 

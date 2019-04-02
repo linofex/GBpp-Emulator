@@ -49,6 +49,8 @@ class Cpu {
 
         //interrupt master enable
         bool intMasterEnable;       //an interrupt can only be served IFF this is TRUE
+        bool halt; //use to halt the CPU after HALT instruction
+        bool stop; //use to stop the CPU after STOP instruction
 
         //execution functions
         BYTE fetch(void);
@@ -126,7 +128,16 @@ class Cpu {
 
         struct instruction getInstrSetAt(BYTE);
         struct instruction getInstrSetCBPrefixAt(BYTE);
-        
+
+        inline void setStop(){stop = true;}
+        inline void setHalt(){halt = true;}
+        inline void resetStop(){stop = false;}
+        inline void resethalt(){halt = false;}
+        inline bool isHalted() const {return halt;}
+        inline bool isStopped() const {return stop;}
+
+
+
 };
 
 #endif

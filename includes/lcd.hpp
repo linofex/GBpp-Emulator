@@ -19,15 +19,14 @@ class Lcd {
         void setScanline(BYTE);
         bool testInterrupt(BYTE);
         bool testCoincidence(void);
-
-    public:
-        Lcd(void);
-        Lcd(Memory* /*, Gpu* */);
-
         bool isLCDEnabled(void);
         BYTE getLCDMode(void);
         void setLCDMode(BYTE);
         BYTE getLCDModeRegister(void);
+
+    public:
+        Lcd(void);
+        Lcd(Memory* /*, Gpu* */);
         void lcdStep(int);
 
 

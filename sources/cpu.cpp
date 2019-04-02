@@ -38,17 +38,16 @@ struct instruction Cpu::getInstrSetCBPrefixAt(BYTE t_opcode) {
 
 
 void Cpu::printCpuState(){
-    std::cout<<"-------------------------------------------------\n";
-    std::cout<< "PC: "<< std::hex<< (int)getPC() - 1 << std::endl;
-    std::cout<< "SP: "<< std::hex<< (int)getSP() << std::endl << std::endl;
-    std::cout<< "A: "<< std::hex<< (int)getA() << std::endl;
-    std::cout<< "B: "<< std::hex<< (int)getB() << std::endl;
-    std::cout<< "C: "<< std::hex<< (int)getC() << std::endl;
-    std::cout<< "D: "<< std::hex<< (int)getD() << std::endl;
-    std::cout<< "E: "<< std::hex<< (int)getE() << std::endl;
-    std::cout<< "H: "<< std::hex<< (int)getH() << std::endl;
-    std::cout<< "L: "<< std::hex<< (int)getL() << std::endl;
-    std::cout<< "F: "<< std::bitset<8>(getF()) << std::endl;
+    std::cout<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
+    std::cout<< "SP: "<< std::hex<< (int)getSP() << "\t";
+    std::cout<< "A: "<< std::hex<< (int)getA() << "\t";
+    std::cout<< "B: "<< std::hex<< (int)getB() << "\t";
+    std::cout<< "C: "<< std::hex<< (int)getC() << "\t";
+    std::cout<< "D: "<< std::hex<< (int)getD() << "\t";
+    std::cout<< "E: "<< std::hex<< (int)getE() << "\t";
+    std::cout<< "H: "<< std::hex<< (int)getH() << "\t";
+    std::cout<< "L: "<< std::hex<< (int)getL() << "\t";
+    std::cout<< "F: "<< std::bitset<8>(getF()) << "\n";
     // std::cout<< "AF: "<< std::hex<< (int)getAF() << std::endl;
     // std::cout<< "BC: "<< std::hex<< (int)getBC() << std::endl;
     // std::cout<< "DE: "<< std::hex<< (int)getDE() << std::endl;
@@ -56,6 +55,7 @@ void Cpu::printCpuState(){
 }
 
 BYTE Cpu::step() {
+    if(isHalted() | isStopped()){return 0;}
     BYTE opcode = Cpu::fetch();
     std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
     instruction instr = Cpu::decode(opcode);
@@ -64,15 +64,29 @@ BYTE Cpu::step() {
 }
 
 void Cpu::stepDebug(std::set<BYTE>* old_opcode){
+    bool flag = false;
+    std::cout<< "********************************************************************************************\n";
+    printCpuState();
     BYTE opcode = Cpu::fetch();
     instruction instr = Cpu::decode(opcode);
     if(old_opcode->find(opcode) == old_opcode->end()){
         old_opcode->insert(opcode);
-        printCpuState();
-        std::cout<<instr.name<<'\t'<<(int)opcode<<std::endl;
+        flag = true;
+        //std::cout<<instr.name<<'\t'<<(int)opcode<<std::endl;
     }
     Cpu::execute(instr);
-   
+    // if(old_opcode->find(opcode) == old_opcode->end()){
+    //     old_opcode->insert(opcode);
+    //     std::cout<<instr.name<<'\t'<<(int)opcode<<std::endl;
+    //     if(old_opcode->find(opcode) == old_opcode->end()){
+    //     old_opcode->insert(opcode);
+    //     std::cout<<instr.name<<'\t'<<(int)opcode<<std::endl;
+    // }
+    printCpuState();
+    std::cout<< (flag==true?"\nNEW":"\nDONE") << "\tInstruction: " <<instr.name<<"\topcode: "<<(int)opcode<< std::endl;
+    std::cout<< "********************************************************************************************\n";
+
+
     
 }
 
@@ -134,6 +148,8 @@ void Cpu::reset() {
     mem->writeByte(0xFFFF, 0x00);
     
     intMasterEnable = false;
+    halt = false;
+    stop = false;
     //Cpu::step();        //for debug
 }
 
@@ -145,6 +161,7 @@ BYTE Cpu::fetch(void) {
 
     return opcode;
 }
+
 
 struct instruction Cpu::decode(BYTE opcode) {
    // std::cout<<"decode"<<std::endl;

@@ -14,24 +14,30 @@ Lcd::Lcd(Memory* t_memory/* , Gpu* gpu_ */) {
 bool Lcd::isLCDEnabled() {
     return (memory->readByte(LCDCONTROL) >> 7);
 }
+
 BYTE Lcd::getLCDMode() {
     return (memory->readByte(LCDSTATUS) & 0x03);
 }
+
 BYTE Lcd::getLCDModeRegister() {
     return memory->readByte(LCDSTATUS);
 }
+
 void Lcd::setLCDMode(BYTE t_val) {
     unsigned char mode = Lcd::getLCDModeRegister() & 0xFC;   //11111100
     unsigned char newMode = mode | t_val;
 
     memory->writeByte(LCDSTATUS, newMode);
 }
+
 unsigned char Lcd::getScanline() {
     return (memory->readByte(LCDLY));
 }
+
 void Lcd::setScanline(BYTE t_val) {
     memory->writeByte(LCDLY, t_val);
 }
+
 void Lcd::lcdStep(int cycles) {
     
     Lcd::setLCDStatus();
@@ -61,6 +67,7 @@ void Lcd::lcdStep(int cycles) {
             Lcd::setScanline(currentLine++);
     }
 }
+
 void Lcd::setLCDStatus() {
     if(!isLCDEnabled()){
         Lcd::setLCDMode(MODE1);
@@ -90,6 +97,7 @@ void Lcd::setLCDStatus() {
         InterruptHandler::requestInterrupt(memory, LCD);
     }
 }
+
 bool Lcd::testInterrupt(BYTE t_mode) {
     switch(t_mode) {
         case MODE0:

@@ -340,7 +340,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
 
 
     instrSet.insert(std::make_pair(0x30, instruction("JR NC, r8 ", 8, jp_nc)));
-    instrSet.insert(std::make_pair(0x31, instruction("LD SP, d16 ", 12, loadd_HL_ind_A)));
+    instrSet.insert(std::make_pair(0x31, instruction("LD SP, d16 ", 12, load_SP_nn)));
     instrSet.insert(std::make_pair(0x32, instruction("LD (HL-), A ", 8, loadd_HL_ind_A)));
     instrSet.insert(std::make_pair(0x33, instruction("INC SP", 8, inc_SP)));  
     instrSet.insert(std::make_pair(0x34, instruction("INC (HL)", 12, inc_HL_ind)));  
@@ -1382,9 +1382,18 @@ static void scf(Cpu* c) {
 }
 static void nop(Cpu* c) {}
 static void halt(Cpu* c) {
-    c->setPC(c->getPC() - 1);
+    if(c->isIntMasterEnable()){
+        c->setHalt();
+    }
+    else{
+        std::cout << "\n** HALT with master enable == false **\n";
+    }
+   // c->setPC(c->getPC() - 1);
+    
 }
-static void stop(Cpu* c) {}
+static void stop(Cpu* c) {
+    c->setStop();
+}
 static void di(Cpu* c) {
     c->resetIntMasterEnable();
 }

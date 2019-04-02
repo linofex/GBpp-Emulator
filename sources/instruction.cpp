@@ -722,15 +722,15 @@ static void sub(Cpu* c, unsigned char n) {
     
     c->setFlag(FLAG_N);
         
-    if(res < 0)  //sub with borrow
-        c->setFlag(FLAG_C);
-    else
+    if(res < 0)  //sub with no borrow
         c->resetFlag(FLAG_C);
-        
-    if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if borrow from bit 3
-        c->setFlag(FLAG_H);
     else
+        c->setFlag(FLAG_C);
+        
+    if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if no borrow from bit 4
         c->resetFlag(FLAG_H);
+    else
+        c->setFlag(FLAG_H);
 }
 static void sub_A_B(Cpu* c) {sub(c, c->getB());}
 static void sub_A_C(Cpu* c) {sub(c, c->getC());}
@@ -878,15 +878,15 @@ static void cp(Cpu* c, unsigned char n) {
     
     c->setFlag(FLAG_N);
         
-    if(res < 0)  //sub with borrow
-        c->setFlag(FLAG_C);
-    else
+    if(res < 0)  //sub with no borrow
         c->resetFlag(FLAG_C);
-        
-    if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if borrow from bit 3
-        c->setFlag(FLAG_H);
     else
+        c->setFlag(FLAG_C);
+        
+    if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if no borrow from bit 4
         c->resetFlag(FLAG_H);
+    else
+        c->setFlag(FLAG_H);
 }
 static void cp_A_B(Cpu* c) {cp(c, c->getB());}
 static void cp_A_C(Cpu* c) {cp(c, c->getC());}
@@ -946,10 +946,15 @@ static BYTE dec(Cpu* c, unsigned char n) {
     
     c->setFlag(FLAG_N);
         
-    if(((n & 0x0F)- 1) < 0)    //if borrow from bit 3
-        c->setFlag(FLAG_H);
-    else
+    if(((n & 0x0F)- 1) < 0)    //if no borrow from bit 4
         c->resetFlag(FLAG_H);
+    else
+        c->setFlag(FLAG_H);
+
+    if((n - 1) < 0)    //if no borrow from bit 7
+        c->resetFlag(FLAG_C);
+    else
+        c->setFlag(FLAG_C);
 
     return (unsigned char) res;
 }

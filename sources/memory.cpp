@@ -55,6 +55,7 @@ BYTE Memory::readByte(const WORD t_add) const {
     }
     else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
       std::cerr << "[ERROR] MEMORY location not usable!\n";
+      return 0x00;
     }
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
@@ -100,10 +101,9 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
     else if (t_add >= 0xFE00 && t_add < 0xFEA0){
          OAM[t_add & 0x00FF] = t_value; // from 0 to 159 (8KB)
     }
-    // else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
-    //  non usata
-    // }
-
+    else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
+      std::cerr << "[ERROR] MEMORY location not writable!\n";
+    }
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
         ioPorts[t_add & 0x007F] = t_value; //

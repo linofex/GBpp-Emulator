@@ -3,6 +3,6 @@
 
 # ignore main executable
 sources/main
-
+gameboy
 # ignore gameboy executable
 gameboy.exe

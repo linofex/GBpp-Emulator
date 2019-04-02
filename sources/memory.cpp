@@ -26,9 +26,25 @@ Memory::Memory():
     echowRam(8*KB,0x00),
     OAM(160,0x00),
     ioPorts(128, 0x00),
-    hRam(127,0x00){}
+    hRam(127,0x00){
+        keyStatus = 0x00;
+    }
 
-BYTE Memory::readByte(const WORD t_add) const {
+BYTE Memory::getJoypadStatus(WORD t_add) {
+    BYTE joypad = ioPorts.at(t_add & 0x007F);
+    BYTE keys = 0x00;
+
+    if((joypad & 0x30) == 32) {     //Select direction keys (select = 0)
+        keys = (keyStatus & 0x0F);
+    }
+    else {                          //Select button keys (select = 0)
+        keys = (keyStatus >> 4);
+    }
+
+    return (joypad & 0xF0) | keys;
+}
+
+BYTE Memory::readByte(const WORD t_add) {
     // ROM
     if(t_add < 0x8000){
         return rom.at(t_add);
@@ -59,11 +75,14 @@ BYTE Memory::readByte(const WORD t_add) const {
     }
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
-        return ioPorts.at(t_add & 0x007F); //
+        if(t_add == 0xFF00) {    //JOYPAD status register
+            return getJoypadStatus(t_add);
+        }
+        return ioPorts.at(t_add & 0x007F); // from 0 to 127
     }
     // high speed ram
     else if(t_add >= 0xFF80 && t_add < 0xFFFF){
-        return hRam.at(t_add & 0x007F); // from to 0 to 125
+        return hRam.at(t_add & 0x007F); // from to 0 to 127
     }
     //Interrupt Enable Register
     else{ 
@@ -71,7 +90,7 @@ BYTE Memory::readByte(const WORD t_add) const {
     }
 }
 
-WORD Memory::readWord(const WORD t_add) const {
+WORD Memory::readWord(const WORD t_add) {
     return readByte(t_add) + (readByte(t_add + 1) << 8);
 }
 

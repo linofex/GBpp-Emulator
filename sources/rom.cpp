@@ -23,14 +23,14 @@ Rom::Rom (const std::string t_RomFileName){
 }
 
 
-void Rom::PrintRomName() const{
+void Rom::printRomName() const{
     std::cout << "ROM name: ";
     std::vector<BYTE>::const_iterator it = game.begin() + 0x0134;
     for (; it <= game.begin() + 0x0142; ++it){std::cout << *it;}
     std::cout << std::endl;
 }
 
-void Rom::PrintNintendoGraphic() const {
+void Rom::printNintendoGraphic() const {
     std::cout << "Nintendo Graphic: ";
     std::vector<BYTE>::const_iterator it = game.begin() + 0x0104;
     for (; it <= game.begin()+0x0133; ++it){std::cout << std::hex << (unsigned int)*it << " ";}
@@ -38,13 +38,13 @@ void Rom::PrintNintendoGraphic() const {
 
 }
 
-std::vector<BYTE> Rom::GetNintendoLogo()const{
+std::vector<BYTE> Rom::getNintendoLogo()const{
     std::vector<BYTE>::const_iterator begin = game.begin() + 0x0104;
     std::vector<BYTE>::const_iterator end = game.begin() + 0x0134;
     return std::vector<BYTE>(begin, end);
 }
 
-std::vector<BYTE> Rom::GetRomName()const{
+std::vector<BYTE> Rom::getRomName()const{
     std::vector<BYTE>::const_iterator begin = game.begin() + 0x0134;
     std::vector<BYTE>::const_iterator end = game.begin() + 0x0142;
     return std::vector<BYTE>(begin, end);

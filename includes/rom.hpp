@@ -33,11 +33,11 @@
             Rom();
             ~Rom();
             Rom (const std::string t_RomFileName);
-            void PrintRomName() const;
-            std::vector<BYTE> GetNintendoLogo()const;
-            std::vector<BYTE> GetRomName()const;
-            std::vector<BYTE> GetRom()const{ return game; };
-            void PrintNintendoGraphic()const;
+            void printRomName() const;
+            std::vector<BYTE> getNintendoLogo()const;
+            std::vector<BYTE> getRomName()const;
+            std::vector<BYTE> getRom()const{ return game; };
+            void printNintendoGraphic()const;
             // void PrintBeginPoint() const;
             // void PrintRomSize()const;
             // void PrintRamSize()const;

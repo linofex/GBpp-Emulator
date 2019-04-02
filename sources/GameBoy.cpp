@@ -1,5 +1,6 @@
 #include "../includes/GameBoy.hpp"
 #include <vector>
+
 // /GameBoy::GameBoy(){}
 GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&
 memory), rom(t_RomFileName), timer(&memory){ 
@@ -14,9 +15,16 @@ memory), rom(t_RomFileName), timer(&memory){
     hostOldTime = std::chrono::system_clock::now();
 }
 
-bool GameBoy::LoadGame(){
-	if(CheckCartridge()){
-		std::vector<BYTE> game(rom.GetRom());
+void GameBoy::userInput() {
+
+
+
+
+}
+
+bool GameBoy::loadGame(){
+	if(checkCartridge()){
+		std::vector<BYTE> game(rom.getRom());
 		WORD address = 0x0000;
 		std::vector<BYTE>::iterator it = game.begin();
 		for(; it != game.end() ; ++it){
@@ -33,7 +41,7 @@ bool GameBoy::LoadGame(){
 	return false;
 }
 
-void GameBoy::PlayGame(){
+void GameBoy::playGame(){
 	std::set<BYTE> old_opcode;
 	for(;;) {
 //		BYTE instructionCycles = cpu.step();
@@ -43,19 +51,19 @@ void GameBoy::PlayGame(){
 	}
 }
 
-void GameBoy::PrintByte(WORD t_add){
+void GameBoy::printByte(WORD t_add){
     std::cout << memory.readByte(t_add); 
 }
-void GameBoy::PrintNintendoGraphic(){
-	rom.PrintNintendoGraphic();
+void GameBoy::printNintendoGraphic(){
+	rom.printNintendoGraphic();
 	std::cout<< "Nintendo Graphic: ";
 	std::vector<BYTE>::const_iterator it = testRom.begin();
     for (; it != testRom.end(); ++it){std::cout << std::hex << (unsigned int)*it << " ";}
     std::cout << std::endl;
         
 }
-void GameBoy::PrintRomInfo(){
-	rom.PrintRomName();
+void GameBoy::printRomInfo(){
+	rom.printRomName();
 	// rom.PrintRamSize();
 	// rom.PrintRomSize();
 	// rom.PrintCartridgeType();
@@ -63,11 +71,11 @@ void GameBoy::PrintRomInfo(){
 	// rom.PrintDestCode();
 	// rom.PrintLicenseCodeOld();
 	// rom.PrintLicenseCodeNew();
-	rom.PrintNintendoGraphic();
+	rom.printNintendoGraphic();
 	//rom.PrintBeginPoint();
 }
-bool GameBoy::CheckCartridge(){
-    return rom.GetNintendoLogo() == testRom;
+bool GameBoy::checkCartridge(){
+    return rom.getNintendoLogo() == testRom;
 }
 
 void GameBoy::sync(){

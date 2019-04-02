@@ -35,14 +35,15 @@
         public:
             GameBoy();
             GameBoy(std::string);
-            bool CheckCartridge(void);
-            bool LoadGame(void);
-            void PlayGame(void);
+            bool checkCartridge(void);
+            bool loadGame(void);
+            void playGame(void);
             void sync(void);
+            void userInput(void);
 
-            void PrintRomInfo(void);
-            void PrintNintendoGraphic(void);
-            void PrintByte(WORD);
+            void printRomInfo(void);
+            void printNintendoGraphic(void);
+            void printByte(WORD);
 
             ~GameBoy();
         };

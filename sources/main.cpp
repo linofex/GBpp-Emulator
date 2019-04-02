@@ -11,8 +11,8 @@ int main(int argc, char** argv){
     if (argc == 2){
         std::string romName = "./roms/" + std::string(argv[1]);
         GameBoy gameboy = GameBoy(romName);
-        if(gameboy.LoadGame())
-            gameboy.PlayGame();
+        if(gameboy.loadGame())
+            gameboy.playGame();
         std::cout << "QUI\n";
         //gameboy.PrintByte(0x0134);
     }

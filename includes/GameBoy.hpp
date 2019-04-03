@@ -12,6 +12,8 @@
 #include <vector>
 #include <chrono>
 #include <ctime>
+#include <ncurses.h>
+
 //#include "display.hpp"
 //#include "gpu.hpp"
 
@@ -22,6 +24,7 @@
             Cpu cpu;
             //InterruptHandler interruptHandler;
             Rom rom;
+            WINDOW* window; // gameboy screen
             Timer timer;
             std::vector<BYTE> testRom;
             unsigned long clockCycles;
@@ -40,7 +43,7 @@
             void playGame(void);
             void sync(void);
             void userInput(void);
-
+            void init(void);
             void printRomInfo(void);
             void printNintendoGraphic(void);
             void printByte(WORD);

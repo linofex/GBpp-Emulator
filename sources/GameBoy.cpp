@@ -13,16 +13,35 @@ memory), rom(t_RomFileName), timer(&memory){
     clockCycles = 0;
     targetOldTime = TARGETPERIOD * clockCycles; //0
     hostOldTime = std::chrono::system_clock::now();
+	//init();
 }
 
 void GameBoy::userInput() {
 
-
-
-
 }
 
+
+void GameBoy::init(){
+	int startx, starty;
+	int h, w;
+	initscr();	// init routine. Must be called first
+	cbreak();	// buffering disbling
+	keypad(stdscr, TRUE); // for arrow keys
+	starty = (LINES - SCREEN_HEIGHT) / 2;
+	startx = (COLS - SCREEN_WIDTH) / 2;
+	 
+	window = newwin(SCREEN_HEIGHT, SCREEN_WIDTH, starty, startx);
+	refresh();
+	box(window, 0 , 0);
+	wprintw(window, "DIO CANE");
+	wrefresh(window);
+	// printw("CIAO\n");
+	
+}
+
+
 bool GameBoy::loadGame(){
+	
 	if(checkCartridge()){
 		std::vector<BYTE> game(rom.getRom());
 		WORD address = 0x0000;
@@ -98,5 +117,6 @@ void GameBoy::sync(){
 }
 
 GameBoy::~GameBoy(){
+	endwin();
     std::cout << "GAMEBOY distruttore\n";
 }

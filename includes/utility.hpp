@@ -8,7 +8,7 @@ typedef unsigned short WORD; // 16bit
 #define VBLANK  0x01
 #define LCD     0x02
 #define TIMER   0x04
-#define JOYPAD  0x10  
+#define JOYPAD  0x10 
 
 //flag register F (only 4 bit are used) |Z|N|H|C|x|x|x|x|
 #define FLAG_Z 0x80 // bit 7
@@ -62,5 +62,9 @@ union REGISTER {
 
 // DMA
 #define DMA 0xFF46
+
+// Screen Dimension
+#define SCREEN_WIDTH    160
+#define SCREEN_HEIGHT   144
 
 #endif

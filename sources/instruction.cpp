@@ -1286,9 +1286,9 @@ static void load_nn_SP(Cpu* c) {
     //dovrebbe essere c->setSP(nn);
 }
 static void push_nn(Cpu* c, unsigned short nn) {
+    c->decSP();
+    c->decSP();
     c->writeWord(c->getSP(), nn);
-    c->decSP();
-    c->decSP();
 }
 static void push_AF(Cpu* c) {
     push_nn(c, c->getAF());

@@ -67,4 +67,18 @@ union REGISTER {
 #define SCREEN_WIDTH    160
 #define SCREEN_HEIGHT   144
 
+// Joypad status variables
+#define RIGHT   0
+#define LEFT    1
+#define UP      2
+#define DOWN    3
+#define A       4
+#define B       5
+#define SELECT  6
+#define START   7
+#define BUTTON  1 << 5
+#define DIRECTION  1 << 4
+
+#define PRESSION_DURATION 200
+
 #endif

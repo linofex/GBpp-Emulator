@@ -53,7 +53,7 @@ void Lcd::lcdStep(int cycles) {
         remainingCycles = 456;
 
         if(currentLine < 144) {         //visible scanlines [0, 143]
-            //Gpu.drawLine()
+            //Ppu.drawLine()
             Lcd::setScanline(currentLine++);
         }
         else if(currentLine == 144) {   //VBLANK interrupt request

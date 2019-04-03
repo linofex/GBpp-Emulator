@@ -30,7 +30,8 @@ Memory::Memory():
         keyStatus = 0x00;
     }
 
-BYTE Memory::getJoypadStatus(WORD t_add) {
+void Memory::setJoypadStatus(BYTE t_joypadStatus){keyStatus = t_joypadStatus;}
+BYTE Memory::buildJoypadStatus(WORD t_add) const {
     BYTE joypad = ioPorts.at(t_add & 0x007F);
     BYTE keys = 0x00;
 
@@ -40,7 +41,6 @@ BYTE Memory::getJoypadStatus(WORD t_add) {
     else {                          //Select button keys (select = 0)
         keys = (keyStatus >> 4);
     }
-
     return (joypad & 0xF0) | keys;
 }
 
@@ -76,7 +76,7 @@ BYTE Memory::readByte(const WORD t_add) {
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
         if(t_add == 0xFF00) {    //JOYPAD status register
-            return getJoypadStatus(t_add);
+            return buildJoypadStatus(t_add);
         }
         return ioPorts.at(t_add & 0x007F); // from 0 to 127
     }

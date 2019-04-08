@@ -285,9 +285,6 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
 
 }
 
-
- 
-
 void init(std::map<unsigned char, instruction>& instrSet) {
 
     instrSet.insert(std::make_pair(0x00, instruction("NOP", 4, nop)));
@@ -678,7 +675,7 @@ static void add_A_H(Cpu* c) {add(c, c->getH());}
 static void add_A_L(Cpu* c) {add(c, c->getL());}
 static void add_A_A(Cpu* c) {add(c, c->getA());}
 static void add_A_n(Cpu* c) {
-    unsigned char data = c->readByte(c->getPC());
+    BYTE data = c->readByte(c->getPC());
     c->incPC();
     add(c, data);
     }
@@ -771,6 +768,7 @@ static void sbc_A_HL_ind(Cpu* c) {
     unsigned char n = c->readByte(addr);
     sbc(c, n);
 }
+
 
 static void and_(Cpu* c, unsigned char n) {
     unsigned char res = c->getA() & n;
@@ -951,10 +949,11 @@ static BYTE dec(Cpu* c, unsigned char n) {
     else
         c->setFlag(FLAG_H);
 
-    if((n - 1) < 0)    //if no borrow from bit 7
-        c->resetFlag(FLAG_C);
-    else
-        c->setFlag(FLAG_C);
+    //FLAG C not affected
+    // if((n - 1) < 0)    //if no borrow from bit 7
+    //     c->resetFlag(FLAG_C);
+    // else
+    //     c->setFlag(FLAG_C);
 
     return (unsigned char) res;
 }
@@ -984,6 +983,7 @@ static void add_HL(Cpu* c, WORD val) {
     else
         c->resetFlag(FLAG_C);
     
+    // Set if carry from bit 11
     if(((c->getHL() & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF)
         c->setFlag(FLAG_H);
 	else
@@ -1030,6 +1030,8 @@ static void dec_SP(Cpu* c) {c->decSP();};
 static void dec_DE(Cpu* c) {c->setDE(c->getDE() - 1);};
 static void dec_BC(Cpu* c) {c->setBC(c->getBC() - 1);};
 
+// From the manual: Put value nn into n
+// I think it's wrong, better the contrary 
 static BYTE load_nn_n(Cpu* c) {
     BYTE n = c->readByte(c->getPC());
     c->incPC();
@@ -1244,6 +1246,7 @@ static void loadh_A_n_ind(Cpu* c) {
     c->setA(0xFF00 + n);
 }
 
+// Put value nn into n
 static BYTE load_n_nn(Cpu* c) {
     WORD nn = c->readWord(c->getPC());
     c->incPC();
@@ -1255,9 +1258,12 @@ static void load_DE_nn(Cpu* c) {c->setDE(load_n_nn(c));}
 static void load_HL_nn(Cpu* c) {c->setHL(load_n_nn(c));}
 static void load_SP_nn(Cpu* c) {c->setSP(load_n_nn(c));}
 
+// Put HL into Stack Pointer (SP).
 static void load_SP_HL(Cpu* c) {
     c->setSP(c->getHL());
 }
+
+// Put SP + n effective address into HL.
 static void loadhl_SP_n(Cpu* c) {
     BYTE n = c->readByte(c->getPC());
     c->incPC();
@@ -1271,13 +1277,15 @@ static void loadhl_SP_n(Cpu* c) {
     else
         c->resetFlag(FLAG_H);
     
-    if(res > 0x0000FFFF)
+    if(res > 0x0000FFFF) //0xFFFF
         c->setFlag(FLAG_C);
     else
         c->resetFlag(FLAG_C);
 
     c->setHL((unsigned short)res);
 }
+
+// Put Stack Pointer (SP) at address n
 static void load_nn_SP(Cpu* c) {
     WORD nn = c->readWord(c->getPC()); 
     c->incPC();
@@ -1285,6 +1293,8 @@ static void load_nn_SP(Cpu* c) {
     c->writeWord(nn, c->getSP());
     //dovrebbe essere c->setSP(nn);
 }
+
+
 static void push_nn(Cpu* c, unsigned short nn) {
     c->decSP();
     c->decSP();
@@ -1636,7 +1646,7 @@ static void bit_b_r(Cpu* c, unsigned char r, unsigned char b) {
     c->setFlag(FLAG_H);
 
     //BYTE b = c->readByte(c->getPC());
-    c->incPC();
+    c->incPC();//??? va tolto
 
     b = (b >> r) & 0x01;
     if(!b)
@@ -1748,11 +1758,11 @@ static void bit_HL_ind_7(Cpu* c) {
 static BYTE set_b_r(Cpu* c, unsigned char r, unsigned char b) {
 
     //BYTE b = c->readByte(c->getPC());
-    c->incPC();
+    // c->incPC(); // ??? va tolto
 
     BYTE temp = (1 << b);
 
-    return (r |= b);
+    return (r |= temp); // ci va temp non b
 }
 static void set_A_0(Cpu* c) {c->setA(set_b_r(c, c->getA(), 0));}
 static void set_A_1(Cpu* c) {c->setA(set_b_r(c, c->getA(), 1));}
@@ -1865,11 +1875,11 @@ static void set_HL_ind_7(Cpu* c) {
 static BYTE res_b_r(Cpu* c, unsigned char r, unsigned char b) {
 
     //BYTE b = c->readByte(c->getPC());
-    c->incPC();
+    //c->incPC(); // ?? VA TOLTO
     
     BYTE temp = (1 << b);
 
-    return (r &= !b);
+    return (r &= !temp); // ci va temp non b
 }
 static void res_A_0(Cpu* c) {c->setA(res_b_r(c, c->getA(), 0));}
 static void res_A_1(Cpu* c) {c->setA(res_b_r(c, c->getA(), 1));}
@@ -2026,8 +2036,7 @@ static void jr_c(Cpu* c) {
 }
 static void call(Cpu* c) {
     WORD oldPC = c->readWord(c->getPC());
-    c->pushWord(oldPC + 2);
-
+    c->pushWord(oldPC + 2); //next instruction 
     jp(c);
 }
 static void call_nz(Cpu* c) {
@@ -2081,6 +2090,7 @@ static void ret_c(Cpu* c) {
         ret(c);
 }
 static void reti(Cpu* c) {
+    
     ret(c);
     ei(c);
 }

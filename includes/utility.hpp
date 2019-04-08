@@ -72,8 +72,8 @@ union REGISTER {
 #define LEFT    1
 #define UP      2
 #define DOWN    3
-#define A       4
-#define B       5
+#define _A       4
+#define _B       5
 #define SELECT  6
 #define START   7
 #define BUTTON  1 << 5

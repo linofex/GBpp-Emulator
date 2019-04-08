@@ -26,20 +26,20 @@
             //InterruptHandler interruptHandler;
             Rom rom;
             SDL_Window* window; // gameboy screen
-            Timer timer;
+            Timer timer; //gameboy timer
             std::vector<Uint32> times;
             std::vector<BYTE> testRom;
             
             unsigned long clockCycles;
             SDL_Event event;
             
-            std::chrono::time_point<std::chrono::system_clock> hostOldTime;
+            Uint32 hostOldTime;
             //std::chrono::time_point<std::chrono::system_clock> targetOldTime;
-            unsigned long targetOldTime;    
+            Uint32 targetOldTime;    
             //Gpu gpu;
             //Display display;
-            void pressedKey(BYTE);
-            void releasedKey(BYTE);
+            void pressedKey(int);
+            void releasedKey(int);
         public:
             GameBoy();
             GameBoy(std::string);

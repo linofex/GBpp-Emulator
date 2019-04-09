@@ -25,6 +25,14 @@ union REGISTER {
     };
 };
 
+
+// struct for colors
+struct RGBColor{
+    BYTE r;
+    BYTE g;
+    BYTE b;
+};
+
 // interrupt routines addresses
 #define VBLANK_ADD  0x40
 #define LCD_ADD     0x48
@@ -66,5 +74,28 @@ union REGISTER {
 // Screen Dimension
 #define SCREEN_WIDTH    160
 #define SCREEN_HEIGHT   144
+
+// Joypad status variables
+#define RIGHT   0
+#define LEFT    1
+#define UP      2
+#define DOWN    3
+#define _A       4
+#define _B       5
+#define SELECT  6
+#define START   7
+#define BUTTON  1 << 5
+#define DIRECTION  1 << 4
+
+#define PRESSION_DURATION 200
+
+// Colors palettes and ppu registers
+#define BGP  0xFF47
+#define OBP0 0xFF48
+#define OBP1 0xFF49
+#define SCROLLX 0xFF43
+#define SCROLLY 0xFF42
+#define WINDOWX 0xFF4B
+#define WINDOWY 0xFF4A
 
 #endif

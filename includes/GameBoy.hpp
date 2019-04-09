@@ -12,7 +12,8 @@
 #include <vector>
 #include <chrono>
 #include <ctime>
-#include <ncurses.h>
+//#include <ncurses.h>
+#include <SDL2/SDL.h>
 
 //#include "display.hpp"
 //#include "gpu.hpp"
@@ -24,17 +25,21 @@
             Cpu cpu;
             //InterruptHandler interruptHandler;
             Rom rom;
-            WINDOW* window; // gameboy screen
-            Timer timer;
+            SDL_Window* window; // gameboy screen
+            Timer timer; //gameboy timer
+            std::vector<Uint32> times;
             std::vector<BYTE> testRom;
+            
             unsigned long clockCycles;
-
-                    
-            std::chrono::time_point<std::chrono::system_clock> hostOldTime;
+            SDL_Event event;
+            
+            Uint32 hostOldTime;
             //std::chrono::time_point<std::chrono::system_clock> targetOldTime;
-            unsigned long targetOldTime;    
+            Uint32 targetOldTime;    
             //Gpu gpu;
             //Display display;
+            void pressedKey(int);
+            void releasedKey(int);
         public:
             GameBoy();
             GameBoy(std::string);

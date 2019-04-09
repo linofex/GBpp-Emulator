@@ -34,14 +34,16 @@ class Cpu;
             BYTE IEReg;                // Interrupt Enable Register
             BYTE keyStatus;
 
-            BYTE getJoypadStatus(WORD);
-
         public:
             Memory();
             // this method reads one byte ad address t_add
             BYTE readByte(const WORD t_add);
             // this method reads 2 byte starting from t_add
             WORD readWord(const WORD t_add); 
+
+            BYTE getJoypadStatus(void) const {return keyStatus;}
+            BYTE buildJoypadStatus(WORD)const;
+            void setJoypadStatus(BYTE);
 
             // this method writes one byte ad address t_add
             void writeByte(const WORD t_add, const BYTE t_value);

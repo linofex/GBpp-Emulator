@@ -25,6 +25,14 @@ union REGISTER {
     };
 };
 
+
+// struct for colors
+struct RGBColor{
+    BYTE r;
+    BYTE g;
+    BYTE b;
+};
+
 // interrupt routines addresses
 #define VBLANK_ADD  0x40
 #define LCD_ADD     0x48
@@ -80,5 +88,14 @@ union REGISTER {
 #define DIRECTION  1 << 4
 
 #define PRESSION_DURATION 200
+
+// Colors palettes and ppu registers
+#define BGP  0xFF47
+#define OBP0 0xFF48
+#define OBP1 0xFF49
+#define SCROLLX 0xFF43
+#define SCROLLY 0xFF42
+#define WINDOWX 0xFF4B
+#define WINDOWY 0xFF4A
 
 #endif

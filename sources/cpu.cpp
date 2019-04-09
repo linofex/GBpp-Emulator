@@ -92,11 +92,6 @@ void Cpu::stepDebug(std::set<BYTE>* old_opcode){
 
 void Cpu::reset() {
 
-    //security check for original cartridge
-    //if(!Cpu::checkCartridge())
-        //halt
-        //return;
-
     //initialization of special registers
     pc = 0x100;
     sp = 0xFFFE;

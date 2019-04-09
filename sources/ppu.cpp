@@ -20,9 +20,68 @@ void Ppu::renderLine(){
     }
 }
 
-std::vector<RGBColor> Ppu::toColors(WORD t_lineOfTile){}
+std::vector<RGBColor> Ppu::toColors(WORD t_lineOfTile, bool type){
+    BYTE data0 = t_lineOfTile & 0x00FF;
+    BYTE data1 = t_lineOfTile >> 8;
 
-void Ppu::fillTile(BYTE t_tileID, int i){
+    std::vector<RGBColor> pixelsInTileLine;
+
+    for(int i = 0; i < 8; ++i) {
+        BYTE lsb = (data0 & (1 << i)) >> i;
+        BYTE msb = (data1 & (1 << i)) >> i;
+        //RGBColor rgb = getRGBColor(((msb << 1) + lsb) >> 2*i);
+        RGBColor rgb = getRGBColor(((msb << 1) + lsb), type);
+        pixelsInTileLine.push_back(rgb);
+    }
+    
+    return pixelsInTileLine;
+}
+
+RGBColor Ppu::getRGBColor(BYTE t_colorID, bool type) {
+    BYTE palette = getBGandWindowPalette();
+    RGBColor rgb;
+    switch(t_colorID) {
+        case 0:     //look at bit 1-0 of the tile palette
+            palette &= 0x03;
+            break;
+        case 1:     //look at bit 3-2 of the tile palette
+            palette &= 0x0C;
+            //palette >>= 2;
+            break;
+        case 2:     //look at bit 5-4 of the tile palette
+            palette &= 0x30;
+            //palette >>= 4;
+            break;
+        case 3:     //look at bit 7-6 of the tile palette
+            palette &= 0xC0;
+            //palette >>= 6;
+            break;
+    }     
+    palette >>= t_colorID*2;
+    
+    return getColorFromPaletteID(palette, type);
+}
+
+RGBColor Ppu::getColorFromPaletteID(BYTE t_paletteID, bool type) {
+    RGBColor rgb;
+    switch(t_paletteID) {
+        case 0:     //white - 00
+            rgb = {255, 255, 255, type};
+            break;
+        case 1:     //light grey - 01
+            rgb = {224, 224, 224, type};
+            break;
+        case 2:     //dark grey - 10
+            rgb = {192, 192, 192, type};
+            break;
+        case 3:     //black - 11
+            rgb = {0, 0, 0, type};
+            break;
+    }     
+    return rgb;
+}
+
+void Ppu::fillTile(BYTE t_tileID, int i, bool type){    //type = 0 -> BG, type = 1 -> Sprite
     BYTE controlRegister = getLCDControlRegister();
     WORD lineOfATile;
     signed char signedTileID;
@@ -30,8 +89,8 @@ void Ppu::fillTile(BYTE t_tileID, int i){
     if(controlRegister & 0x10){
         for(int j = 0; j< 8 ; j+= 2){
             //one line of the tile
-            lineOfATile = memory->readWord(0x8000 + j);
-            std::vector<RGBColor> lineOfPixels = toColors(lineOfATile);
+            lineOfATile = memory->readWord(0x8000 + j + t_tileID);
+            std::vector<RGBColor> lineOfPixels = toColors(lineOfATile, type);
             //compute colors returns pixels
             // fill in buffer using counterline and i
             BYTE offset = (bufferY + countline)*160 + i*8;
@@ -55,11 +114,9 @@ void Ppu::renderBGLine(){
     for(int i = 0; i < SCREEN_WIDTH/8  ; ++i){
         offset = scrollX*32 + (scrollY + i) % 32;
         tileID = memory->readByte(BGMemoryStart + offset);
-        fillTile(tileID, i);
+        fillTile(tileID, i, 0);
     }
     bufferY %= 140;
     // increase scrollX e scrollY? quando? secondo me no va fatt noi
-    
-     
 
 }

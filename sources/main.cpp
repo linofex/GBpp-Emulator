@@ -15,6 +15,7 @@ int main(int argc, char** argv){
         //gameboy.PrintByte(0x0134);
     }
     std::cout<< "anche QUA\n";
-            
+
+    return 0;    
 
 } 

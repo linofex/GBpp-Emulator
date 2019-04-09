@@ -189,7 +189,7 @@ void GameBoy::sync(){
 	Uint32 timeDifference = targetElapsedTime - hostElapsedTime;
     if(timeDifference > 2) {    //2 ms
         std::cout<<"The diff is: "<<'\t'<<targetElapsedTime - hostElapsedTime<<std::endl;
-        usleep(timeDifference); // sleep 
+        /////////WINDOWS alternative ////////usleep(timeDifference); // sleep 
 	}
     hostOldTime = hostNewTime;
     targetOldTime = targetNewTime;

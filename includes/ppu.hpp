@@ -21,11 +21,13 @@ class Ppu{
         inline BYTE getWindowY(void) const {return memory->readByte(WINDOWY);}
         inline BYTE getLCDControlRegister(void) const {return memory->readByte(LCDCONTROL);}
 
-        void fillTile(BYTE, int);
+        void fillTile(BYTE, int, bool);
         void renderBGLine();
         void renderWindowLine();
         void renderSpriteLine();
-        std::vector<RGBColor> Ppu::toColors(WORD);
+        std::vector<RGBColor> toColors(WORD, bool);
+        RGBColor getColorFromPaletteID(BYTE, bool);
+        RGBColor getRGBColor(BYTE, bool);
 
 
 

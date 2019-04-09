@@ -7,23 +7,6 @@
 #include <string>
 #include <vector>
 #include <set>
-
-/* //flag register F (only 4 bit are used) |Z|N|H|C|x|x|x|x|
-#define FLAG_Z 7
-#define FLAG_N 6
-#define FLAG_H 5
-#define FLAG_C 4 */
-
-//functions on flags register
-/*#define isFLAG_Zero(void)(regAF.high & (1 << FLAG_Z))
-#define isFLAG_Neg(void) (regAF.high & (1 << FLAG_N))
-#define isFLAG_HalfCarry(void) (regAF.high & (1 << FLAG_H))
-#define isFLAG_Carry(void) (regAF.high & (1 << FLAG_C))
-
-#define setFlag(n) (regAF.high |= n)
-#define resetFlag(n) (regAF.high &= ~n)
-//#define clearFlag(n) (regAF.high &= ~n)*/
-
 #include <map>
 
 class Cpu {

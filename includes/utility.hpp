@@ -31,6 +31,8 @@ struct RGBColor{
     BYTE r;
     BYTE g;
     BYTE b;
+
+    bool type;  //0 for BG, 1 for Sprite
 };
 
 // interrupt routines addresses

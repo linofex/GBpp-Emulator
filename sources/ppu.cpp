@@ -1,30 +1,31 @@
 #include "../includes/ppu.hpp"
 #include <iostream>
-Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelPriority(160*144,0), RGBBuffer(160*144){
+Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelPriority(160*144,0), RGBBuffer(160*144,{0,0,0}){
     bufferY = 0;
 }
 void Ppu::renderLine(BYTE t_currentline){
     bufferY = t_currentline;
     BYTE LCDcontrolRegister = getLCDControlRegister();
     //if(!(LCDcontrolRegister & 0x01)){ // bit 0
-        renderBGLine(t_currentline);
+       renderBGLine(t_currentline);
         //std::cout<< "BG\n";
     //}
     if(LCDcontrolRegister & 0x20){ //bit 5
-      //  renderWindowLine();
+        renderWindowLine();
         //std::cout<< "WINDOW\n";
     }
     if(LCDcontrolRegister & 0x02){ //bit 1
         renderSpriteLine();
         //std::cout<< "SPRITE";
     }
-    std::cout<< "############################# " << (int)bufferY << std::endl;
+    int a = 0;
+    std::cout<< "############################# " << (int)(a+ bufferY) << std::endl;
     // /bufferY = (++bufferY)%140;
 }
 
 std::vector<RGBColor> Ppu::toPixels(WORD t_lineOfTile){
-    BYTE data0 = t_lineOfTile & 0x00FF;
-    BYTE data1 = t_lineOfTile >> 8;
+    BYTE data1 = t_lineOfTile & 0x00FF;
+    BYTE data0 = t_lineOfTile >> 8;
 
     std::vector<RGBColor> pixelsInTileLine;
 
@@ -63,7 +64,7 @@ RGBColor Ppu::getRGBColor(BYTE t_colorID) {
     
     
     RGBColor color = getColorFromPaletteID(palette);
-   // //std::cout <<(int) getScrollY()<<" "<<(int) bufferY<<" R:" << (int)color.r <<" G:" << (int)color.g <<" B:" << (int)color.b <<std::endl;
+  // std::cout<<" R:" << (int)color.r <<" G:" << (int)color.g <<" B:" << (int)color.b <<std::endl;
     return color;
 
 }
@@ -81,7 +82,7 @@ RGBColor Ppu::getColorFromPaletteID(BYTE t_paletteID) {
     }     
 }
 
-void Ppu::fillTile(BYTE t_tileID, int i, bool t_type){    //type = 0 -> BG, type = 1 -> Sprite
+void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){    //type = 0 -> BG, type = 1 -> Sprite
     BYTE controlRegister = getLCDControlRegister();
     WORD lineOfATile;
     signed char signedTileID;
@@ -96,18 +97,49 @@ void Ppu::fillTile(BYTE t_tileID, int i, bool t_type){    //type = 0 -> BG, type
         startAddress = 0x8800;
         offset = ((signed char) t_tileID + 127)*16;
     }
+    std::vector<WORD> tile = {0X0000, 0X3c3c, 0X6666 ,0X6666 ,0X6666 ,0X6666,0X3c3c, 0X0000};
 
-    for(int j = 0; j < 16 ; j+= 2){
+    //for(int j = 0; j < 16 ; j+= 2){
         //one line of the tile
-        lineOfATile = memory->readWord(startAddress + j + offset); //16B = tile dimension
+        //lineOfATile = tile.back();
+        //tile.pop_back();
+        lineOfATile = memory->readWord(startAddress + (t_currentline % 8) + offset); //16B = tile dimension
         std::vector<RGBColor> lineOfPixels = toPixels(lineOfATile);
+        // for(int k = 0 ; k< 8 ;++k){
+        //     if(lineOfPixels.at(k).r == 255){
+        //         std::cout << "0 ";
+        //     }
+        //     else
+        //     {
+        //         std::cout << "1 ";
+        //     }
+            
+        // }
+        // std::cout << std::endl;
         //compute colors returns pixels
         // fill in buffer using counterline and i
-        int offset = (bufferY + countline)*160 + i*8;
+        int offsetTile = bufferY + (countline)*160 + i*8;
        // //std::cout << (offset)<< " *";
-        std::copy (lineOfPixels.begin(), lineOfPixels.end(), RGBBuffer.begin()+offset);
+        std::copy (lineOfPixels.begin(), lineOfPixels.begin() + lineOfPixels.size(), RGBBuffer.begin()+offsetTile);
+       // std::cout<<" R:" << (int)RGBBuffer.at(h).r <<" G:" << (int)RGBBuffer.at(h).g <<" B:" << (int)RGBBuffer.at(h).b <<std::endl;
+              
         countline ++;
+    //}
+    std::cout << std::endl;
+    for(int t = 0; t < 8; t++) {
+         for(int k = 0 ; k< 8 ;++k){
+            if((int)RGBBuffer.at(t*160 + k).r == 255){
+                std::cout << "  ";
+            }
+            else
+            {
+                std::cout << "1 ";
+            }
+            
+        }
+        std::cout << std::endl;
     }
+    std::cout << std::endl;
 }
 
 void Ppu::renderBGLine(BYTE t_currentline){
@@ -118,10 +150,12 @@ void Ppu::renderBGLine(BYTE t_currentline){
     BYTE BGMemoryStart = getLCDControlRegister() & 0x08 ? 0x9C00 : 0x9800;
     BYTE tileID;
     BYTE offset;
+
+    
     for(int i = 0; i < SCREEN_WIDTH/8  ; ++i){
-        offset = scrollX*32 + (scrollY + t_currentline/8  + i) % 32;
+        offset = (scrollY + (int)t_currentline/8)*32 + ((scrollX + i)%32);
         tileID = memory->readByte(BGMemoryStart + offset);
-        fillTile(tileID, i, 0);
+        fillLineOfTile(tileID, i, t_currentline, 0);
     }
 
     // increase scrollX e scrollY? quando? secondo me no va fatt noi
@@ -137,7 +171,7 @@ void Ppu::renderWindowLine(){
     for(int i = 0; i < SCREEN_WIDTH/8  ; ++i){
         offset = windowX*32 + (windowY + i) % 32;
         tileID = memory->readByte(windowMemoryStart + offset);
-        fillTile(tileID, i, 0);
+        fillLineOfTile(tileID, i,7, 0);
     }
 
 }

@@ -45,6 +45,7 @@
             void pressedKey(int);
             void releasedKey(int);
         public:
+            long long int o;
             GameBoy();
             GameBoy(std::string);
             bool checkCartridge(void);

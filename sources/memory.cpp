@@ -70,7 +70,7 @@ BYTE Memory::readByte(const WORD t_add) {
         return OAM.at(t_add & 0x00FF); // from 0 to 159
     }
     else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
-      std::cerr << "[ERROR] MEMORY location not usable!\n";
+      std::cout << "[ERROR] MEMORY location not usable!\n";
       return 0x00;
     }
     // I/O ports
@@ -78,8 +78,6 @@ BYTE Memory::readByte(const WORD t_add) {
         if(t_add == 0xFF00) {    //JOYPAD status register
             return buildJoypadStatus(t_add);
         }
-        if(t_add == 0xFF40)
-            std::cerr << "READ: "<<(int)(t_add & 0x007F) << std::endl;
         return ioPorts.at(t_add & 0x007F); // from 0 to 127
         
     }
@@ -105,7 +103,7 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
     }
     // Video Memory
     else if (t_add>= 0x8000 && t_add < 0xA000){
-         vRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
+        vRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
     }
     // external memory
     else if (t_add >= 0xA000 && t_add < 0xC000){
@@ -128,15 +126,12 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
     }
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
-        if(t_add == 0xFF40)
-            std::cerr << std::hex << (int)t_value << std::endl;
-        if(t_add == 0xFF44)
-            //std::cout << "azzero la scanline"<<(int)t_value<<"\n";
-        ioPorts[t_add & 0x007F] = t_value; 
-        if(t_add == 0xFF40){
-            std::cerr << "WRiTE: "<<(int)(t_add & 0x007F) << std::endl;
-            std::cerr << std::hex << (int)readByte(t_add)<< std::endl;
+        if(t_add == 0xFF47){
+            std::cerr << std::hex<<(int)t_value << std::endl;
         }
+        ioPorts[t_add & 0x007F] = t_value; 
+        
+
         if(t_add == 0xFF46){
             startDMATransfer(this); //start DMA transfer
             return;

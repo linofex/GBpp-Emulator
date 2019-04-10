@@ -57,16 +57,14 @@ void Cpu::printCpuState(){
 }
 
 BYTE Cpu::step() {
-    if(isHalted() | isStopped()){
-        std::cout << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW";return 0;}
+    if(isHalted() ||  isStopped()){
+        std::cerr << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW";return 0;}
     BYTE opcode = Cpu::fetch();
-    std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
+   // std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
     instruction instr = Cpu::decode(opcode);
-    if((int)getPC() >= 636){
-        std::cout<< instr.name << std::endl;
-    }
+   
    // std::cout<< o <<std::endl;
-    std::cout<<"PC: "<< getPC() <<  "\tInstruction: " <<instr.name<<"\topcode: "<<std::hex<<(int)opcode<< std::endl;
+    //std::cout<<"PC: "<< getPC() <<  "\tInstruction: " <<instr.name<<"\topcode: "<<std::hex<<(int)opcode<< std::endl;
     
 
     return Cpu::execute(instr);

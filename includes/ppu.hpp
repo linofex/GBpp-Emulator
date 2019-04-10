@@ -21,7 +21,7 @@ class Ppu{
         inline BYTE getWindowY(void) const {return memory->readByte(WINDOWY);}
         inline BYTE getLCDControlRegister(void) const {return memory->readByte(LCDCONTROL);}
 
-        void fillTile(BYTE, int, bool);
+        void fillLineOfTile(BYTE, int, BYTE, bool);
         void renderBGLine(BYTE);
         void renderWindowLine();
         void renderSpriteLine();

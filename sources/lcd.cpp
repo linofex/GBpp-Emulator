@@ -40,7 +40,7 @@ void Lcd::step(int cycles) {
     Lcd::setLCDStatus();
 
     if(!Lcd::isLCDEnabled()){
-     std::cout << "*** CR **: ";
+    // std::cout << "DISABILITATO ";
         return;
     }
     else
@@ -51,7 +51,7 @@ void Lcd::step(int cycles) {
     
 
     unsigned char currentLine = Lcd::getScanline();
-    std::cout << "*** CR **: "<<(int)currentLine << std::endl;
+   // std::cout << "*** CR ABILITATO **: "<<(int)currentLine << std::endl;
 
 
     if(remainingCycles <= 0) {
@@ -142,18 +142,18 @@ bool Lcd::testCoincidence(){
 void Lcd::renderScreen(SDL_Window* t_window, SDL_Renderer* t_renderer) {
     std::vector<RGBColor> buffer = ppu->getRGBBuffer();
     RGBColor color;
-    for (int i = 0; i < SCREEN_HEIGHT; ++i){
+    for (int i = 0; i < (int)getScanline(); ++i){
         for(int j= 0; j< SCREEN_WIDTH;++j){
-           color =  buffer[i*SCREEN_WIDTH + SCREEN_HEIGHT];
+           color =  buffer[i*SCREEN_WIDTH + j];
+          //  std::cout<<"\n R:" << (int)color.r <<" G:" << (int)color.g <<" B:" << (int)color.b <<std::endl;
+
           //SDL_SetRenderDrawColor(t_renderer, rand()/255, rand()/255, rand()/255,255);
-           SDL_SetRenderDrawColor(t_renderer, color.r, color.g, color.b, 255);
+           SDL_SetRenderDrawColor(t_renderer, (Uint8)color.r, (Uint8)color.g, (Uint8)color.b, 255);
            SDL_RenderDrawPoint(t_renderer, j, i);
+          
         }
-       
-        //SDL_Delay(10);      
-       
+         //SDL_RenderPresent(t_renderer);
     }
     SDL_RenderPresent(t_renderer);
-
-
+    //getchar();
 }

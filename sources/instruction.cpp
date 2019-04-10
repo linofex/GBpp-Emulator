@@ -421,7 +421,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0x7E, instruction("LD A, (HL)", 8, load_A_HL_ind)));  
     instrSet.insert(std::make_pair(0x7F, instruction("LD A, A", 4, load_A_A)));
     
-    //std::cout<<typeid(i).name()<<std::endl;
+    ////std::cout<<typeid(i).name()<<std::endl;
     instrSet.insert(std::make_pair(0x80, instruction("ADD A, B", 4, add_A_B)));  
     instrSet.insert(std::make_pair(0x81, instruction("ADD A, C", 4, add_A_C)));
     instrSet.insert(std::make_pair(0x82, instruction("ADD A, D", 4, add_A_D)));
@@ -576,7 +576,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0xFD, instruction("UNDEFINED", 0, not_defined)));
     instrSet.insert(std::make_pair(0xFC, instruction("UNDEFINED", 0, not_defined))); 
     instrSet.insert(std::make_pair(0xFE, instruction("CP d8", 8, cp_A_n)));  
-    instrSet.insert(std::make_pair(0xFF, instruction("RST 28", 32, rst_28))); 
+    instrSet.insert(std::make_pair(0xFF, instruction("RST 38", 32, rst_38))); 
 
 
 
@@ -629,20 +629,20 @@ void init(std::map<unsigned char, instruction>& instrSet) {
 
 
 
-    //std::cout<<"---------------------------------------------> "<<instrSet.at(0x80).name<<std::endl;
+    ////std::cout<<"---------------------------------------------> "<<instrSet.at(0x80).name<<std::endl;
 
 }
 
 //----------------------- EMPTY -------------------------------------
 static void not_defined(Cpu* c) {
-    std::cout<<"Instruction not defined"<<std::endl;
-    std::cout<< "PC: "<<std::hex <<(int)(c->readByte(c->getPC()-2))<< "\n";
+    //std::cout<<"Instruction not defined"<<std::endl;
+    //std::cout<< "PC: "<<std::hex <<(int)(c->readByte(c->getPC()-2))<< "\n";
 
 }
 
 //-----------------------ADD-------------------------------------
 static void add(Cpu* c, unsigned char n) {
-   //std::cout<<"inizio add"<<std::endl;
+   ////std::cout<<"inizio add"<<std::endl;
 
    unsigned short res = c->getA() + n;
     
@@ -665,7 +665,7 @@ static void add(Cpu* c, unsigned char n) {
     else
         c->resetFlag(FLAG_H);
 
-    //std::cout<<"fine add"<<std::endl;
+    ////std::cout<<"fine add"<<std::endl;
     
 }
 
@@ -899,7 +899,7 @@ static void cp_A_n(Cpu* c) {
     unsigned char data = c->readByte(c->getPC());
     c->incPC();
     cp(c, data);
-    //std::cout <<"A: "<<std::hex <<(int) c->getA()<< " data: " << std::hex <<(int) data<< std::endl;
+    std::cout <<"A: "<<std::hex <<(int) c->getA()<< " data: " << std::hex <<(int) data<< std::endl;
 }
 static void cp_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
@@ -1248,7 +1248,7 @@ static void loadh_A_n_ind(Cpu* c) {
     c->incPC();
     std::cout << " A = " <<std::hex << (int)c->getA();
     c->setA(c->readByte(0xFF00 + n)); //MA é un BYTE A!!!
-   std::cout <<" LDH A a8: "<< std::hex << (int)n << " A = " <<std::hex<<(int) c->getA()<< std::endl;
+    std::cout <<" LDH A a8: "<< std::hex << (int)n << "readbyte: "<<std::hex<< (int)(c->readByte(0xFF00 + n)) << " A = " <<std::hex<<(int) c->getA()<< std::endl;
 }
 
 // Put value nn into n
@@ -1406,7 +1406,7 @@ static void halt(Cpu* c) {
         c->setHalt();
     }
     else{
-        //std::cout << "\n** HALT with master enable == false **\n";
+        ////std::cout << "\n** HALT with master enable == false **\n";
     }
    // c->setPC(c->getPC() - 1);
     
@@ -2034,12 +2034,14 @@ static void jp_hl_ind(Cpu* c) {
     WORD newPc = c->readWord(c->getHL());
     c->setPC(newPc);
     }
+
+
 static void jr(Cpu* c) {
     signed char n = c->readByte(c->getPC());
     //c->incPC();
-    std::cout<< c->getPC();
+//   /  std::cout<< c->getPC();
     c->setPC(c->getPC() + n);
-    std::cout << " dopo: "<< c->getPC()<< " n: "<<(int)n << std::endl ;
+//    / std::cout << " dopo: "<< c->getPC()<< " n: "<<(int)n << std::endl ;
 }
 static void jr_nz(Cpu* c) {
     if(!c->isFLAG_Zero())

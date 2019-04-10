@@ -1,6 +1,7 @@
 #include "../includes/interrupts.hpp"
 #include "../includes/memory.hpp"
 #include "../includes/cpu.hpp"
+#include <iostream>
 
 
 void InterruptHandler::serveInterrupt(const BYTE t_interrupt, Memory* t_memory, Cpu* t_cpu){
@@ -31,8 +32,10 @@ void InterruptHandler::serveInterrupt(const BYTE t_interrupt, Memory* t_memory, 
 }
 
 void InterruptHandler::doInterrupt(Memory* t_memory, Cpu* t_cpu){
+//        std::cerr << "DIS";
 
     if (t_cpu->isIntMasterEnable()){
+        std::cerr << "INT";
         if(t_cpu->getInstrSetAt(t_cpu->getPC()).name == "HALT")
             t_cpu->incPC();
 

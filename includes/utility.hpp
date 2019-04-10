@@ -34,10 +34,10 @@ struct RGBColor{
 };
 
 //custom palette
-#define WHITE {254, 254, 254}
+#define WHITE {255, 255, 255}
 #define LIGHT_GREY {224, 224, 224}
 #define DARK_GREY {96, 96, 96}
-#define BLACK {1, 1, 1}
+#define BLACK {0, 0, 0}
 
 
 struct pixel{
@@ -53,7 +53,7 @@ struct pixel{
 
 // gameboy emulation
 #define CLOCK 4194304
-#define TARGETPERIOD 0.000238418     //1000/(4194304)
+#define TARGETPERIOD 0.000238418     //1000/(4194304)  milliseconds
 #define HOSTPERIOD 1/(25*10^9)      //0.4 ns
 
 //locations for the timers

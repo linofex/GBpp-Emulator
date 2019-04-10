@@ -1,26 +1,28 @@
 #include "../includes/ppu.hpp"
-
-Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelBuffer(160*144){
+#include <iostream>
+Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelPriority(160*144,0), RGBBuffer(160*144){
     bufferY = 0;
-    customPalette.push_back({255, 255, 255}); //00 = white
-    customPalette.push_back({214, 214, 214}); //01 = light grey
-    customPalette.push_back({64, 64, 64});    //10 = darkgrey
-    customPalette.push_back({0, 0, 0});       //11 = black
 }
-void Ppu::renderLine(){
+void Ppu::renderLine(BYTE t_currentline){
+    bufferY = t_currentline;
     BYTE LCDcontrolRegister = getLCDControlRegister();
-    if(LCDcontrolRegister & 0x01){ // bit 0
-        renderBGLine();
-    }
+    //if(!(LCDcontrolRegister & 0x01)){ // bit 0
+        renderBGLine(t_currentline);
+        //std::cout<< "BG\n";
+    //}
     if(LCDcontrolRegister & 0x20){ //bit 5
-        renderWindowLine();
+      //  renderWindowLine();
+        //std::cout<< "WINDOW\n";
     }
     if(LCDcontrolRegister & 0x02){ //bit 1
         renderSpriteLine();
+        //std::cout<< "SPRITE";
     }
+    std::cout<< "############################# " << (int)bufferY << std::endl;
+    // /bufferY = (++bufferY)%140;
 }
 
-std::vector<RGBColor> Ppu::toColors(WORD t_lineOfTile, bool type){
+std::vector<RGBColor> Ppu::toPixels(WORD t_lineOfTile){
     BYTE data0 = t_lineOfTile & 0x00FF;
     BYTE data1 = t_lineOfTile >> 8;
 
@@ -30,14 +32,13 @@ std::vector<RGBColor> Ppu::toColors(WORD t_lineOfTile, bool type){
         BYTE lsb = (data0 & (1 << i)) >> i;
         BYTE msb = (data1 & (1 << i)) >> i;
         //RGBColor rgb = getRGBColor(((msb << 1) + lsb) >> 2*i);
-        RGBColor rgb = getRGBColor(((msb << 1) + lsb), type);
+        RGBColor rgb = getRGBColor((msb << 1) + lsb);
         pixelsInTileLine.push_back(rgb);
     }
-    
     return pixelsInTileLine;
 }
 
-RGBColor Ppu::getRGBColor(BYTE t_colorID, bool type) {
+RGBColor Ppu::getRGBColor(BYTE t_colorID) {
     BYTE palette = getBGandWindowPalette();
     RGBColor rgb;
     switch(t_colorID) {
@@ -56,67 +57,93 @@ RGBColor Ppu::getRGBColor(BYTE t_colorID, bool type) {
             palette &= 0xC0;
             //palette >>= 6;
             break;
-    }     
-    palette >>= t_colorID*2;
+    }    
+
+    palette >>= (t_colorID*2); 
     
-    return getColorFromPaletteID(palette, type);
+    
+    RGBColor color = getColorFromPaletteID(palette);
+   // //std::cout <<(int) getScrollY()<<" "<<(int) bufferY<<" R:" << (int)color.r <<" G:" << (int)color.g <<" B:" << (int)color.b <<std::endl;
+    return color;
+
 }
 
-RGBColor Ppu::getColorFromPaletteID(BYTE t_paletteID, bool type) {
-    RGBColor rgb;
+RGBColor Ppu::getColorFromPaletteID(BYTE t_paletteID) {
     switch(t_paletteID) {
-        case 0:     //white - 00
-            rgb = {255, 255, 255, type};
-            break;
+        case 0:      //white - 00
+            return WHITE;
         case 1:     //light grey - 01
-            rgb = {224, 224, 224, type};
-            break;
+            return LIGHT_GREY;
         case 2:     //dark grey - 10
-            rgb = {192, 192, 192, type};
-            break;
+           return DARK_GREY;
         case 3:     //black - 11
-            rgb = {0, 0, 0, type};
-            break;
+           return BLACK;
     }     
-    return rgb;
 }
 
-void Ppu::fillTile(BYTE t_tileID, int i, bool type){    //type = 0 -> BG, type = 1 -> Sprite
+void Ppu::fillTile(BYTE t_tileID, int i, bool t_type){    //type = 0 -> BG, type = 1 -> Sprite
     BYTE controlRegister = getLCDControlRegister();
     WORD lineOfATile;
     signed char signedTileID;
     int countline = 0;
+    WORD startAddress;
+    BYTE offset;
+
     if(controlRegister & 0x10){
-        for(int j = 0; j< 8 ; j+= 2){
-            //one line of the tile
-            lineOfATile = memory->readWord(0x8000 + j + t_tileID);
-            std::vector<RGBColor> lineOfPixels = toColors(lineOfATile, type);
-            //compute colors returns pixels
-            // fill in buffer using counterline and i
-            BYTE offset = (bufferY + countline)*160 + i*8;
-            std::copy (lineOfPixels.begin(), lineOfPixels.end(), pixelBuffer.begin()+offset);
-            countline ++;
-
-        }
-
+        startAddress = 0x8000;
+        offset = t_tileID*16;
+    } else {
+        startAddress = 0x8800;
+        offset = ((signed char) t_tileID + 127)*16;
     }
 
-
-
+    for(int j = 0; j < 16 ; j+= 2){
+        //one line of the tile
+        lineOfATile = memory->readWord(startAddress + j + offset); //16B = tile dimension
+        std::vector<RGBColor> lineOfPixels = toPixels(lineOfATile);
+        //compute colors returns pixels
+        // fill in buffer using counterline and i
+        int offset = (bufferY + countline)*160 + i*8;
+       // //std::cout << (offset)<< " *";
+        std::copy (lineOfPixels.begin(), lineOfPixels.end(), RGBBuffer.begin()+offset);
+        countline ++;
+    }
 }
 
-void Ppu::renderBGLine(){
+void Ppu::renderBGLine(BYTE t_currentline){
+
+    // CI VUOLE ANCHE LA SCANLINEEEE
     BYTE scrollY = getScrollY() >> 3;
-    BYTE scrollX = getScrollX() >> 3;
+    BYTE scrollX = getScrollX() >> 3;     
     BYTE BGMemoryStart = getLCDControlRegister() & 0x08 ? 0x9C00 : 0x9800;
     BYTE tileID;
-    BYTE offset ;
+    BYTE offset;
     for(int i = 0; i < SCREEN_WIDTH/8  ; ++i){
-        offset = scrollX*32 + (scrollY + i) % 32;
+        offset = scrollX*32 + (scrollY + t_currentline/8  + i) % 32;
         tileID = memory->readByte(BGMemoryStart + offset);
         fillTile(tileID, i, 0);
     }
-    bufferY %= 140;
+
     // increase scrollX e scrollY? quando? secondo me no va fatt noi
+
+}
+
+void Ppu::renderWindowLine(){
+    BYTE windowY = getWindowY() >> 3;
+    BYTE windowX = (getWindowX() - 7) >> 3;
+    BYTE windowMemoryStart = getLCDControlRegister() & 0x40 ? 0x9C00 : 0x9800;
+    BYTE tileID;
+    BYTE offset;
+    for(int i = 0; i < SCREEN_WIDTH/8  ; ++i){
+        offset = windowX*32 + (windowY + i) % 32;
+        tileID = memory->readByte(windowMemoryStart + offset);
+        fillTile(tileID, i, 0);
+    }
+
+}
+
+void Ppu::renderSpriteLine(){
+
+
 
 }

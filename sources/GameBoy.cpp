@@ -3,8 +3,7 @@
 #include <unistd.h>
 
 // /GameBoy::GameBoy(){}
-GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&
-memory), rom(t_RomFileName), timer(&memory), times(8,0){ 
+GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory), lcd(&memory, &ppu), rom(t_RomFileName), timer(&memory), times(8,0){ 
 	// Bytes for ROM testing
     testRom = std::vector<BYTE> {0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73,
                         		 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 
@@ -15,7 +14,9 @@ memory), rom(t_RomFileName), timer(&memory), times(8,0){
 	clockCycles = 0;
     targetOldTime = TARGETPERIOD * clockCycles; // 0
     hostOldTime = SDL_GetTicks(); //  millisecons
-	//init();
+
+	displayTime = SDL_GetTicks();
+	initSDL();
 }
 
 
@@ -110,9 +111,26 @@ void GameBoy::userInput() {
 		}
 	}
 
-void GameBoy::init(){
+void GameBoy::initSDL(){
+
+    SDL_Init(SDL_INIT_VIDEO);
+    //SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+     window = SDL_CreateWindow("Gbb-Emulator",
+                        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                        WINDOW_WIDTH,WINDOW_HEIGHT,
+                        0);
+
+        /* We must call SDL_CreateRenderer in order for draw calls to affect this window. */
+        renderer = SDL_CreateRenderer(window, -1, 0);
+
+	//SDL_RenderSetScale(renderer, 160,144);
+    SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 254, 0);
+    SDL_RenderClear(renderer);
+	SDL_RenderPresent(renderer);
 	return;
 }
+
 
 // This method loads the game in the ROM memory if all checks are correct
 bool GameBoy::loadGame(){
@@ -126,7 +144,7 @@ bool GameBoy::loadGame(){
 				memory.writeByte(address++, *it);
 			}
 			else{
-				std::cout<< "Not enough memory";
+				std::cerr<< "Not enough memory";
 				return false;
 			}
 		}
@@ -136,25 +154,30 @@ bool GameBoy::loadGame(){
 }
 
 void GameBoy::playGame(){
-	std::set<BYTE> old_opcode;
-	for(;;) {
-//		BYTE instructionCycles = cpu.step();
-		cpu.stepDebug(&old_opcode);
-//		clockCycles += instructionCycles;
-		getchar();
+	for(;;){
+		std::cout<<"--------------------------------------------\n";
+		BYTE instructionCycles = cpu.step();
+		lcd.step(instructionCycles);
+		
+		if(SDL_GetTicks() - displayTime > 250){
+			lcd.renderScreen(window, renderer);
+			displayTime = SDL_GetTicks();
+		}//		
+		clockCycles += instructionCycles;
+		InterruptHandler::doInterrupt(&memory, &cpu);
 	}
 }
 
 void GameBoy::printByte(WORD t_add){
-    std::cout << memory.readByte(t_add); 
+    //std::cout << memory.readByte(t_add); 
 }
 void GameBoy::printNintendoGraphic(){
 	rom.printNintendoGraphic();
-	std::cout<< "Nintendo Graphic: ";
+	//std::cout<< "Nintendo Graphic: ";
 	std::vector<BYTE>::const_iterator it = testRom.begin();
-    for (; it != testRom.end(); ++it){std::cout << std::hex << (unsigned int)*it << " ";}
-    std::cout << std::endl;
-        
+    for (; it != testRom.end(); ++it){//std::cout << std::hex << (unsigned int)*it << " ";}
+    //std::cout << std::endl;
+	}
 }
 void GameBoy::printRomInfo(){
 	rom.printRomName();
@@ -180,15 +203,15 @@ bool GameBoy::checkCartridge(){
 void GameBoy::sync(){
 	Uint32 hostNewTime = SDL_GetTicks();
     Uint32 hostElapsedTime = hostNewTime - hostOldTime;
-    std::cout<<"The host elapsed time is: "<<'\t'<<hostElapsedTime<<std::endl;
+    //std::cout<<"The host elapsed time is: "<<'\t'<<hostElapsedTime<<std::endl;
 
     Uint32 targetNewTime = TARGETPERIOD * clockCycles;
     Uint32 targetElapsedTime = targetNewTime - targetOldTime;
-    std::cout<<"The target elapsed time is: "<<'\t'<<targetElapsedTime<<std::endl;
+    //std::cout<<"The target elapsed time is: "<<'\t'<<targetElapsedTime<<std::endl;
     
 	Uint32 timeDifference = targetElapsedTime - hostElapsedTime;
     if(timeDifference > 2) {    //2 ms
-        std::cout<<"The diff is: "<<'\t'<<targetElapsedTime - hostElapsedTime<<std::endl;
+        //std::cout<<"The diff is: "<<'\t'<<targetElapsedTime - hostElapsedTime<<std::endl;
         /////////WINDOWS alternative ////////usleep(timeDifference); // sleep 
 	}
     hostOldTime = hostNewTime;
@@ -196,5 +219,5 @@ void GameBoy::sync(){
 }
 
 GameBoy::~GameBoy(){
-    std::cout << "GAMEBOY distruttore\n";
+    //std::cout << "GAMEBOY distruttore\n";
 }

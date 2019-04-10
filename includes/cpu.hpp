@@ -14,7 +14,6 @@ class Cpu {
     private:
         //useful pointers
         Memory* mem;
-
         //special registers of 16 bits
         WORD pc;    //program counter
         WORD sp;    //stack pointer
@@ -43,6 +42,8 @@ class Cpu {
         void printCpuState(void);
 
     public:
+            long long int o;
+            bool flag;
         Cpu(void);
         Cpu(Memory*);
         ~Cpu(void);

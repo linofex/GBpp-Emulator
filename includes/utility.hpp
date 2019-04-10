@@ -31,8 +31,18 @@ struct RGBColor{
     BYTE r;
     BYTE g;
     BYTE b;
+};
 
-    bool type;  //0 for BG, 1 for Sprite
+//custom palette
+#define WHITE {254, 254, 254}
+#define LIGHT_GREY {224, 224, 224}
+#define DARK_GREY {96, 96, 96}
+#define BLACK {1, 1, 1}
+
+
+struct pixel{
+    RGBColor color;
+    bool type;
 };
 
 // interrupt routines addresses
@@ -77,6 +87,10 @@ struct RGBColor{
 #define SCREEN_WIDTH    160
 #define SCREEN_HEIGHT   144
 
+// Window Dimension
+#define WINDOW_WIDTH    889
+#define WINDOW_HEIGHT   800
+
 // Joypad status variables
 #define RIGHT   0
 #define LEFT    1
@@ -99,5 +113,6 @@ struct RGBColor{
 #define SCROLLY 0xFF42
 #define WINDOWX 0xFF4B
 #define WINDOWY 0xFF4A
+
 
 #endif

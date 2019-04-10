@@ -575,7 +575,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0xFB, instruction("EI", 4, ei)));
     instrSet.insert(std::make_pair(0xFD, instruction("UNDEFINED", 0, not_defined)));
     instrSet.insert(std::make_pair(0xFC, instruction("UNDEFINED", 0, not_defined))); 
-    instrSet.insert(std::make_pair(0xFE, instruction("XOR A, d8", 8, xor_A_n)));  
+    instrSet.insert(std::make_pair(0xFE, instruction("CP d8", 8, cp_A_n)));  
     instrSet.insert(std::make_pair(0xFF, instruction("RST 28", 32, rst_28))); 
 
 
@@ -636,11 +636,13 @@ void init(std::map<unsigned char, instruction>& instrSet) {
 //----------------------- EMPTY -------------------------------------
 static void not_defined(Cpu* c) {
     std::cout<<"Instruction not defined"<<std::endl;
+    std::cout<< "PC: "<<std::hex <<(int)(c->readByte(c->getPC()-2))<< "\n";
+
 }
 
 //-----------------------ADD-------------------------------------
 static void add(Cpu* c, unsigned char n) {
-   std::cout<<"inizio add"<<std::endl;
+   //std::cout<<"inizio add"<<std::endl;
 
    unsigned short res = c->getA() + n;
     
@@ -663,7 +665,7 @@ static void add(Cpu* c, unsigned char n) {
     else
         c->resetFlag(FLAG_H);
 
-    std::cout<<"fine add"<<std::endl;
+    //std::cout<<"fine add"<<std::endl;
     
 }
 
@@ -877,12 +879,12 @@ static void cp(Cpu* c, unsigned char n) {
     c->setFlag(FLAG_N);
         
     if(res < 0)  //sub with no borrow
-        c->resetFlag(FLAG_C);
+        c->resetFlag(FLAG_C); /////////////////////////QUAA
     else
         c->setFlag(FLAG_C);
-        
+
     if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if no borrow from bit 4
-        c->resetFlag(FLAG_H);
+        c->resetFlag(FLAG_H); //li ho invertiti
     else
         c->setFlag(FLAG_H);
 }
@@ -893,10 +895,11 @@ static void cp_A_E(Cpu* c) {cp(c, c->getE());}
 static void cp_A_H(Cpu* c) {cp(c, c->getH());}
 static void cp_A_L(Cpu* c) {cp(c, c->getL());}
 static void cp_A_A(Cpu* c) {cp(c, c->getA());}
-static void cp_A_n(Cpu* c, unsigned char n) {
+static void cp_A_n(Cpu* c) {
     unsigned char data = c->readByte(c->getPC());
     c->incPC();
     cp(c, data);
+    //std::cout <<"A: "<<std::hex <<(int) c->getA()<< " data: " << std::hex <<(int) data<< std::endl;
 }
 static void cp_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
@@ -944,7 +947,7 @@ static BYTE dec(Cpu* c, unsigned char n) {
     
     c->setFlag(FLAG_N);
         
-    if(((n & 0x0F)- 1) < 0)    //if no borrow from bit 4
+    if(((n & 0x0F) - 1) < 0)    //if no borrow from bit 4
         c->resetFlag(FLAG_H);
     else
         c->setFlag(FLAG_H);
@@ -1243,7 +1246,9 @@ static void loadh_n_ind_A(Cpu* c) {
 static void loadh_A_n_ind(Cpu* c) {
     BYTE n = c->readByte(c->getPC());
     c->incPC();
-    c->setA(0xFF00 + n);
+    std::cout << " A = " <<std::hex << (int)c->getA();
+    c->setA(c->readByte(0xFF00 + n)); //MA é un BYTE A!!!
+   std::cout <<" LDH A a8: "<< std::hex << (int)n << " A = " <<std::hex<<(int) c->getA()<< std::endl;
 }
 
 // Put value nn into n
@@ -1401,7 +1406,7 @@ static void halt(Cpu* c) {
         c->setHalt();
     }
     else{
-        std::cout << "\n** HALT with master enable == false **\n";
+        //std::cout << "\n** HALT with master enable == false **\n";
     }
    // c->setPC(c->getPC() - 1);
     
@@ -1997,18 +2002,33 @@ static void jp(Cpu* c) {
 static void jp_nz(Cpu* c) {
     if(!c->isFLAG_Zero())
         jp(c);
+    else{
+        c->incPC();
+    }
 }
 static void jp_z(Cpu* c) {
     if(c->isFLAG_Zero())
         jp(c);
+    else{
+        c->incPC();
+             
+    }
 }
 static void jp_nc(Cpu* c) {
     if(!c->isFLAG_Carry())
         jp(c);
+    else{
+        c->incPC();
+             
+    }
 }
 static void jp_c(Cpu* c) {
     if(c->isFLAG_Carry())
         jp(c);
+    else{
+        c->incPC();
+             
+    }
 }
 static void jp_hl_ind(Cpu* c) {
     WORD newPc = c->readWord(c->getHL());
@@ -2016,23 +2036,38 @@ static void jp_hl_ind(Cpu* c) {
     }
 static void jr(Cpu* c) {
     signed char n = c->readByte(c->getPC());
+    //c->incPC();
+    std::cout<< c->getPC();
     c->setPC(c->getPC() + n);
+    std::cout << " dopo: "<< c->getPC()<< " n: "<<(int)n << std::endl ;
 }
 static void jr_nz(Cpu* c) {
     if(!c->isFLAG_Zero())
         jr(c);
+    else{
+        c->incPC();
+    }
 }
 static void jr_z(Cpu* c) {
     if(c->isFLAG_Zero())
         jr(c);
+    else{
+        c->incPC();
+    }
 }
 static void jr_nc(Cpu* c) {
     if(!c->isFLAG_Carry())
         jr(c);
+    else{
+        c->incPC();
+    }
 }
 static void jr_c(Cpu* c) {
     if(c->isFLAG_Carry())
         jr(c);
+    else{
+        c->incPC();
+    }
 }
 static void call(Cpu* c) {
     WORD oldPC = c->readWord(c->getPC());
@@ -2042,18 +2077,34 @@ static void call(Cpu* c) {
 static void call_nz(Cpu* c) {
     if(!c->isFLAG_Zero())
         call(c);
+    else{
+        c->incPC();
+        c->incPC();        
+    }
 }
 static void call_z(Cpu* c) {
     if(c->isFLAG_Zero())
         call(c);
+    else{
+        c->incPC();
+        c->incPC();        
+    }
 }
 static void call_nc(Cpu* c) {
     if(!c->isFLAG_Carry())
         call(c);
+    else{
+        c->incPC();
+        c->incPC();        
+    }
 }
 static void call_c(Cpu* c) {
     if(c->isFLAG_Carry())
         call(c);
+    else{
+        c->incPC();
+        c->incPC();        
+    }
 }
 static void rst(Cpu* c, unsigned char ls) {
     c->pushWord(c->getPC());

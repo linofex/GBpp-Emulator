@@ -1,13 +1,11 @@
 #include "../includes/lcd.hpp"
+#include "../includes/ppu.hpp"
 #include "../includes/memory.hpp"
 #include"../includes/interrupts.hpp"
-
-
+#include <iostream>
 Lcd::Lcd() {}
 
-Lcd::Lcd(Memory* t_memory/* , Gpu* gpu_ */) {
-    memory = t_memory;
-    //gpu = gpu_;
+Lcd::Lcd(Memory* t_memory, Ppu* t_ppu) : memory(t_memory), ppu(t_ppu){
     remainingCycles = 456;
 }
 
@@ -38,33 +36,41 @@ void Lcd::setScanline(BYTE t_val) {
     memory->writeByte(LCDLY, t_val);
 }
 
-void Lcd::lcdStep(int cycles) {
-    
+void Lcd::step(int cycles) {
     Lcd::setLCDStatus();
 
-    if(!Lcd::isLCDEnabled())
+    if(!Lcd::isLCDEnabled()){
+     std::cout << "*** CR **: ";
         return;
+    }
     else
         remainingCycles -= cycles;
+    
+    // std::cout <<"RC: "<<(int)remainingCycles<< std::endl;
+    // std::cout <<"CCC: "<<cycles<< std::endl;
+    
 
     unsigned char currentLine = Lcd::getScanline();
+    std::cout << "*** CR **: "<<(int)currentLine << std::endl;
+
 
     if(remainingCycles <= 0) {
         remainingCycles = 456;
 
         if(currentLine < 144) {         //visible scanlines [0, 143]
-            //Ppu.drawLine()
-            Lcd::setScanline(currentLine++);
+            ppu->renderLine(currentLine);
+            Lcd::setScanline(++currentLine);
         }
         else if(currentLine == 144) {   //VBLANK interrupt request
+            std::cout<<"Interrupt VBLANK"<<std::endl;
             InterruptHandler::requestInterrupt(memory, VBLANK);
-            Lcd::setScanline(currentLine++);
+            Lcd::setScanline(++currentLine);
         }
         else if(currentLine == 154) {   //invisible scanlines [144, 153]
             Lcd::setScanline(0);        //go to the next line
         }
         else
-            Lcd::setScanline(currentLine++);
+            Lcd::setScanline(++currentLine);
     }
 }
 
@@ -131,4 +137,23 @@ bool Lcd::testCoincidence(){
         return true;    //request interrupt
     }
     return false; // do nothing
+}
+
+void Lcd::renderScreen(SDL_Window* t_window, SDL_Renderer* t_renderer) {
+    std::vector<RGBColor> buffer = ppu->getRGBBuffer();
+    RGBColor color;
+    for (int i = 0; i < SCREEN_HEIGHT; ++i){
+        for(int j= 0; j< SCREEN_WIDTH;++j){
+           color =  buffer[i*SCREEN_WIDTH + SCREEN_HEIGHT];
+          //SDL_SetRenderDrawColor(t_renderer, rand()/255, rand()/255, rand()/255,255);
+           SDL_SetRenderDrawColor(t_renderer, color.r, color.g, color.b, 255);
+           SDL_RenderDrawPoint(t_renderer, j, i);
+        }
+       
+        //SDL_Delay(10);      
+       
+    }
+    SDL_RenderPresent(t_renderer);
+
+
 }

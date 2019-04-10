@@ -2,17 +2,18 @@
 #define LCD_H
 
 #include "utility.hpp"
+#include <SDL2/SDL.h>
 
 class Memory;
-//class Gpu;
+class Ppu;
 
 class Lcd {
     private:
         Memory* memory;
-        //Gpu* gpu;
+        Ppu* ppu;
 
         unsigned char currentLine;
-        unsigned short remainingCycles;
+        signed short remainingCycles;
 
         void setLCDStatus(void);
         unsigned char getScanline(void);
@@ -26,8 +27,9 @@ class Lcd {
 
     public:
         Lcd(void);
-        Lcd(Memory* /*, Gpu* */);
-        void lcdStep(int);
+        Lcd(Memory*, Ppu*);
+        void step(int);
+        void renderScreen(SDL_Window*, SDL_Renderer*);
 
 
     

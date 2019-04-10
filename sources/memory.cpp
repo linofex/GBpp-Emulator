@@ -78,7 +78,10 @@ BYTE Memory::readByte(const WORD t_add) {
         if(t_add == 0xFF00) {    //JOYPAD status register
             return buildJoypadStatus(t_add);
         }
+        if(t_add == 0xFF40)
+            std::cerr << "READ: "<<(int)(t_add & 0x007F) << std::endl;
         return ioPorts.at(t_add & 0x007F); // from 0 to 127
+        
     }
     // high speed ram
     else if(t_add >= 0xFF80 && t_add < 0xFFFF){
@@ -121,11 +124,19 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
          OAM[t_add & 0x00FF] = t_value; // from 0 to 159 (8KB)
     }
     else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
-      std::cerr << "[ERROR] MEMORY location not writable!\n";
+      std::cout << "[ERROR] MEMORY location not writable!\n";
     }
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
-        ioPorts[t_add & 0x007F] = t_value; //
+        if(t_add == 0xFF40)
+            std::cerr << std::hex << (int)t_value << std::endl;
+        if(t_add == 0xFF44)
+            //std::cout << "azzero la scanline"<<(int)t_value<<"\n";
+        ioPorts[t_add & 0x007F] = t_value; 
+        if(t_add == 0xFF40){
+            std::cerr << "WRiTE: "<<(int)(t_add & 0x007F) << std::endl;
+            std::cerr << std::hex << (int)readByte(t_add)<< std::endl;
+        }
         if(t_add == 0xFF46){
             startDMATransfer(this); //start DMA transfer
             return;

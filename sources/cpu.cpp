@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <unistd.h>
+#include <iostream>
 #include <bitset>
 
 Cpu::Cpu(void) { } 
@@ -15,7 +16,8 @@ Cpu::Cpu(void) { }
 Cpu::Cpu(Memory* m) {
     mem = m; //RICORDATELO
     Cpu::reset();
-    std::cout<<"reset end"<<std::endl;
+    o = 0;
+    flag = false;
 }
 Cpu::~Cpu(void) {
     std::cout << "CPU distruttore\n";
@@ -55,11 +57,18 @@ void Cpu::printCpuState(){
 }
 
 BYTE Cpu::step() {
-    if(isHalted() | isStopped()){return 0;}
+    if(isHalted() | isStopped()){
+        std::cout << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW";return 0;}
     BYTE opcode = Cpu::fetch();
     std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
     instruction instr = Cpu::decode(opcode);
-    std::cout<<instr.name<<'\t'<<(int)instr.cycles<<'\t'<<instr.function<<std::endl;
+    if((int)getPC() >= 636){
+        std::cout<< instr.name << std::endl;
+    }
+   // std::cout<< o <<std::endl;
+    std::cout<<"PC: "<< getPC() <<  "\tInstruction: " <<instr.name<<"\topcode: "<<std::hex<<(int)opcode<< std::endl;
+    
+
     return Cpu::execute(instr);
 }
 
@@ -153,7 +162,6 @@ BYTE Cpu::fetch(void) {
     //unsigned char opcode = 0x80;//
     BYTE opcode = mem->readByte(pc);
     incPC();
-
     return opcode;
 }
 

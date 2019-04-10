@@ -10,7 +10,7 @@ int main(int argc, char** argv){
         GameBoy gameboy = GameBoy(romName);
         
         if(gameboy.loadGame())
-            //gameboy.playGame();
+            gameboy.playGame();
         std::cout << "QUI\n";
         //gameboy.PrintByte(0x0134);
     }

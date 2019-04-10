@@ -6,12 +6,12 @@
 class Ppu{
     private:
         Memory* memory;
-        std::vector<RGBColor> pixelBuffer;
-        std::vector<RGBColor> customPalette;
+        std::vector<bool> pixelPriority;
+        std::vector<RGBColor> RGBBuffer;
+        
         
         BYTE bufferY;
-
-        
+     
         inline BYTE getBGandWindowPalette(void) const {return memory->readByte(BGP);}   //Background palette 0xFF47
         inline BYTE getSpritePalette0(void) const {return memory->readByte(OBP0);}      //Object Palette spirtes0 0xFF48
         inline BYTE getSpritePalette1(void) const {return memory->readByte(OBP1);}      //Object Palette spirtes1 0xFF49
@@ -22,19 +22,19 @@ class Ppu{
         inline BYTE getLCDControlRegister(void) const {return memory->readByte(LCDCONTROL);}
 
         void fillTile(BYTE, int, bool);
-        void renderBGLine();
+        void renderBGLine(BYTE);
         void renderWindowLine();
         void renderSpriteLine();
-        std::vector<RGBColor> toColors(WORD, bool);
-        RGBColor getColorFromPaletteID(BYTE, bool);
-        RGBColor getRGBColor(BYTE, bool);
+        std::vector<RGBColor> toPixels(WORD);
+        RGBColor getColorFromPaletteID(BYTE);
+        RGBColor getRGBColor(BYTE);
 
 
 
     public:
         Ppu(Memory*);
-        void renderLine(void);
-        inline std::vector<RGBColor> getPixelBuffer(void) const {return pixelBuffer;}
+        void renderLine(BYTE);
+        inline std::vector<RGBColor> getRGBBuffer(void) const {return RGBBuffer;}
 
 
 

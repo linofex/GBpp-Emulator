@@ -651,7 +651,7 @@ static void add(Cpu* c, unsigned char n) {
     else
         c->resetFlag(FLAG_Z);
 
-    c->setA(res);
+    c->setA((BYTE)(res & 0x00FF));
 
     c->resetFlag(FLAG_N);
         
@@ -680,7 +680,7 @@ static void add_A_n(Cpu* c) {
     BYTE data = c->readByte(c->getPC());
     c->incPC();
     add(c, data);
-    }
+}
 static void add_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
     unsigned char n = c->readByte(addr);
@@ -688,7 +688,7 @@ static void add_A_HL_ind(Cpu* c) {
 }
 
 static void adc(Cpu* c, unsigned char n) {
-    unsigned char carry = c->isFLAG_Carry();  //carry = 1 or 0
+    unsigned char carry = (c->isFLAG_Carry()== 0)? 0 : 1;  //carry = 1 or 0
     add(c, n + carry);
 }
 static void adc_A_B(Cpu* c) {adc(c, c->getB());}
@@ -710,23 +710,25 @@ static void adc_A_HL_ind(Cpu* c) {
 }
 
 static void sub(Cpu* c, unsigned char n) {
-    signed short res = c->getA() - n;
+    //signed short res = c->getA() - n;
 
-    if(res == 0)        //sub = 0
-        c->setFlag(FLAG_Z);
-    else
+    c->setA(c->getA() - n);
+
+    if(c->getA())        //sub = 0
         c->resetFlag(FLAG_Z);
+    else
+        c->setFlag(FLAG_Z);
 
-    c->setA(res);
+    
     
     c->setFlag(FLAG_N);
         
-    if(res < 0)  //sub with no borrow
+    if(n > c->getA())  //sub with no borrow //SOSPETTA
         c->resetFlag(FLAG_C);
     else
         c->setFlag(FLAG_C);
         
-    if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if no borrow from bit 4
+    if((c->getA() & 0x0F) < (n & 0x0F))    //if no borrow from bit 4 //SOSPETTA
         c->resetFlag(FLAG_H);
     else
         c->setFlag(FLAG_H);
@@ -908,7 +910,7 @@ static void cp_A_HL_ind(Cpu* c) {
 }
 
 static BYTE inc(Cpu* c, unsigned char n) {
-    unsigned short res = n + 1;
+    BYTE res = n + 1;
 
     if(res == 0)        //res = 0
         c->setFlag(FLAG_Z);
@@ -917,12 +919,12 @@ static BYTE inc(Cpu* c, unsigned char n) {
     
     c->resetFlag(FLAG_N);
         
-    if(((n & 0x0F) + 1) > 0x0F)    //if carry from bit 3
+    if((n & 0x0F) == 0x0F)    //if carry from bit 3
         c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);
 
-    return (unsigned char) res;
+    return res;
 }
 static void inc_A(Cpu* c) {c->setA(inc(c, c->getA()));}
 static void inc_B(Cpu* c) {c->setB(inc(c, c->getB()));}
@@ -933,12 +935,13 @@ static void inc_H(Cpu* c) {c->setH(inc(c, c->getH()));}
 static void inc_L(Cpu* c) {c->setL(inc(c, c->getL()));}
 static void inc_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
-    unsigned char n = c->readByte(addr);
-    c->setHL(inc(c, n));
+    c->writeByte(addr, c->readByte(addr)+1); //SOSPETTA
+    // unsigned char n = c->readByte(addr);
+    // c->setHL(inc(c, n));
 }
 
 static BYTE dec(Cpu* c, unsigned char n) {
-    unsigned short res = n - 1;
+    BYTE res = n - 1;
 
     if(res == 0)        //res = 0
         c->setFlag(FLAG_Z);
@@ -947,7 +950,7 @@ static BYTE dec(Cpu* c, unsigned char n) {
     
     c->setFlag(FLAG_N);
         
-    if(((n & 0x0F) - 1) < 0)    //if no borrow from bit 4
+    if(n & 0x0F)    //if no borrow from bit 4
         c->resetFlag(FLAG_H);
     else
         c->setFlag(FLAG_H);
@@ -957,8 +960,7 @@ static BYTE dec(Cpu* c, unsigned char n) {
     //     c->resetFlag(FLAG_C);
     // else
     //     c->setFlag(FLAG_C);
-
-    return (unsigned char) res;
+    return res;
 }
 static void dec_A(Cpu* c) {c->setA(dec(c, c->getA()));}
 static void dec_B(Cpu* c) {c->setB(dec(c, c->getB()));}
@@ -969,15 +971,16 @@ static void dec_H(Cpu* c) {c->setH(dec(c, c->getH()));}
 static void dec_L(Cpu* c) {c->setL(dec(c, c->getL()));}
 static void dec_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
-    unsigned char n = c->readByte(addr);
-    c->setHL(dec(c, n));
+    c->writeByte(addr, c->readByte(addr) - 1); //SOSPETTA
+    // unsigned char n = c->readByte(addr);
+    // c->setHL(dec(c, n));
 }
 
-static void add_HL(Cpu* c, WORD val) {
+static void add_HL(Cpu* c, WORD val) { //v
     
     unsigned long res = c->getHL() + val;
 
-    c->setHL((unsigned short) res);
+    c->setHL((unsigned short) (res & 0xFFFF));
  
     c->resetFlag(FLAG_N);
 
@@ -987,7 +990,7 @@ static void add_HL(Cpu* c, WORD val) {
         c->resetFlag(FLAG_C);
     
     // Set if carry from bit 11
-    if(((c->getHL() & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF)
+    if(((c->getHL() & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF) // SOSPETTA
         c->setFlag(FLAG_H);
 	else
         c->resetFlag(FLAG_H);
@@ -1035,7 +1038,7 @@ static void dec_BC(Cpu* c) {c->setBC(c->getBC() - 1);};
 
 // From the manual: Put value nn into n
 // I think it's wrong, better the contrary 
-static BYTE load_nn_n(Cpu* c) {
+static BYTE load_nn_n(Cpu* c) { //v
     BYTE n = c->readByte(c->getPC());
     c->incPC();
     return n;
@@ -1139,7 +1142,7 @@ static void load_L_HL_ind(Cpu* c) {
     c->setL(n);
 }
 
-static void load_HL_ind_x(Cpu* c, unsigned char n) {
+static void load_HL_ind_x(Cpu* c, unsigned char n) { //V
     WORD addr = c->getHL();
     c->writeByte(addr, n);
 }
@@ -1152,11 +1155,12 @@ static void load_HL_ind_H(Cpu* c) {load_HL_ind_x(c, c->getH());}
 static void load_HL_ind_L(Cpu* c) {load_HL_ind_x(c, c->getL());}
 static void load_HL_ind_n(Cpu* c) {
     BYTE n = c->readByte(c->getPC());
+    c->incPC();
     load_HL_ind_x(c, n);
 }
 
 
-static void load_A_x_ind(Cpu* c, unsigned short  n) {
+static void load_A_x_ind(Cpu* c, unsigned short  n) { //v
     unsigned char res = c->readByte(n);
     c->setA(res);
 }
@@ -1252,7 +1256,7 @@ static void loadh_A_n_ind(Cpu* c) {
 }
 
 // Put value nn into n
-static BYTE load_n_nn(Cpu* c) {
+static BYTE load_n_nn(Cpu* c) { //v
     WORD nn = c->readWord(c->getPC());
     c->incPC();
     c->incPC();
@@ -1401,7 +1405,7 @@ static void scf(Cpu* c) {
     c->resetFlag(FLAG_N);
 }
 static void nop(Cpu* c) {}
-static void halt(Cpu* c) {
+static void halt(Cpu* c) { //SOSPETTO
     if(c->isIntMasterEnable()){
         c->setHalt();
     }
@@ -1456,7 +1460,7 @@ static BYTE rl(Cpu* c, unsigned char a) {
 
     BYTE a_7 = ((a & 0x80) >> 7);
     a <<= 1;
-    unsigned char carry = c->isFLAG_Carry();
+    unsigned char carry = (c->isFLAG_Carry() == 0x00) ? 0 : 1;
     a+= carry;
     
     if(a_7 == 1)
@@ -1465,7 +1469,7 @@ static BYTE rl(Cpu* c, unsigned char a) {
         c->resetFlag(FLAG_C);
 
     if(a == 0)
-        c->setFlag(FLAG_Z);
+        c->setFlag(FLAG_Z);  //SOSPETTO
     else
         c->resetFlag(FLAG_Z);
     
@@ -1493,7 +1497,7 @@ static BYTE rrc(Cpu* c, unsigned char a) {
 
     a >>= 1;
     a += (carry << 7);
-    if(a == 0)
+    if(a == 0)   //SOSPETTO
         c->setFlag(FLAG_Z);
     else
         c->resetFlag(FLAG_Z);
@@ -1513,13 +1517,13 @@ static void rrc_HL_ind(Cpu* c) {
     c->writeByte(addr, res);
 }
 
-static BYTE rr(Cpu* c, unsigned char a) {
+static BYTE rr(Cpu* c, unsigned char a) { //v
     c->resetFlag(FLAG_N);
     c->resetFlag(FLAG_H);
 
     BYTE a_0 = (a & 0x01);
     a >>= 1;
-    unsigned char carry = c->isFLAG_Carry();
+    unsigned char carry = (c->isFLAG_Carry() == 0) ? 0 : 1;
     a+= (carry << 7);
     
     if(a_0 == 1)
@@ -2033,14 +2037,14 @@ static void jp_c(Cpu* c) {
 static void jp_hl_ind(Cpu* c) {
     WORD newPc = c->readWord(c->getHL());
     c->setPC(newPc);
-    }
+}
 
 
-static void jr(Cpu* c) {
+static void jr(Cpu* c) { //v
     signed char n = c->readByte(c->getPC());
     //c->incPC();
 //   /  std::cout<< c->getPC();
-    c->setPC(c->getPC() + n);
+    c->setPC(c->getPC() + n+1);
 //    / std::cout << " dopo: "<< c->getPC()<< " n: "<<(int)n << std::endl ;
 }
 static void jr_nz(Cpu* c) {
@@ -2072,8 +2076,8 @@ static void jr_c(Cpu* c) {
     }
 }
 static void call(Cpu* c) {
-    WORD oldPC = c->readWord(c->getPC());
-    c->pushWord(oldPC + 2); //next instruction 
+    //WORD oldPC = c->readWord(c->getPC());
+    c->pushWord(c->getPC() + 2); //next instruction 
     jp(c);
 }
 static void call_nz(Cpu* c) {

@@ -40,7 +40,7 @@ void Lcd::step(int cycles) {
     Lcd::setLCDStatus();
 
     if(!Lcd::isLCDEnabled()){
-    // std::cout << "DISABILITATO ";
+    //std::cerr << "D";
         return;
     }
     else
@@ -150,7 +150,6 @@ void Lcd::renderScreen(SDL_Window* t_window, SDL_Renderer* t_renderer) {
           //SDL_SetRenderDrawColor(t_renderer, rand()/255, rand()/255, rand()/255,255);
            SDL_SetRenderDrawColor(t_renderer, (Uint8)color.r, (Uint8)color.g, (Uint8)color.b, 255);
            SDL_RenderDrawPoint(t_renderer, j, i);
-          
         }
          //SDL_RenderPresent(t_renderer);
     }

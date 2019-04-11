@@ -40,34 +40,43 @@ struct instruction Cpu::getInstrSetCBPrefixAt(BYTE t_opcode) {
 
 
 void Cpu::printCpuState(){
-    std::cout<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
-    std::cout<< "SP: "<< std::hex<< (int)getSP() << "\t";
-    std::cout<< "A: "<< std::hex<< (int)getA() << "\t";
-    std::cout<< "B: "<< std::hex<< (int)getB() << "\t";
-    std::cout<< "C: "<< std::hex<< (int)getC() << "\t";
-    std::cout<< "D: "<< std::hex<< (int)getD() << "\t";
-    std::cout<< "E: "<< std::hex<< (int)getE() << "\t";
-    std::cout<< "H: "<< std::hex<< (int)getH() << "\t";
-    std::cout<< "L: "<< std::hex<< (int)getL() << "\t";
-    std::cout<< "F: "<< std::bitset<8>(getF()) << "\n";
-    // std::cout<< "AF: "<< std::hex<< (int)getAF() << std::endl;
-    // std::cout<< "BC: "<< std::hex<< (int)getBC() << std::endl;
-    // std::cout<< "DE: "<< std::hex<< (int)getDE() << std::endl;
-    // std::cout<< "HL: "<< std::hex<< (int)getHL() << std::endl;
+    
+    // std::cerr<< "A: "<< std::hex<< (int)getA() << "\t";
+    // std::cerr<< "B: "<< std::hex<< (int)getB() << "\t";
+    // std::cerr<< "C: "<< std::hex<< (int)getC() << "\t";
+    // std::cerr<< "D: "<< std::hex<< (int)getD() << "\t";
+    // std::cerr<< "E: "<< std::hex<< (int)getE() << "\t";
+    // std::cerr<< "H: "<< std::hex<< (int)getH() << "\t";
+    // std::cerr<< "L: "<< std::hex<< (int)getL() << "\t";
+    // std::cerr<< "F: "<< std::bitset<8>(getF()) << "\n";
+     std::cerr<< "AF: "<< std::hex<< (int)getAF() << std::endl;
+     std::cerr<< "BC: "<< std::hex<< (int)getBC() << std::endl;
+     std::cerr<< "DE: "<< std::hex<< (int)getDE() << std::endl;
+     std::cerr<< "HL: "<< std::hex<< (int)getHL() << std::endl;
+     std::cerr<< "SP: "<< std::hex<< (int)getSP() << "\t";
+     std::cerr<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
+
 }
 
 BYTE Cpu::step() {
     if(isHalted() ||  isStopped()){
         std::cerr << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW";return 0;}
+    std::cout<<"PC: "<<std::hex << (int)getPC();
     BYTE opcode = Cpu::fetch();
    // std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
     instruction instr = Cpu::decode(opcode);
+    // if(getPC() == 0x181){
+    //     std::cerr<<"PAUSE\n";
+    //     system("PAUSE");
+    // }
    
    // std::cout<< o <<std::endl;
-    //std::cout<<"PC: "<< getPC() <<  "\tInstruction: " <<instr.name<<"\topcode: "<<std::hex<<(int)opcode<< std::endl;
+   BYTE ret = Cpu::execute(instr);
+   //std::cout<<" - PC: "<<std::hex << (int)getPC() <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
+   //printCpuState();
     
 
-    return Cpu::execute(instr);
+    return ret;
 }
 
 void Cpu::stepDebug(std::set<BYTE>* old_opcode){
@@ -180,24 +189,26 @@ BYTE Cpu::execute(instruction instr) {
 }
 
 void Cpu::pushWord(WORD t_val) {
+    decSP();
+    decSP();
     mem->writeWord(getSP(), t_val);
-    incSP();
-    incSP();
+    
 }
 
 void Cpu::push(BYTE t_val) {
     //aggiungere controllo dell'indirizzo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    mem->writeWord(getSP(), t_val);
-    incSP();
+    mem->writeByte(getSP(), t_val);
+    decSP();
 }
 
 WORD Cpu::popWord() {
     BYTE temp = Cpu::popByte();
     return temp + (Cpu::popByte() << 8);
+
 }
 
 BYTE Cpu::popByte() {
-    BYTE temp = mem->readWord(getSP());
-    decSP();
+    BYTE temp = mem->readByte(getSP());
+    incSP();
     return temp;
 }

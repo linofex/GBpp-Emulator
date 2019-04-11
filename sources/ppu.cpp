@@ -6,10 +6,15 @@ Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelPriority(160*144,0), RGBBuffe
 void Ppu::renderLine(BYTE t_currentline){
     bufferY = t_currentline;
     BYTE LCDcontrolRegister = getLCDControlRegister();
-    //if(!(LCDcontrolRegister & 0x01)){ // bit 0
-       renderBGLine(t_currentline);
-        //std::cout<< "BG\n";
+    //if(LCDcontrolRegister & 0x01){ // bit 0
+        renderBGLine(t_currentline);
+        //std::cout<< "BG--------\n";
     //}
+    //else{
+        // std::cout<< "BBBBBB--------\n";
+      //  RGBBuffer = std::vector<RGBColor>(160*144,{255,255,255});
+    //}
+    
     if(LCDcontrolRegister & 0x20){ //bit 5
         renderWindowLine();
         //std::cout<< "WINDOW\n";
@@ -19,7 +24,7 @@ void Ppu::renderLine(BYTE t_currentline){
         //std::cout<< "SPRITE";
     }
     int a = 0;
-    std::cout<< "############################# " << (int)(a+ bufferY) << std::endl;
+   // std::cout<< "############################# " << (int)(a+ bufferY) << std::endl;
     // /bufferY = (++bufferY)%140;
 }
 
@@ -86,7 +91,6 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
     BYTE controlRegister = getLCDControlRegister();
     WORD lineOfATile;
     signed char signedTileID;
-    int countline = 0;
     WORD startAddress;
     BYTE offset;
 
@@ -97,7 +101,7 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
         startAddress = 0x8800;
         offset = ((signed char) t_tileID + 127)*16;
     }
-    std::vector<WORD> tile = {0X0000, 0X3c3c, 0X6666 ,0X6666 ,0X6666 ,0X6666,0X3c3c, 0X0000};
+    //std::vector<WORD> tile = {0X0000, 0X3c3c, 0X6666 ,0X6666 ,0X6666 ,0X6666,0X3c3c, 0X0000};
 
     //for(int j = 0; j < 16 ; j+= 2){
         //one line of the tile
@@ -118,42 +122,43 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
         // std::cout << std::endl;
         //compute colors returns pixels
         // fill in buffer using counterline and i
-        int offsetTile = bufferY + (countline)*160 + i*8;
+        int offsetTile = t_currentline*160 + i*8;
        // //std::cout << (offset)<< " *";
         std::copy (lineOfPixels.begin(), lineOfPixels.begin() + lineOfPixels.size(), RGBBuffer.begin()+offsetTile);
        // std::cout<<" R:" << (int)RGBBuffer.at(h).r <<" G:" << (int)RGBBuffer.at(h).g <<" B:" << (int)RGBBuffer.at(h).b <<std::endl;
               
-        countline ++;
     //}
-    std::cout << std::endl;
-    for(int t = 0; t < 8; t++) {
-         for(int k = 0 ; k< 8 ;++k){
-            if((int)RGBBuffer.at(t*160 + k).r == 255){
-                std::cout << "  ";
-            }
-            else
-            {
-                std::cout << "1 ";
-            }
+    // std::cout << std::endl;
+    // for(int t = 0; t < 8; t++) {
+    //      for(int k = 0 ; k< 8 ;++k){
+    //         if((int)RGBBuffer.at(t*160 + k).r == 255){
+    //             std::cout << "  ";
+    //         }
+    //         else
+    //         {
+    //             std::cout << "1 ";
+    //         }
             
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 }
 
-void Ppu::renderBGLine(BYTE t_currentline){
 
+void Ppu::renderBGLine(BYTE t_currentline){
     // CI VUOLE ANCHE LA SCANLINEEEE
     BYTE scrollY = getScrollY() >> 3;
-    BYTE scrollX = getScrollX() >> 3;     
-    BYTE BGMemoryStart = getLCDControlRegister() & 0x08 ? 0x9C00 : 0x9800;
+    BYTE scrollX = getScrollX() >> 3;  
+    BYTE LCDcontrolRegister = getLCDControlRegister();    
+    BYTE BGMemoryStart = LCDcontrolRegister & 0x08 ? 0x9C00 : 0x9800;
     BYTE tileID;
     BYTE offset;
-
-    
-    for(int i = 0; i < SCREEN_WIDTH/8  ; ++i){
-        offset = (scrollY + (int)t_currentline/8)*32 + ((scrollX + i)%32);
+    for(int i = 0; i < SCREEN_WIDTH/8 ; ++i){
+        if((LCDcontrolRegister & 0x10) && (t_currentline >= getWindowY()) && (i > (getWindowX() - 7)/8)){
+            return;
+        }
+        offset = ((scrollY/8 + (int)t_currentline/8)%32)*32 + ((scrollX/8 + i)%32);
         tileID = memory->readByte(BGMemoryStart + offset);
         fillLineOfTile(tileID, i, t_currentline, 0);
     }

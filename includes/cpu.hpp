@@ -39,9 +39,10 @@ class Cpu {
         struct instruction decode(BYTE);
         BYTE execute(instruction);
    
-        void printCpuState(void);
 
     public:
+            void printCpuState(void);
+
             long long int o;
             bool flag;
         Cpu(void);

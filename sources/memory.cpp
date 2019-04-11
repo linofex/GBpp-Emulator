@@ -111,6 +111,7 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
     }
     // work memory
     else if (t_add >= 0xC000 && t_add < 0xE000){
+         //std::cout << "BG!: " << std::hex <<(int)t_value<< "\n";
          wRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
     }
     // echo ram
@@ -122,12 +123,12 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
          OAM[t_add & 0x00FF] = t_value; // from 0 to 159 (8KB)
     }
     else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
-      std::cout << "[ERROR] MEMORY location not writable!\n";
+      //std::cout << "[ERROR] MEMORY location not writable!\n";
     }
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
-        if(t_add == 0xFF47){
-            std::cerr << std::hex<<(int)t_value << std::endl;
+        if(t_add == LCDCONTROL){
+            std::cerr << " WRITE IN BGP: "<<std::hex<<(int)t_value << std::endl;
         }
         ioPorts[t_add & 0x007F] = t_value; 
         

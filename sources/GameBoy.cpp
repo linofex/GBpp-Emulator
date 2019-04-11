@@ -126,7 +126,7 @@ void GameBoy::initSDL(){
     SDL_Init(SDL_INIT_VIDEO);
     //SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
      window = SDL_CreateWindow("Gbb-Emulator",
-                        SDL_WINDOWPOS_CENTERED -200, SDL_WINDOWPOS_CENTERED,
+                        SDL_WINDOWPOS_CENTERED -80, SDL_WINDOWPOS_CENTERED,
                         WINDOW_WIDTH,WINDOW_HEIGHT,
                         0);
 
@@ -171,14 +171,23 @@ void GameBoy::playGame(){
 		BYTE instructionCycles = cpu.step();
 		lcd.step(instructionCycles);
 		
-		if(SDL_GetTicks() - displayTime > 17){
-			lcd.renderScreen(window, renderer);
+		if(SDL_GetTicks() - displayTime > 20){
+			//lcd.renderScreen(window, renderer);
 			displayTime = SDL_GetTicks();
 		}//		
 		clockCycles += instructionCycles;
 		InterruptHandler::doInterrupt(&memory, &cpu);
-		sync();
+		//sync();
 		//std::cerr << o++ << " ";
+		o++;
+		if(cpu.getPC() == 0x2795){
+			cpu.printCpuState();
+			//std::cerr << " BOOM " << o;
+
+
+			//std::cerr << (int)cpu.getPC();
+			exit(1);
+		}
 	}
 }
 
@@ -228,17 +237,17 @@ void GameBoy::sync(){
 	float_t timeDifference =  targetNewTime - hostNewTime;
 	    
 		
-    if(timeDifference > 5) {    //2 ms
-		std::cerr<<"HITT!!  The diff is: "<<'\t'<< (float)(timeDifference )<<std::endl;
-        usleep(timeDifference*1000); // sleep 
-		hostOldTime = SDL_GetTicks();
-   		targetOldTime = targetNewTime;
+    // if(timeDifference > 5) {    //2 ms
+	// 	std::cerr<<"HITT!!  The diff is: "<<'\t'<< (float)(timeDifference)<<std::endl;
+    //     usleep(timeDifference*1000); // sleep 
+	// 	hostOldTime = SDL_GetTicks();
+   	// 	targetOldTime = targetNewTime;
 		
-	}
-	else {
-		std::cerr<<"MISS!!  The diff is: "<<'\t'<< (float)(timeDifference)<<std::endl;
+	// }
+	// else {
+	// 	std::cerr<<"MISS!!  The diff is: "<<'\t'<< (float)(timeDifference)<<std::endl;
 
-	}
+	// }
    
 }
 

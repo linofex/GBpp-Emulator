@@ -35,19 +35,18 @@ void InterruptHandler::doInterrupt(Memory* t_memory, Cpu* t_cpu){
 //        std::cerr << "DIS";
 
     if (t_cpu->isIntMasterEnable()){
-        std::cerr << "INT";
         if(t_cpu->getInstrSetAt(t_cpu->getPC()).name == "HALT")
             t_cpu->incPC();
 
-        BYTE ier = t_memory->readByte(IER_ADD); //Read Interrupt Enable Reister from memory at 0x0FF0F
+        BYTE ier = t_memory->readByte(IER_ADD); //Read Interrupt Enable Reister from memory at 0x0FFFF
         BYTE irr = t_memory->readByte(IRR_ADD); //Read Interrupt Request Reister from memory at 0x0FF0F
         
         /* If the interrupt is enabled AND the interrupt is requested --> ServeInterrupt */
         /*          IN ORDER OF PRIORITY            */
-        if(ier & VBLANK & irr)  return serveInterrupt(VBLANK, t_memory, t_cpu); // Higher priority
-        if(ier & LCD & irr)     return serveInterrupt(LCD, t_memory, t_cpu);
-        if(ier & TIMER & irr)   return serveInterrupt(TIMER, t_memory, t_cpu);
-        if(ier & JOYPAD & irr)  return serveInterrupt(JOYPAD, t_memory, t_cpu);   
+        if(ier & VBLANK & irr)  {std::cerr << "VBLANK\n";return serveInterrupt(VBLANK, t_memory, t_cpu);} // Higher priority
+        if(ier & LCD & irr)     {std::cerr << "LCD\n";return serveInterrupt(LCD, t_memory, t_cpu);}
+        if(ier & TIMER & irr)   {std::cerr << "TIMER\n";return serveInterrupt(TIMER, t_memory, t_cpu);}
+        if(ier & JOYPAD & irr)  {std::cerr << "JOYPAD\n";return serveInterrupt(JOYPAD, t_memory, t_cpu);}   
     }
 }
 

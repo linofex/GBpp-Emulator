@@ -11,12 +11,12 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
                        			 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 
                        			 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E
     							};
-	clockCycles = 0;
-    targetOldTime = TARGETPERIOD * clockCycles; // 0
+	//clockCycles = 0;
+    targetOldTime = TARGETPERIOD * 0; // 0
     hostOldTime = SDL_GetTicks(); //  millisecons
 
 	displayTime = SDL_GetTicks();
-	initSDL();
+	//initSDL();
 	o = 0;
 }
 
@@ -164,6 +164,7 @@ bool GameBoy::loadGame(){
 }
 
 void GameBoy::playGame(){
+	WORD pp = 0x101;
 	for(;;){
 		userInput();
 		//std::cout<<"--------------------------------------------\n";
@@ -172,22 +173,24 @@ void GameBoy::playGame(){
 		lcd.step(instructionCycles);
 		
 		if(SDL_GetTicks() - displayTime > 20){
-			//lcd.renderScreen(window, renderer);
+		//	lcd.renderScreen(window, renderer);
+			//getchar();
 			displayTime = SDL_GetTicks();
 		}//		
-		clockCycles += instructionCycles;
+		cpu.addClockCycle(instructionCycles);
 		InterruptHandler::doInterrupt(&memory, &cpu);
 		//sync();
 		//std::cerr << o++ << " ";
 		o++;
-		if(cpu.getPC() == 0x2795){
+		if(cpu.getPC() == pp){
 			cpu.printCpuState();
+			std::cerr <<"metti pc: ";
+			std::cin >> std::hex >> pp;
 			//std::cerr << " BOOM " << o;
-
-
 			//std::cerr << (int)cpu.getPC();
-			exit(1);
 		}
+		
+
 	}
 }
 
@@ -230,7 +233,7 @@ void GameBoy::sync(){
 	std::cerr<<"\nWW "<<'\t'<< (float)(hostOldTime)<<std::endl;
     //std::cout<<"The host elapsed time is: "<<'\t'<<hostElapsedTime<<std::endl;
  	
-    float targetNewTime = TARGETPERIOD * clockCycles;
+    float targetNewTime = TARGETPERIOD * cpu.getClockCycles();
     float targetElapsedTime = targetNewTime - targetOldTime;
     //std::cout<<"The target elapsed time is: "<<'\t'<<targetElapsedTime<<std::endl;
     

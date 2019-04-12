@@ -17,6 +17,7 @@ Cpu::Cpu(Memory* m) {
     mem = m; //RICORDATELO
     Cpu::reset();
     o = 0;
+    clockCycles = 0;
     flag = false;
 }
 Cpu::~Cpu(void) {
@@ -49,21 +50,27 @@ void Cpu::printCpuState(){
     // std::cerr<< "H: "<< std::hex<< (int)getH() << "\t";
     // std::cerr<< "L: "<< std::hex<< (int)getL() << "\t";
     // std::cerr<< "F: "<< std::bitset<8>(getF()) << "\n";
-     std::cerr<< "AF: "<< std::hex<< (int)getAF() << std::endl;
-     std::cerr<< "BC: "<< std::hex<< (int)getBC() << std::endl;
-     std::cerr<< "DE: "<< std::hex<< (int)getDE() << std::endl;
-     std::cerr<< "HL: "<< std::hex<< (int)getHL() << std::endl;
-     std::cerr<< "SP: "<< std::hex<< (int)getSP() << "\t";
-     std::cerr<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
+     std::cout<< "\nAF: "<< std::hex<< (int)getAF() << std::endl;
+     std::cout<< "BC: "<< std::hex<< (int)getBC() << std::endl;
+     std::cout<< "DE: "<< std::hex<< (int)getDE() << std::endl;
+     std::cout<< "HL: "<< std::hex<< (int)getHL() << std::endl;
+     std::cout<< "SP: "<< std::hex<< (int)getSP() << "\t";
+     std::cout<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
+     std::cout<< "0xFF44: "<< std::hex<< (int)mem->readByte(0xFF44) << std::endl;
+    // std::cerr<< "0xFF44: "<< std::hex<< (int)getSP() << "\t";
+    // std::cerr<< "\0xFF44: "<< std::hex<< (int)getPC()<< "\t";
+
+     
 
 }
 
 BYTE Cpu::step() {
     if(isHalted() ||  isStopped()){
-        std::cerr << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW";return 0;}
-    std::cout<<"PC: "<<std::hex << (int)getPC();
+        // /std::cerr << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW";return 0;
+        }
+    //std::cout<<"PC: "<<std::hex << (int)getPC();
     BYTE opcode = Cpu::fetch();
-   // std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
+  // std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
     instruction instr = Cpu::decode(opcode);
     // if(getPC() == 0x181){
     //     std::cerr<<"PAUSE\n";
@@ -197,13 +204,14 @@ void Cpu::pushWord(WORD t_val) {
 
 void Cpu::push(BYTE t_val) {
     //aggiungere controllo dell'indirizzo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    mem->writeByte(getSP(), t_val);
     decSP();
+    mem->writeByte(getSP(), t_val);
+    
 }
 
 WORD Cpu::popWord() {
     BYTE temp = Cpu::popByte();
-    return temp + (Cpu::popByte() << 8);
+    return temp + (Cpu::popByte() << 8); // secondo me il <<8 deve andare a temp, ma non funiona lo stesso
 
 }
 

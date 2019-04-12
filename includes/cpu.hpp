@@ -5,6 +5,7 @@
 #include "memory.hpp"
 #include "instruction.hpp"
 #include <string>
+#include <iostream>
 #include <vector>
 #include <set>
 #include <map>
@@ -23,6 +24,7 @@ class Cpu {
         REGISTER regBC;
         REGISTER regDE;
         REGISTER regHL;
+        unsigned long clockCycles;
     
         //map for the instructions
         std::map<unsigned char, struct instruction> instrSet;
@@ -57,7 +59,7 @@ class Cpu {
         inline bool isIntMasterEnable(void) const {return intMasterEnable;}
         void setIntMasterEnable(void) {intMasterEnable = true;}
         void resetIntMasterEnable(void) {intMasterEnable = false;}
-
+        
         void pushWord(WORD);
         WORD popWord(void);
         void push(BYTE);
@@ -120,6 +122,9 @@ class Cpu {
         inline void resethalt(){halt = false;}
         inline bool isHalted() const {return halt;}
         inline bool isStopped() const {return stop;}
+
+        inline unsigned long getClockCycles() const {return clockCycles;}
+        inline void addClockCycle(int t_clock){clockCycles += t_clock;}
 
 
 

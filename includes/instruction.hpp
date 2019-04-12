@@ -254,7 +254,7 @@ static void load_A_x_ind(Cpu*, unsigned short);
 static void load_A_BC_ind(Cpu*);
 static void load_A_DE_ind(Cpu*);
 //static void load_A_HL_ind(Cpu*);
-static void load_A_NN_ind(Cpu*);
+static void load_A_nn_ind(Cpu*);
 
 
 //------------------- LOAD n, A -------------------
@@ -296,7 +296,7 @@ static void loadh_A_n_ind(Cpu*);
 //________________________________ 16-bit Load _____________________________
 
 //------------------- LOAD n, nn -------------------
-static BYTE load_n_nn(Cpu*);
+static WORD load_n_nn(Cpu*);
 static void load_BC_nn(Cpu*);
 static void load_DE_nn(Cpu*);
 static void load_HL_nn(Cpu*);

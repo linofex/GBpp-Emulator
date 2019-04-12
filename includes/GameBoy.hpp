@@ -33,7 +33,7 @@
             std::vector<Uint32> times;
             std::vector<BYTE> testRom;
             
-            unsigned long clockCycles;
+            //unsigned long clockCycles;
             SDL_Event event;
             
             Uint32 hostOldTime;

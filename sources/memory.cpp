@@ -78,6 +78,7 @@ BYTE Memory::readByte(const WORD t_add) {
         if(t_add == 0xFF00) {    //JOYPAD status register
             return buildJoypadStatus(t_add);
         }
+       
         return ioPorts.at(t_add & 0x007F); // from 0 to 127
         
     }
@@ -103,6 +104,7 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
     }
     // Video Memory
     else if (t_add>= 0x8000 && t_add < 0xA000){
+        std::cout<<"SCRIVO I TILE " << std::hex << (int)t_value<<std::endl;
         vRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
     }
     // external memory
@@ -129,11 +131,15 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
         if(t_add == LCDCONTROL){
             std::cerr << " WRITE IN BGP: "<<std::hex<<(int)t_value << std::endl;
+          //  return;
         }
+        // if(t_add == 0xFF44)
+        //     std::cerr <<"CI SCRIV0 "<< std::hex << (int)t_value;
         ioPorts[t_add & 0x007F] = t_value; 
         
 
         if(t_add == 0xFF46){
+            std::cerr <<"\n\n**** DMA!! "<< std::endl;
             startDMATransfer(this); //start DMA transfer
             return;
         }

@@ -19,6 +19,7 @@ Cpu::Cpu(Memory* m) {
     o = 0;
     clockCycles = 0;
     flag = false;
+    lastOpcode = 0x00;
 }
 Cpu::~Cpu(void) {
     std::cout << "CPU distruttore\n";
@@ -41,7 +42,6 @@ struct instruction Cpu::getInstrSetCBPrefixAt(BYTE t_opcode) {
 
 
 void Cpu::printCpuState(){
-    
     // std::cerr<< "A: "<< std::hex<< (int)getA() << "\t";
     // std::cerr<< "B: "<< std::hex<< (int)getB() << "\t";
     // std::cerr<< "C: "<< std::hex<< (int)getC() << "\t";
@@ -66,23 +66,32 @@ void Cpu::printCpuState(){
 
 BYTE Cpu::step() {
     if(isHalted() ||  isStopped()){
-        // /std::cerr << "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW";return 0;
-        }
-    //std::cout<<"PC: "<<std::hex << (int)getPC();
+        std::cout << "HALT";
+        return 0;
+    }
+    if(isLastOpcode(0xFB)){  //EI
+        setIntMasterEnable();
+    }
+    else if (isLastOpcode(0xF3)){ //DI
+        resetIntMasterEnable();
+    }
+    
+   // std::cout<<"PC: "<<std::hex << (int)getPC()<< "\n";
     BYTE opcode = Cpu::fetch();
+    if(opcode == 0x76){
+         std::cout<<"PAUSE\n";
+   //      system("PAUSE");
+    }
   // std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
     instruction instr = Cpu::decode(opcode);
-    // if(getPC() == 0x181){
-    //     std::cerr<<"PAUSE\n";
-    //     system("PAUSE");
-    // }
-   
-   // std::cout<< o <<std::endl;
-   BYTE ret = Cpu::execute(instr);
-   //std::cout<<" - PC: "<<std::hex << (int)getPC() <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
+
+    
+        // std::cout<< o <<std::endl;
+    BYTE ret = Cpu::execute(instr);
+    //std::cout <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
    //printCpuState();
     
-
+   // setLastOpcode(opcode);
     return ret;
 }
 
@@ -175,6 +184,7 @@ BYTE Cpu::fetch(void) {
     //std::cout<<"fetch"<<std::endl;
     //unsigned char opcode = 0x80;//
     BYTE opcode = mem->readByte(pc);
+
     incPC();
     return opcode;
 }

@@ -2,6 +2,8 @@
 #define LCD_H
 
 #include "utility.hpp"
+
+#define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 
 class Memory;

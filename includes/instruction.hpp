@@ -663,7 +663,7 @@ static void jp_z(Cpu*);
 static void jp_nc(Cpu*);
 static void jp_c(Cpu*);
 //------------------- JP (HL) -------------------
-static void jp_hl_ind(Cpu*);
+static void jp_hl(Cpu*);
 
 //------------------- JR n -------------------
 static void jr(Cpu*);

@@ -33,6 +33,7 @@ class Cpu;
             std::vector<BYTE>hRam;     // high ram
             BYTE IEReg;                // Interrupt Enable Register
             BYTE keyStatus;
+            bool readOnlyRom;
 
         public:
             Memory();
@@ -46,10 +47,10 @@ class Cpu;
             void setJoypadStatus(BYTE);
 
             // this method writes one byte ad address t_add
-            void writeByte(const WORD t_add, const BYTE t_value);
-            
+            void writeByte(const WORD t_add, BYTE t_value);
+            void setReadOnlyRom(){ readOnlyRom = true;}
             // this method writes 2 byte starting from t_add
-            void writeWord(const WORD t_add, const WORD t_value);
+            void writeWord(const WORD t_add, WORD t_value);
 
             void writeInStack(Cpu* t_cpu, WORD t_value);
 

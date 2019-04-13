@@ -69,7 +69,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x34, instruction("SWAP H", 8, swap_H)));
     instrSetCBPrefix.insert(std::make_pair(0x35, instruction("SWAP L", 8, swap_L)));
     instrSetCBPrefix.insert(std::make_pair(0x36, instruction("SWAP (HL)", 16, swap_HL_ind)));
-    instrSetCBPrefix.insert(std::make_pair(0x37, instruction("SWAP A", 8, swap_B)));
+    instrSetCBPrefix.insert(std::make_pair(0x37, instruction("SWAP A", 8, swap_A)));
     instrSetCBPrefix.insert(std::make_pair(0x38, instruction("SRL B", 8, srl_B)));
     instrSetCBPrefix.insert(std::make_pair(0x39, instruction("SRL C", 8, srl_C)));
     instrSetCBPrefix.insert(std::make_pair(0x3A, instruction("SRL D", 8, srl_D)));
@@ -85,7 +85,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x43, instruction("BIT 0 E", 8, bit_E_0)));
     instrSetCBPrefix.insert(std::make_pair(0x44, instruction("BIT 0 H", 8, bit_H_0)));
     instrSetCBPrefix.insert(std::make_pair(0x45, instruction("BIT 0 L", 8, bit_L_0)));
-    instrSetCBPrefix.insert(std::make_pair(0x46, instruction("BIT 0 (HL)", 16, bit_HL_ind_0)));
+    instrSetCBPrefix.insert(std::make_pair(0x46, instruction("BIT 0 (HL)", 12, bit_HL_ind_0)));
     instrSetCBPrefix.insert(std::make_pair(0x47, instruction("BIT 0 A", 8, bit_A_0)));
     instrSetCBPrefix.insert(std::make_pair(0x48, instruction("BIT 1 B", 8, bit_B_1)));
     instrSetCBPrefix.insert(std::make_pair(0x49, instruction("BIT 1 C", 8, bit_C_1)));
@@ -93,7 +93,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x4B, instruction("BIT 1 E", 8, bit_E_1)));
     instrSetCBPrefix.insert(std::make_pair(0x4C, instruction("BIT 1 H", 8, bit_H_1)));
     instrSetCBPrefix.insert(std::make_pair(0x4D, instruction("BIT 1 L", 8, bit_L_1)));
-    instrSetCBPrefix.insert(std::make_pair(0x4E, instruction("BIT 1 (HL)", 16, bit_HL_ind_1)));
+    instrSetCBPrefix.insert(std::make_pair(0x4E, instruction("BIT 1 (HL)", 12, bit_HL_ind_1)));
     instrSetCBPrefix.insert(std::make_pair(0x4F, instruction("BIT 1 A", 8, bit_A_1)));
     
     instrSetCBPrefix.insert(std::make_pair(0x50, instruction("BIT 2 B", 8, bit_B_2)));
@@ -102,7 +102,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x53, instruction("BIT 2 E", 8, bit_E_2)));
     instrSetCBPrefix.insert(std::make_pair(0x54, instruction("BIT 2 H", 8, bit_H_2)));
     instrSetCBPrefix.insert(std::make_pair(0x55, instruction("BIT 2 L", 8, bit_L_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x56, instruction("BIT 2 (HL)", 16, bit_HL_ind_2)));
+    instrSetCBPrefix.insert(std::make_pair(0x56, instruction("BIT 2 (HL)", 12, bit_HL_ind_2)));
     instrSetCBPrefix.insert(std::make_pair(0x57, instruction("BIT 2 A", 8, bit_A_2)));
     instrSetCBPrefix.insert(std::make_pair(0x58, instruction("BIT 3 B", 8, bit_B_3)));
     instrSetCBPrefix.insert(std::make_pair(0x59, instruction("BIT 3 C", 8, bit_C_3)));
@@ -110,7 +110,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x5B, instruction("BIT 3 E", 8, bit_E_3)));
     instrSetCBPrefix.insert(std::make_pair(0x5C, instruction("BIT 3 H", 8, bit_H_3)));
     instrSetCBPrefix.insert(std::make_pair(0x5D, instruction("BIT 3 L", 8, bit_L_3)));
-    instrSetCBPrefix.insert(std::make_pair(0x5E, instruction("BIT 3 (HL)", 16, bit_HL_ind_3)));
+    instrSetCBPrefix.insert(std::make_pair(0x5E, instruction("BIT 3 (HL)", 12, bit_HL_ind_3)));
     instrSetCBPrefix.insert(std::make_pair(0x5F, instruction("BIT 3 A", 8, bit_A_3)));
 
     instrSetCBPrefix.insert(std::make_pair(0x60, instruction("BIT 4 B", 8, bit_B_4)));
@@ -119,7 +119,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x63, instruction("BIT 4 E", 8, bit_E_4)));
     instrSetCBPrefix.insert(std::make_pair(0x64, instruction("BIT 4 H", 8, bit_H_4)));
     instrSetCBPrefix.insert(std::make_pair(0x65, instruction("BIT 4 L", 8, bit_L_4)));
-    instrSetCBPrefix.insert(std::make_pair(0x66, instruction("BIT 4 (HL)", 16, bit_HL_ind_4)));
+    instrSetCBPrefix.insert(std::make_pair(0x66, instruction("BIT 4 (HL)", 12, bit_HL_ind_4)));
     instrSetCBPrefix.insert(std::make_pair(0x67, instruction("BIT 4 A", 8, bit_A_4)));
     instrSetCBPrefix.insert(std::make_pair(0x68, instruction("BIT 5 B", 8, bit_B_5)));
     instrSetCBPrefix.insert(std::make_pair(0x69, instruction("BIT 5 C", 8, bit_C_5)));
@@ -127,7 +127,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x6B, instruction("BIT 5 E", 8, bit_E_5)));
     instrSetCBPrefix.insert(std::make_pair(0x6C, instruction("BIT 5 H", 8, bit_H_5)));
     instrSetCBPrefix.insert(std::make_pair(0x6D, instruction("BIT 5 L", 8, bit_L_5)));
-    instrSetCBPrefix.insert(std::make_pair(0x6E, instruction("BIT 5 (HL)", 16, bit_HL_ind_5)));
+    instrSetCBPrefix.insert(std::make_pair(0x6E, instruction("BIT 5 (HL)", 12, bit_HL_ind_5)));
     instrSetCBPrefix.insert(std::make_pair(0x6F, instruction("BIT 5 A", 8, bit_A_5)));
 
     instrSetCBPrefix.insert(std::make_pair(0x70, instruction("BIT 6 B", 8, bit_B_6)));
@@ -136,7 +136,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x73, instruction("BIT 6 E", 8, bit_E_6)));
     instrSetCBPrefix.insert(std::make_pair(0x74, instruction("BIT 6 H", 8, bit_H_6)));
     instrSetCBPrefix.insert(std::make_pair(0x75, instruction("BIT 6 L", 8, bit_L_6)));
-    instrSetCBPrefix.insert(std::make_pair(0x76, instruction("BIT 6 (HL)", 16, bit_HL_ind_6)));
+    instrSetCBPrefix.insert(std::make_pair(0x76, instruction("BIT 6 (HL)", 12, bit_HL_ind_6)));
     instrSetCBPrefix.insert(std::make_pair(0x77, instruction("BIT 6 A", 8, bit_A_6)));
     instrSetCBPrefix.insert(std::make_pair(0x78, instruction("BIT 7 B", 8, bit_B_7)));
     instrSetCBPrefix.insert(std::make_pair(0x79, instruction("BIT 7 C", 8, bit_C_7)));
@@ -144,7 +144,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x7B, instruction("BIT 7 E", 8, bit_E_7)));
     instrSetCBPrefix.insert(std::make_pair(0x7C, instruction("BIT 7 H", 8, bit_H_7)));
     instrSetCBPrefix.insert(std::make_pair(0x7D, instruction("BIT 7 L", 8, bit_L_7)));
-    instrSetCBPrefix.insert(std::make_pair(0x7E, instruction("BIT 7 (HL)", 16, bit_HL_ind_7)));
+    instrSetCBPrefix.insert(std::make_pair(0x7E, instruction("BIT 7 (HL)", 12, bit_HL_ind_7)));
     instrSetCBPrefix.insert(std::make_pair(0x7F, instruction("BIT 7 A", 8, bit_A_7)));
 
     instrSetCBPrefix.insert(std::make_pair(0x80, instruction("RES 0 B", 8, res_B_0)));
@@ -153,7 +153,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x83, instruction("RES 0 E", 8, res_E_0)));
     instrSetCBPrefix.insert(std::make_pair(0x84, instruction("RES 0 H", 8, res_H_0)));
     instrSetCBPrefix.insert(std::make_pair(0x85, instruction("RES 0 L", 8, res_L_0)));
-    instrSetCBPrefix.insert(std::make_pair(0x86, instruction("RES 0 (HL)", 16, res_HL_ind_0)));
+    instrSetCBPrefix.insert(std::make_pair(0x86, instruction("RES 0 (HL)", 12, res_HL_ind_0)));
     instrSetCBPrefix.insert(std::make_pair(0x87, instruction("RES 0 A", 8, res_A_0)));
     instrSetCBPrefix.insert(std::make_pair(0x88, instruction("RES 1 B", 8, res_B_1)));
     instrSetCBPrefix.insert(std::make_pair(0x89, instruction("RES 1 C", 8, res_C_1)));
@@ -161,7 +161,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x8B, instruction("RES 1 E", 8, res_E_1)));
     instrSetCBPrefix.insert(std::make_pair(0x8C, instruction("RES 1 H", 8, res_H_1)));
     instrSetCBPrefix.insert(std::make_pair(0x8D, instruction("RES 1 L", 8, res_L_1)));
-    instrSetCBPrefix.insert(std::make_pair(0x8E, instruction("RES 1 (HL)", 16, res_HL_ind_1)));
+    instrSetCBPrefix.insert(std::make_pair(0x8E, instruction("RES 1 (HL)", 12, res_HL_ind_1)));
     instrSetCBPrefix.insert(std::make_pair(0x8F, instruction("RES 1 A", 8, res_A_1)));
 
     instrSetCBPrefix.insert(std::make_pair(0x90, instruction("RES 2 B", 8, res_B_2)));
@@ -170,7 +170,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x93, instruction("RES 2 E", 8, res_E_2)));
     instrSetCBPrefix.insert(std::make_pair(0x94, instruction("RES 2 H", 8, res_H_2)));
     instrSetCBPrefix.insert(std::make_pair(0x95, instruction("RES 2 L", 8, res_L_2)));
-    instrSetCBPrefix.insert(std::make_pair(0x96, instruction("RES 2 (HL)", 16, res_HL_ind_2)));
+    instrSetCBPrefix.insert(std::make_pair(0x96, instruction("RES 2 (HL)", 12, res_HL_ind_2)));
     instrSetCBPrefix.insert(std::make_pair(0x97, instruction("RES 2 A", 8, res_A_2)));
     instrSetCBPrefix.insert(std::make_pair(0x98, instruction("RES 3 B", 8, res_B_3)));
     instrSetCBPrefix.insert(std::make_pair(0x99, instruction("RES 3 C", 8, res_C_3)));
@@ -178,7 +178,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x9B, instruction("RES 3 E", 8, res_E_3)));
     instrSetCBPrefix.insert(std::make_pair(0x9C, instruction("RES 3 H", 8, res_H_3)));
     instrSetCBPrefix.insert(std::make_pair(0x9D, instruction("RES 3 L", 8, res_L_3)));
-    instrSetCBPrefix.insert(std::make_pair(0x9E, instruction("RES 3 (HL)", 16, res_HL_ind_3)));
+    instrSetCBPrefix.insert(std::make_pair(0x9E, instruction("RES 3 (HL)", 12, res_HL_ind_3)));
     instrSetCBPrefix.insert(std::make_pair(0x9F, instruction("RES 3 A", 8, res_A_3)));
 
     instrSetCBPrefix.insert(std::make_pair(0xA0, instruction("RES 4 B", 8, res_B_4)));
@@ -187,7 +187,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xA3, instruction("RES 4 E", 8, res_E_4)));
     instrSetCBPrefix.insert(std::make_pair(0xA4, instruction("RES 4 H", 8, res_H_4)));
     instrSetCBPrefix.insert(std::make_pair(0xA5, instruction("RES 4 L", 8, res_L_4)));
-    instrSetCBPrefix.insert(std::make_pair(0xA6, instruction("RES 4 (HL)", 16, res_HL_ind_4)));
+    instrSetCBPrefix.insert(std::make_pair(0xA6, instruction("RES 4 (HL)", 12, res_HL_ind_4)));
     instrSetCBPrefix.insert(std::make_pair(0xA7, instruction("RES 4 A", 8, res_A_4)));
     instrSetCBPrefix.insert(std::make_pair(0xA8, instruction("RES 5 B", 8, res_B_5)));
     instrSetCBPrefix.insert(std::make_pair(0xA9, instruction("RES 5 C", 8, res_C_5)));
@@ -195,7 +195,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xAB, instruction("RES 5 E", 8, res_E_5)));
     instrSetCBPrefix.insert(std::make_pair(0xAC, instruction("RES 5 H", 8, res_H_5)));
     instrSetCBPrefix.insert(std::make_pair(0xAD, instruction("RES 5 L", 8, res_L_5)));
-    instrSetCBPrefix.insert(std::make_pair(0xAE, instruction("RES 5 (HL)", 16, res_HL_ind_5)));
+    instrSetCBPrefix.insert(std::make_pair(0xAE, instruction("RES 5 (HL)", 12, res_HL_ind_5)));
     instrSetCBPrefix.insert(std::make_pair(0xAF, instruction("RES 5 A", 8, res_A_5)));
 
     instrSetCBPrefix.insert(std::make_pair(0xB0, instruction("RES 6 B", 8, res_B_6)));
@@ -204,7 +204,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xB3, instruction("RES 6 E", 8, res_E_6)));
     instrSetCBPrefix.insert(std::make_pair(0xB4, instruction("RES 6 H", 8, res_H_6)));
     instrSetCBPrefix.insert(std::make_pair(0xB5, instruction("RES 6 L", 8, res_L_6)));
-    instrSetCBPrefix.insert(std::make_pair(0xB6, instruction("RES 6 (HL)", 16, res_HL_ind_6)));
+    instrSetCBPrefix.insert(std::make_pair(0xB6, instruction("RES 6 (HL)", 12, res_HL_ind_6)));
     instrSetCBPrefix.insert(std::make_pair(0xB7, instruction("RES 6 A", 8, res_A_6)));
     instrSetCBPrefix.insert(std::make_pair(0xB8, instruction("RES 7 B", 8, res_B_7)));
     instrSetCBPrefix.insert(std::make_pair(0xB9, instruction("RES 7 C", 8, res_C_7)));
@@ -212,7 +212,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xBB, instruction("RES 7 E", 8, res_E_7)));
     instrSetCBPrefix.insert(std::make_pair(0xBC, instruction("RES 7 H", 8, res_H_7)));
     instrSetCBPrefix.insert(std::make_pair(0xBD, instruction("RES 7 L", 8, res_L_7)));
-    instrSetCBPrefix.insert(std::make_pair(0xBE, instruction("RES 7 (HL)", 16, res_HL_ind_7)));
+    instrSetCBPrefix.insert(std::make_pair(0xBE, instruction("RES 7 (HL)", 12, res_HL_ind_7)));
     instrSetCBPrefix.insert(std::make_pair(0xBF, instruction("RES 7 A", 8, res_A_7)));
 
     instrSetCBPrefix.insert(std::make_pair(0xC0, instruction("SET 0 B", 8, set_B_0)));
@@ -221,7 +221,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xC3, instruction("SET 0 E", 8, set_E_0)));
     instrSetCBPrefix.insert(std::make_pair(0xC4, instruction("SET 0 H", 8, set_H_0)));
     instrSetCBPrefix.insert(std::make_pair(0xC5, instruction("SET 0 L", 8, set_L_0)));
-    instrSetCBPrefix.insert(std::make_pair(0xC6, instruction("SET 0 (HL)", 16, set_HL_ind_0)));
+    instrSetCBPrefix.insert(std::make_pair(0xC6, instruction("SET 0 (HL)", 12, set_HL_ind_0)));
     instrSetCBPrefix.insert(std::make_pair(0xC7, instruction("SET 0 A", 8, set_A_0)));
     instrSetCBPrefix.insert(std::make_pair(0xC8, instruction("SET 1 B", 8, set_B_1)));
     instrSetCBPrefix.insert(std::make_pair(0xC9, instruction("SET 1 C", 8, set_C_1)));
@@ -229,7 +229,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xCB, instruction("SET 1 E", 8, set_E_1)));
     instrSetCBPrefix.insert(std::make_pair(0xCC, instruction("SET 1 H", 8, set_H_1)));
     instrSetCBPrefix.insert(std::make_pair(0xCD, instruction("SET 1 L", 8, set_L_1)));
-    instrSetCBPrefix.insert(std::make_pair(0xCE, instruction("SET 1 (HL)", 16, set_HL_ind_1)));
+    instrSetCBPrefix.insert(std::make_pair(0xCE, instruction("SET 1 (HL)", 12, set_HL_ind_1)));
     instrSetCBPrefix.insert(std::make_pair(0xCF, instruction("SET 1 A", 8, set_A_1)));
     
     instrSetCBPrefix.insert(std::make_pair(0xD0, instruction("SET 2 B", 8, set_B_2)));
@@ -238,7 +238,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xD3, instruction("SET 2 E", 8, set_E_2)));
     instrSetCBPrefix.insert(std::make_pair(0xD4, instruction("SET 2 H", 8, set_H_2)));
     instrSetCBPrefix.insert(std::make_pair(0xD5, instruction("SET 2 L", 8, set_L_2)));
-    instrSetCBPrefix.insert(std::make_pair(0xD6, instruction("SET 2 (HL)", 16, set_HL_ind_2)));
+    instrSetCBPrefix.insert(std::make_pair(0xD6, instruction("SET 2 (HL)", 12, set_HL_ind_2)));
     instrSetCBPrefix.insert(std::make_pair(0xD7, instruction("SET 2 A", 8, set_A_2)));
     instrSetCBPrefix.insert(std::make_pair(0xD8, instruction("SET 3 B", 8, set_B_3)));
     instrSetCBPrefix.insert(std::make_pair(0xD9, instruction("SET 3 C", 8, set_C_3)));
@@ -246,7 +246,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xDB, instruction("SET 3 E", 8, set_E_3)));
     instrSetCBPrefix.insert(std::make_pair(0xDC, instruction("SET 3 H", 8, set_H_3)));
     instrSetCBPrefix.insert(std::make_pair(0xDD, instruction("SET 3 L", 8, set_L_3)));
-    instrSetCBPrefix.insert(std::make_pair(0xDE, instruction("SET 3 (HL)", 16, set_HL_ind_3)));
+    instrSetCBPrefix.insert(std::make_pair(0xDE, instruction("SET 3 (HL)", 12, set_HL_ind_3)));
     instrSetCBPrefix.insert(std::make_pair(0xDF, instruction("SET 3 A", 8, set_A_3)));
 
     instrSetCBPrefix.insert(std::make_pair(0xE0, instruction("SET 4 B", 8, set_B_4)));
@@ -255,7 +255,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xE3, instruction("SET 4 E", 8, set_E_4)));
     instrSetCBPrefix.insert(std::make_pair(0xE4, instruction("SET 4 H", 8, set_H_4)));
     instrSetCBPrefix.insert(std::make_pair(0xE5, instruction("SET 4 L", 8, set_L_4)));
-    instrSetCBPrefix.insert(std::make_pair(0xE6, instruction("SET 4 (HL)", 16, set_HL_ind_4)));
+    instrSetCBPrefix.insert(std::make_pair(0xE6, instruction("SET 4 (HL)", 12, set_HL_ind_4)));
     instrSetCBPrefix.insert(std::make_pair(0xE7, instruction("SET 4 A", 8, set_A_4)));
     instrSetCBPrefix.insert(std::make_pair(0xE8, instruction("SET 5 B", 8, set_B_5)));
     instrSetCBPrefix.insert(std::make_pair(0xE9, instruction("SET 5 C", 8, set_C_5)));
@@ -263,7 +263,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xEB, instruction("SET 5 E", 8, set_E_5)));
     instrSetCBPrefix.insert(std::make_pair(0xEC, instruction("SET 5 H", 8, set_H_5)));
     instrSetCBPrefix.insert(std::make_pair(0xED, instruction("SET 5 L", 8, set_L_5)));
-    instrSetCBPrefix.insert(std::make_pair(0xEE, instruction("SET 5 (HL)", 16, set_HL_ind_5)));
+    instrSetCBPrefix.insert(std::make_pair(0xEE, instruction("SET 5 (HL)", 12, set_HL_ind_5)));
     instrSetCBPrefix.insert(std::make_pair(0xEF, instruction("SET 5 A", 8, set_A_5)));
 
     instrSetCBPrefix.insert(std::make_pair(0xF0, instruction("SET 6 B", 8, set_B_6)));
@@ -272,7 +272,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xF3, instruction("SET 6 E", 8, set_E_6)));
     instrSetCBPrefix.insert(std::make_pair(0xF4, instruction("SET 6 H", 8, set_H_6)));
     instrSetCBPrefix.insert(std::make_pair(0xF5, instruction("SET 6 L", 8, set_L_6)));
-    instrSetCBPrefix.insert(std::make_pair(0xF6, instruction("SET 6 (HL)", 16, set_HL_ind_6)));
+    instrSetCBPrefix.insert(std::make_pair(0xF6, instruction("SET 6 (HL)", 12, set_HL_ind_6)));
     instrSetCBPrefix.insert(std::make_pair(0xF7, instruction("SET 7 A", 8, set_A_6)));
     instrSetCBPrefix.insert(std::make_pair(0xF8, instruction("SET 7 B", 8, set_B_7)));
     instrSetCBPrefix.insert(std::make_pair(0xF9, instruction("SET 7 C", 8, set_C_7)));
@@ -280,7 +280,7 @@ void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0xFB, instruction("SET 7 E", 8, set_E_7)));
     instrSetCBPrefix.insert(std::make_pair(0xFC, instruction("SET 7 H", 8, set_H_7)));
     instrSetCBPrefix.insert(std::make_pair(0xFD, instruction("SET 7 L", 8, set_L_7)));
-    instrSetCBPrefix.insert(std::make_pair(0xFE, instruction("SET 7 (HL)", 16, set_HL_ind_7)));
+    instrSetCBPrefix.insert(std::make_pair(0xFE, instruction("SET 7 (HL)", 12, set_HL_ind_7)));
     instrSetCBPrefix.insert(std::make_pair(0xFF, instruction("SET 7 A", 8, set_A_7)));  
 
 }
@@ -550,7 +550,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, cp_A_n)));
 
     instrSet.insert(std::make_pair(0xE8, instruction("ADD SP, r8", 8, add_SP_n)));  
-    instrSet.insert(std::make_pair(0xE9, instruction("JP (HL)", 2, jp_hl_ind)));
+    instrSet.insert(std::make_pair(0xE9, instruction("JP (HL)", 2, jp_hl)));
     instrSet.insert(std::make_pair(0xEA, instruction("LD a16, A", 8, load_nn_ind_A)));
     instrSet.insert(std::make_pair(0xEB, instruction("UNDEFINED", 0, not_defined)));  
     instrSet.insert(std::make_pair(0xEC, instruction("UNDEFINED", 0, not_defined)));
@@ -896,7 +896,7 @@ static void cp_A_n(Cpu* c) {
     unsigned char data = c->readByte(c->getPC());
     c->incPC();
     cp(c, data);
-    std::cout <<"A: "<<std::hex <<(int) c->getA()<< " data: " << std::hex <<(int) data<< std::endl;
+    //std::cout <<"A: "<<std::hex <<(int) c->getA()<< " data: " << std::hex <<(int) data<< std::endl;
 }
 static void cp_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
@@ -930,9 +930,22 @@ static void inc_H(Cpu* c) {c->setH(inc(c, c->getH()));}
 static void inc_L(Cpu* c) {c->setL(inc(c, c->getL()));}
 static void inc_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
-    c->writeByte(addr, c->readByte(addr)+1); //SOSPETTA
+    BYTE n = c->readByte(addr);
+    BYTE res = n + 1;
+    c->writeByte(addr, res); //SOSPETTA
     // unsigned char n = c->readByte(addr);
     // c->setHL(inc(c, n));
+    c->resetFlag(FLAG_N);
+    if(res == 0)        //res = 0
+        c->setFlag(FLAG_Z);
+    else
+        c->resetFlag(FLAG_Z);
+    
+    if((n & 0x0F) == 0x0F)    //if carry from bit 3
+        c->setFlag(FLAG_H);
+    else
+        c->resetFlag(FLAG_H);
+
 }
 
 static BYTE dec(Cpu* c, unsigned char n) {
@@ -945,7 +958,7 @@ static BYTE dec(Cpu* c, unsigned char n) {
     
     c->setFlag(FLAG_N);
         
-    if(n & 0x0F)    //if no borrow from bit 4
+    if((n & 0x0F) == 0)    //if no borrow from bit 4
         c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);
@@ -966,7 +979,7 @@ static void dec_H(Cpu* c) {c->setH(dec(c, c->getH()));}
 static void dec_L(Cpu* c) {c->setL(dec(c, c->getL()));}
 static void dec_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
-    c->writeByte(addr, c->readByte(addr) - 1); //SOSPETTA
+    c->writeByte(addr, dec(c, c->readByte(addr))); //SOSPETTA
     // unsigned char n = c->readByte(addr);
     // c->setHL(dec(c, n));
 }
@@ -1159,7 +1172,6 @@ static void load_HL_ind_n(Cpu* c) {
 static void load_A_x_ind(Cpu* c, unsigned short  n) { //v
     unsigned char res = c->readByte(n);
     c->setA(res);
-    std::cerr << "PC ADESSO:" << std::hex << (int)c->getPC() << "\n"; 
 }
 static void load_A_BC_ind(Cpu* c) {load_A_x_ind(c, c->getBC());}
 static void load_A_DE_ind(Cpu* c) {load_A_x_ind(c, c->getDE());}
@@ -1247,9 +1259,9 @@ static void loadh_n_ind_A(Cpu* c) {
 static void loadh_A_n_ind(Cpu* c) {
     BYTE n = c->readByte(c->getPC());
     c->incPC();
-    std::cout << " A = " <<std::hex << (int)c->getA();
+    //std::cout << " A = " <<std::hex << (int)c->readByte(0xFF00 + n);
     c->setA(c->readByte(0xFF00 + n)); //MA é un BYTE A!!!
-    std::cout <<" LDH A a8: "<< std::hex << (int)n << "readbyte: "<<std::hex<< (int)(c->readByte(0xFF00 + n)) << " A = " <<std::hex<<(int) c->getA()<< std::endl;
+    //std::cout <<" LDH A a8: "<< std::hex << (int)n << "readbyte: "<<std::hex<< (int)(c->readByte(0xFF00 + n)) << " A = " <<std::hex<<(int) c->getA()<< std::endl;
 }
 
 // Put value nn into n
@@ -1321,6 +1333,7 @@ static void push_HL(Cpu* c) {
 
 static WORD pop_nn(Cpu* c) {
     WORD nn = c->readWord(c->getSP());
+
     c->incSP();
     c->incSP();
     return nn;
@@ -1405,22 +1418,22 @@ static void nop(Cpu* c) {}
 static void halt(Cpu* c) { //SOSPETTO
     if(c->isIntMasterEnable()){
         c->setHalt();
+        std::cerr << "HALT\n";
     }
-    else{
+    //else{
         ////std::cout << "\n** HALT with master enable == false **\n";
-    }
+    //}
    // c->setPC(c->getPC() - 1);
     
 }
 static void stop(Cpu* c) {
     c->setStop();
 }
-static void di(Cpu* c) {
-    c->resetIntMasterEnable();
-}
+static void di(Cpu* c) {}
+
 static void ei(Cpu* c) {
-    c->setIntMasterEnable();
 }
+
 
 static BYTE rlc(Cpu* c, unsigned char a) {
     c->resetFlag(FLAG_N);
@@ -1885,7 +1898,7 @@ static BYTE res_b_r(Cpu* c, unsigned char r, unsigned char b) {
     
     BYTE temp = (1 << b);
 
-    return (r &= !temp); // ci va temp non b
+    return (r &= ~temp); // ci va temp non b
 }
 static void res_A_0(Cpu* c) {c->setA(res_b_r(c, c->getA(), 0));}
 static void res_A_1(Cpu* c) {c->setA(res_b_r(c, c->getA(), 1));}
@@ -2044,9 +2057,8 @@ static void jp_c(Cpu* c) {
              
     }
 }
-static void jp_hl_ind(Cpu* c) {
-    WORD newPc = c->readWord(c->getHL());
-    c->setPC(newPc);
+static void jp_hl(Cpu* c) {
+    c->setPC(c->getHL());
 }
 
 
@@ -2054,13 +2066,12 @@ static void jr(Cpu* c) { //v
     signed char n = c->readByte(c->getPC());
     //c->incPC();
 //   /  std::cout<< c->getPC();
-    c->setPC(c->getPC() + n+1);
+    c->setPC(c->getPC() + (signed char)n+1);
 //    / std::cout << " dopo: "<< c->getPC()<< " n: "<<(int)n << std::endl ;
 }
 static void jr_nz(Cpu* c) {
     if(!c->isFLAG_Zero()){
         c->addClockCycle(12);
-
         jr(c);
     }
     else{
@@ -2150,7 +2161,6 @@ static void call_c(Cpu* c) {
 }
 static void rst(Cpu* c, unsigned char ls) {
     c->pushWord(c->getPC());
-
     c->setPC(0x0000 + ls);
 }
 static void rst_0(Cpu* c) {rst(c, 0x00);}
@@ -2164,8 +2174,8 @@ static void rst_38(Cpu* c) {rst(c, 0x38);}
 
 static void ret(Cpu* c) {
     WORD addr = c->popWord();
-    std::cerr<< "PC ORA: " << std::hex << (int)addr;
-    exit(1);
+    //std::cerr<< "PC ORA: " << std::hex << (int)addr;
+    //exit(1);
     c->setPC(addr);
 }
 static void ret_nz(Cpu* c) {
@@ -2209,16 +2219,15 @@ static void ret_c(Cpu* c) {
     }
 }
 static void reti(Cpu* c) {
-    
     ret(c);
     ei(c);
 }
 
 static void cb(Cpu* c) {
-    WORD oldPC = c->getPC();
+    WORD opcode = c->readByte(c->getPC());
     c->incPC();
 
-    c->getInstrSetCBPrefixAt(oldPC).function(c);
+    c->getInstrSetCBPrefixAt(opcode).function(c);
 }
 
 

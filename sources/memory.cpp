@@ -27,7 +27,9 @@ Memory::Memory():
     OAM(160,0x00),
     ioPorts(128, 0x00),
     hRam(127,0x00){
-        keyStatus = 0x00;
+        keyStatus = 0xFF;
+        ioPorts[0xFF00 & 0x07F] = 0xCF;
+        readOnlyRom = false;
     }
 
 void Memory::setJoypadStatus(BYTE t_joypadStatus){keyStatus = t_joypadStatus;}
@@ -70,7 +72,7 @@ BYTE Memory::readByte(const WORD t_add) {
         return OAM.at(t_add & 0x00FF); // from 0 to 159
     }
     else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
-      std::cout << "[ERROR] MEMORY location not usable!\n";
+      //std::cout << "[ERROR] MEMORY location not usable!\n";
       return 0x00;
     }
     // I/O ports
@@ -97,14 +99,28 @@ WORD Memory::readWord(const WORD t_add) {
 }
 
 
-void Memory::writeByte(const WORD t_add, const BYTE t_value){
+void Memory::writeByte(const WORD t_add, BYTE t_value){
     // ROM
-    if(t_add < 0x8000){
+    if(t_add < 0x8000 && !readOnlyRom){
+        if(t_add == 0x02f0){
+           // std::cerr<< "DIO STRA MERDA " << std::hex<<(int)t_value;
+            t_value = 0x76;
+            //exit(1);
+        }
+        if(t_add == 0x0A98){
+           std::cerr<< "DIO STRA MERDA " << std::hex<<(int)t_value;
+            t_value = 0xC5;
+            //exit(1);
+        }
+        
         rom[t_add] = t_value;
+    }
+    else if(t_add < 0x8000 && readOnlyRom){
+        //std::cerr <<"NON VA BENE! t_add: " << std::hex <<(int)t_add<< " value: " << std::hex << (int)t_value<< "\n";
     }
     // Video Memory
     else if (t_add>= 0x8000 && t_add < 0xA000){
-        std::cout<<"SCRIVO I TILE " << std::hex << (int)t_value<<std::endl;
+       // std::cout<<"SCRIVO I TILE " << std::hex << (int)t_value<<std::endl;
         vRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
     }
     // external memory
@@ -130,8 +146,19 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
         if(t_add == LCDCONTROL){
-            std::cerr << " WRITE IN BGP: "<<std::hex<<(int)t_value << std::endl;
+            //std::cerr << " WRITE IN BGP: "<<std::hex<<(int)t_value << std::endl;
           //  return;
+        }
+        if(t_add == 0xFF00){
+            BYTE status = ioPorts.at(t_add & 0x007F);
+            // std::cerr <<"\n\nSTATUS "<< std::hex << (int)status<< std::endl;
+            // std::cerr <<"\n\nJiiP "<< std::hex << (int)t_value<< std::endl;
+
+
+            status &= 0xCF;
+            t_value &= 0x30;
+            t_value |= status; 
+           // std::cerr <<"\n\nJP "<< std::hex << (int)t_value<< std::endl;
         }
         // if(t_add == 0xFF44)
         //     std::cerr <<"CI SCRIV0 "<< std::hex << (int)t_value;
@@ -139,22 +166,26 @@ void Memory::writeByte(const WORD t_add, const BYTE t_value){
         
 
         if(t_add == 0xFF46){
-            std::cerr <<"\n\n**** DMA!! "<< std::endl;
+           // std::cerr <<"\n\n**** DMA!! "<< std::endl;
             startDMATransfer(this); //start DMA transfer
             return;
         }
     }
     // high speed ram
     else if(t_add >= 0xFF80 && t_add < 0xFFFF){
+        if(t_add == 0xFF85){
+            // std::cout << "FF85: "<< std::hex << (int)t_value<< "\n";
+            // getchar();
+        }
          hRam[t_add & 0x007F] = t_value; // from to 0 to 125
     }
     //Interrupt Enable Register (necessario?)
-    else {  
-        IEReg = t_add;
+    else if (t_add == 0xFFFF){  
+        IEReg = t_value;
     }  
 }
 
-void Memory::writeWord(const WORD t_add, const WORD t_value){
+void Memory::writeWord(const WORD t_add, WORD t_value){
     writeByte(t_add, t_value & 0xFF); // First byte
     writeByte(t_add + 1, (t_value >> 8) & 0xFF);  // Second byte
 }

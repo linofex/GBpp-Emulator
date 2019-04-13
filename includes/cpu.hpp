@@ -33,6 +33,8 @@ class Cpu {
 
         //interrupt master enable
         bool intMasterEnable;       //an interrupt can only be served IFF this is TRUE
+        BYTE lastOpcode;
+        
         bool halt; //use to halt the CPU after HALT instruction
         bool stop; //use to stop the CPU after STOP instruction
 
@@ -57,8 +59,11 @@ class Cpu {
         
 
         inline bool isIntMasterEnable(void) const {return intMasterEnable;}
-        void setIntMasterEnable(void) {intMasterEnable = true;}
-        void resetIntMasterEnable(void) {intMasterEnable = false;}
+        inline void setIntMasterEnable(void) {intMasterEnable = true;}
+        inline void resetIntMasterEnable(void) {intMasterEnable = false;}
+
+        inline bool isLastOpcode(BYTE t_opcode) const {return lastOpcode == t_opcode;}
+        inline void setLastOpcode(BYTE t_opcode) {lastOpcode = t_opcode;}
         
         void pushWord(WORD);
         WORD popWord(void);
@@ -102,7 +107,7 @@ class Cpu {
         inline BYTE readByte(WORD t_addr) {return mem->readByte(t_addr);}
         inline void writeByte(WORD t_addr, BYTE t_val) {mem->writeByte(t_addr, t_val);}
         inline WORD readWord(WORD t_addr) {return mem->readWord(t_addr);}
-        inline void writeWord(WORD t_addr, BYTE t_val) {mem->writeWord(t_addr, t_val);}
+        inline void writeWord(WORD t_addr, WORD t_val) {mem->writeWord(t_addr, t_val);}
 
         inline WORD getSP(void) const {return sp;}
         inline WORD getPC(void) const {return pc;}

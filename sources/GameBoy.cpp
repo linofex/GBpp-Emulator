@@ -2,6 +2,7 @@
 #include <vector>
 #include <unistd.h>
 #include <iostream>
+#include  <iomanip>
 // /GameBoy::GameBoy(){}
 GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory), lcd(&memory, &ppu), rom(t_RomFileName), timer(&memory), times(8,0){ 
 	// Bytes for ROM testing
@@ -16,7 +17,7 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
     hostOldTime = SDL_GetTicks(); //  millisecons
 
 	displayTime = SDL_GetTicks();
-	//initSDL();
+	initSDL();
 	o = 0;
 }
 
@@ -49,11 +50,7 @@ void GameBoy::userInput() {
 	SDL_PollEvent(&event);
 	switch (event.type)	{
 		case (SDL_QUIT):
-			std::cerr << "QUO";
-			SDL_DestroyRenderer(renderer);
-			SDL_DestroyWindow(window);
-			SDL_Quit();
-			exit(1);
+			turnOff();
 		case (SDL_KEYDOWN):
 			switch (event.key.keysym.sym){
 				case (SDLK_8):
@@ -126,7 +123,7 @@ void GameBoy::initSDL(){
     SDL_Init(SDL_INIT_VIDEO);
     //SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
      window = SDL_CreateWindow("Gbb-Emulator",
-                        SDL_WINDOWPOS_CENTERED -80, SDL_WINDOWPOS_CENTERED,
+                        SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED,
                         WINDOW_WIDTH,WINDOW_HEIGHT,
                         0);
 
@@ -149,22 +146,33 @@ bool GameBoy::loadGame(){
 		std::vector<BYTE> game(rom.getRom());
 		WORD address = 0x0000;
 		std::vector<BYTE>::iterator it = game.begin();
+		int counter = 0;
 		for(; it != game.end() ; ++it){
-			if(address <= 0x8000){
+			if(address <= 0x8000){			
 				memory.writeByte(address++, *it);
+				// std::cout << std::setfill('0') << std::setw(2) <<  std::hex << (int)*it;
+				// if(++counter % 16 == 0){
+				// 	std::cout << "\n";
+				// }
 			}
 			else{
 				std::cerr<< "Not enough memory";
 				return false;
 			}
 		}
+		memory.setReadOnlyRom();
 		return true;
 	}  
 	return false;
 }
 
 void GameBoy::playGame(){
-	WORD pp = 0x101;
+		WORD pp = 0x204;
+
+	std::cerr << "dammi un pc: ";
+	std::cin >> std::hex >> pp;
+	
+	bool flag = false;
 	for(;;){
 		userInput();
 		//std::cout<<"--------------------------------------------\n";
@@ -172,8 +180,8 @@ void GameBoy::playGame(){
 		BYTE instructionCycles = cpu.step();
 		lcd.step(instructionCycles);
 		
-		if(SDL_GetTicks() - displayTime > 20){
-		//	lcd.renderScreen(window, renderer);
+		if(SDL_GetTicks() - displayTime > 2){
+			lcd.renderScreen(window, renderer);
 			//getchar();
 			displayTime = SDL_GetTicks();
 		}//		
@@ -182,12 +190,17 @@ void GameBoy::playGame(){
 		//sync();
 		//std::cerr << o++ << " ";
 		o++;
-		if(cpu.getPC() == pp){
-			cpu.printCpuState();
-			std::cerr <<"metti pc: ";
-			std::cin >> std::hex >> pp;
-			//std::cerr << " BOOM " << o;
-			//std::cerr << (int)cpu.getPC();
+		std::cerr << std::hex << (int)cpu.getPC()<< " - ";
+		if(cpu.getPC() == pp || flag == true){
+			flag = true;
+			
+			//ppu.fillLineOfTileDB(0x8010);
+			//getchar();	
+// /			cpu.printCpuState();
+			//sstd::cerr <<"\npop6: "<<std::hex <<(int)cpu.readByte(0xFFFF);
+//			std::cerr <<"metti pc: ";
+//getchar();			// //std::cerr << " BOOM " << o;
+			// //std::cerr << (int)cpu.getPC();
 		}
 		
 
@@ -223,6 +236,14 @@ bool GameBoy::checkCartridge(){
     return rom.getNintendoLogo() == testRom;
 }
 
+void GameBoy::turnOff(){
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+	exit(1);
+}
+
+
 // This method emulates the timing of the gameboy.
 // Since the host machine is faster than target machines, a sleep time
 // syncronizes the machines
@@ -237,7 +258,7 @@ void GameBoy::sync(){
     float targetElapsedTime = targetNewTime - targetOldTime;
     //std::cout<<"The target elapsed time is: "<<'\t'<<targetElapsedTime<<std::endl;
     
-	float_t timeDifference =  targetNewTime - hostNewTime;
+	float timeDifference =  targetNewTime - hostNewTime;
 	    
 		
     // if(timeDifference > 5) {    //2 ms

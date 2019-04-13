@@ -57,6 +57,7 @@
             void printRomInfo(void);
             void printNintendoGraphic(void);
             void printByte(WORD);
+            void turnOff(void);
             ~GameBoy();
         };
 

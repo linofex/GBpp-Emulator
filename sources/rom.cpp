@@ -1,5 +1,8 @@
 #include "../includes/rom.hpp"
 
+#include<iostream>
+#include  <iomanip>
+
 Rom::Rom(){}
 Rom::~Rom(){
     std::cout << "ROM distruttore\n";
@@ -12,7 +15,6 @@ Rom::Rom (const std::string t_RomFileName){
     // BeginPoint.resize(4);
     // NintendoLogo.resize(48);
     // RomName.resize(15, 0x00);
-    
     if (ROMFile.is_open()){
         size = ROMFile.tellg();
         game.resize(size);

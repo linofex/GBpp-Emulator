@@ -4,17 +4,19 @@
 //#include "../includes/cpu.hpp"
 //using namespace GBemulator;
 int main(int argc, char** argv){
-
+    SDL_SetMainReady();
     if (argc == 2){
         std::string romName = "./roms/" + std::string(argv[1]);
+        
         GameBoy gameboy = GameBoy(romName);
         
-        if(gameboy.loadGame())
+        if(gameboy.loadGame()){
             gameboy.playGame();
-        std::cout << "QUI\n";
-        //gameboy.PrintByte(0x0134);
+        }
+        else{
+            gameboy.turnOff();
+        }
     }
-    std::cout<< "anche QUA\n";
 
     return 0;    
 

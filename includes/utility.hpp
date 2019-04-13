@@ -1,8 +1,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-typedef unsigned char BYTE; // 8bit
-typedef unsigned short WORD; // 16bit
+typedef unsigned char BYTE; // 8bit unsigned
+typedef unsigned short WORD; // 16bit unsigned
 
 // interrupt types
 #define VBLANK  0x01
@@ -34,10 +34,10 @@ struct RGBColor{
 };
 
 //custom palette
-#define WHITE {255, 255, 255}
-#define LIGHT_GREY {224, 224, 224}
-#define DARK_GREY {96, 96, 96}
-#define BLACK {0, 0, 0}
+#define WHITE       {255, 255, 255}
+#define LIGHT_GREY  {224, 224, 224}
+#define DARK_GREY   {96, 96, 96}
+#define BLACK       {0, 0, 0}
 
 
 struct pixel{
@@ -96,8 +96,8 @@ struct pixel{
 #define LEFT    1
 #define UP      2
 #define DOWN    3
-#define _A       4
-#define _B       5
+#define _A      4
+#define _B      5
 #define SELECT  6
 #define START   7
 #define BUTTON  1 << 5
@@ -113,6 +113,5 @@ struct pixel{
 #define SCROLLY 0xFF42
 #define WINDOWX 0xFF4B
 #define WINDOWY 0xFF4A
-
 
 #endif

@@ -62,7 +62,7 @@ void Lcd::step(int cycles) {
             Lcd::setScanline(++currentLine);
         }
         else if(currentLine == 144) {   //VBLANK interrupt request
-            std::cout<<"Interrupt VBLANK"<<std::endl;
+            //std::cout<<"Interrupt VBLANK"<<std::endl;
             InterruptHandler::requestInterrupt(memory, VBLANK);
             Lcd::setScanline(++currentLine);
         }

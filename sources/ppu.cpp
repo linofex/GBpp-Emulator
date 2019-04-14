@@ -122,7 +122,7 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
         offset = t_tileID*16;
     } else {
         startAddress = 0x8800;
-        offset = ((signed char) t_tileID + 127)*16;
+        offset = ((signed char) t_tileID + 128)*16;
     }
     //std::vector<WORD> tile = {0X0000, 0X3c3c, 0X6666 ,0X6666 ,0X6666 ,0X6666,0X3c3c, 0X0000};
 
@@ -131,18 +131,17 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
         //lineOfATile = tile.back();
         //tile.pop_back();
         lineOfATile = memory->readWord(startAddress + (t_currentline % 8)*2 + offset); //16B = tile dimension
+        
         std::vector<RGBColor> lineOfPixels = toPixels(lineOfATile, 2, false);
-        // for(int k = 0 ; k< 8 ;++k){
-        //     if(lineOfPixels.at(k).r == 255){
-        //         std::cout << " ";
-        //     }
-        //     else
-        //     {
-        //         std::cout << "1 ";
-        //     }
-            
-        // }
-        // std::cout<< "\n\n";
+        for(int k = 0 ; k< 8 ;++k){
+            if(lineOfPixels.at(k).r == 255){
+                std::cout << " ";
+            }
+            else {
+                std::cout << "1 ";
+            }
+        }
+         //std::cout<< "\n\n";
         // std::cout << std::endl;
         //compute colors returns pixels
         // fill in buffer using counterline and i
@@ -214,9 +213,15 @@ void Ppu::renderBGLine(BYTE t_currentline){
         }
         offset = ((scrollY/8 + (int)t_currentline/8)%32)*32 + ((scrollX/8 + i)%32);
         tileID = memory->readByte(BGMemoryStart + offset);
+        if(t_currentline % 8 == 0) {
+            std::cout <<std::hex<<(int) tileID<<" ";
+            //getchar();//system("PAUSE");
+        }
         //std::cout << "Tile ID: "<< std::hex<< (int)tileID << "\t" << "memory address: "<< std::hex<< (int)(BGMemoryStart + i )<< "\n";
         fillLineOfTile(tileID, i, t_currentline, 0); //0 = tileID;
     }
+    if(t_currentline % 8 == 0)
+        std::cout<<std::endl;
 
     // increase scrollX e scrollY? quando? secondo me no va fatt noi
 

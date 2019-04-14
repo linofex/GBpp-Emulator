@@ -103,11 +103,12 @@ void Memory::writeByte(const WORD t_add, BYTE t_value){
     // ROM
     if(t_add < 0x8000 && !readOnlyRom){
         if(t_add == 0x02f0){
-           t_value = 0x76;
+            //t_value = 0x76; //for tetris
             //exit(1);
         }
+
         if(t_add == 0x0A98){
-            t_value = 0xC9;
+           // t_value = 0xC9;
             //exit(1);
         }
         

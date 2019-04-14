@@ -135,7 +135,7 @@ void GameBoy::initSDL(){
 	//scaling keeps the ratio 160/144
 	int sizeX = current.w/2;// - 800;
 	int sizeY = sizeX*SCREEN_HEIGHT/SCREEN_WIDTH;
-	std::cerr<<"Display size is "<<sizeX<<"x"<<sizeY<<"px\n";
+	//std::cerr<<"Display size is "<<sizeX<<"x"<<sizeY<<"px\n";
 	
 	//SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
 	window = SDL_CreateWindow("Gbb-Emulator",
@@ -184,7 +184,7 @@ bool GameBoy::loadGame(){
 }
 
 void GameBoy::playGame(){
-	WORD pp = 0x2F0;
+	WORD pp = 0x100;
 
 	//std::cerr << "dammi un pc: ";
 	//std::cin >> std::hex >> pp;
@@ -209,7 +209,7 @@ void GameBoy::playGame(){
 		//std::cerr << o++ << " ";
 		o++;
 		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
-		//if(cpu.getPC() == pp|| flag == true){
+		//if(cpu.getPC() == pp) { //|| flag == true){
 		//	flag = true;
 		//	flag = false;
 			

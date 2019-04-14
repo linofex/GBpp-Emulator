@@ -1667,7 +1667,7 @@ static void bit_b_r(Cpu* c, unsigned char r, unsigned char b) {
     //BYTE b = c->readByte(c->getPC());
     //c->incPC();//??? va tolto
 
-    b = (b >> r) & 0x01;
+    b = (r >> b) & 0x01;
     if(!b)
         c->setFlag(FLAG_Z);
     else

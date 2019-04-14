@@ -33,6 +33,8 @@ class Cpu {
 
         //interrupt master enable
         bool intMasterEnable;       //an interrupt can only be served IFF this is TRUE
+        
+        BYTE opcode;        
         BYTE lastOpcode;
         
         bool halt; //use to halt the CPU after HALT instruction

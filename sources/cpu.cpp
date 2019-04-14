@@ -20,6 +20,7 @@ Cpu::Cpu(Memory* m) {
     clockCycles = 0;
     flag = false;
     lastOpcode = 0x00;
+    opcode = 0x00;
 }
 Cpu::~Cpu(void) {
     std::cout << "CPU distruttore\n";
@@ -57,6 +58,10 @@ void Cpu::printCpuState(){
      std::cout<< "SP: "<< std::hex<< (int)getSP() << "\t";
      std::cout<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
      std::cout<< "0xFF44: "<< std::hex<< (int)mem->readByte(0xFF44) << std::endl;
+     std::cout<< "Opcode: "<< std::hex<< (int)opcode << std::endl;
+     //std::cout<< "Last Opcode: "<< std::hex<< (int)lastOpcode << std::endl;
+     std::cout<< "Instruction: "<< instrSet.at(opcode).name << std::endl;
+     
     // std::cerr<< "0xFF44: "<< std::hex<< (int)getSP() << "\t";
     // std::cerr<< "\0xFF44: "<< std::hex<< (int)getPC()<< "\t";
 
@@ -77,9 +82,9 @@ BYTE Cpu::step() {
     }
     
    // std::cout<<"PC: "<<std::hex << (int)getPC()<< "\n";
-    BYTE opcode = Cpu::fetch();
+    opcode = Cpu::fetch();
     if(opcode == 0x76){
-         std::cout<<"PAUSE\n";
+         //std::cout<<"PAUSE\n";
    //      system("PAUSE");
     }
   // std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
@@ -91,7 +96,7 @@ BYTE Cpu::step() {
     //std::cout <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
    //printCpuState();
     
-   // setLastOpcode(opcode);
+   setLastOpcode(opcode);
     return ret;
 }
 
@@ -99,7 +104,7 @@ void Cpu::stepDebug(std::set<BYTE>* old_opcode){
     bool flag = false;
     std::cout<< "********************************************************************************************\n";
     printCpuState();
-    BYTE opcode = Cpu::fetch();
+    opcode = Cpu::fetch();
     instruction instr = Cpu::decode(opcode);
     if(old_opcode->find(opcode) == old_opcode->end()){
         old_opcode->insert(opcode);
@@ -183,7 +188,15 @@ void Cpu::reset() {
 BYTE Cpu::fetch(void) {
     //std::cout<<"fetch"<<std::endl;
     //unsigned char opcode = 0x80;//
+   
     BYTE opcode = mem->readByte(pc);
+
+     if(pc == 0xA98){
+        // std::cout<<"\n\n**********************************************************************************n\n";
+        // std::cout<< std::hex << (int)opcode;
+        // getchar();
+        // opcode = 0xC9;
+    }
 
     incPC();
     return opcode;
@@ -205,11 +218,12 @@ BYTE Cpu::execute(instruction instr) {
     return instr.cycles;
 }
 
-void Cpu::pushWord(WORD t_val) {
+void Cpu::pushWord(WORD t_val) { 
     decSP();
     decSP();
     mem->writeWord(getSP(), t_val);
-    
+//     std::cout << "SP_value: " << std::hex << (int)t_val<< "\n";
+//     std::cout << "SP_add: " << std::hex << (int)sp<< "\n";
 }
 
 void Cpu::push(BYTE t_val) {

@@ -646,8 +646,7 @@ static void add(Cpu* c, unsigned char n) {
     else
         c->resetFlag(FLAG_Z);
 
-    c->setA((BYTE)(res & 0x00FF));
-
+   
     c->resetFlag(FLAG_N);
         
     if(res > 0x00FF)  //sum overflow
@@ -659,6 +658,9 @@ static void add(Cpu* c, unsigned char n) {
         c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);
+
+    c->setA((BYTE)(res & 0x00FF));
+
 
     ////std::cout<<"fine add"<<std::endl;
     
@@ -705,17 +707,16 @@ static void adc_A_HL_ind(Cpu* c) {
 }
 
 static void sub(Cpu* c, unsigned char n) {
-    //signed short res = c->getA() - n;
+    signed short res = c->getA() - n;
 
-    c->setA(c->getA() - n);
+    //c->setA(c->getA() - n);
 
-    if(c->getA())        //sub = 0
+    if(res == 0)        //sub = 0
         c->resetFlag(FLAG_Z);
     else
         c->setFlag(FLAG_Z);
 
-    
-    
+        
     c->setFlag(FLAG_N);
         
     if(n > c->getA())  //sub with no borrow //SOSPETTA
@@ -727,6 +728,8 @@ static void sub(Cpu* c, unsigned char n) {
         c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);
+
+    c->setA(c->getA() - n);
 }
 static void sub_A_B(Cpu* c) {sub(c, c->getB());}
 static void sub_A_C(Cpu* c) {sub(c, c->getC());}
@@ -930,21 +933,24 @@ static void inc_H(Cpu* c) {c->setH(inc(c, c->getH()));}
 static void inc_L(Cpu* c) {c->setL(inc(c, c->getL()));}
 static void inc_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
-    BYTE n = c->readByte(addr);
-    BYTE res = n + 1;
-    c->writeByte(addr, res); //SOSPETTA
-    // unsigned char n = c->readByte(addr);
-    // c->setHL(inc(c, n));
-    c->resetFlag(FLAG_N);
-    if(res == 0)        //res = 0
-        c->setFlag(FLAG_Z);
-    else
-        c->resetFlag(FLAG_Z);
+    c->writeByte(addr, inc(c, c->readByte(addr))); //SOSPETTA
+
+    // WORD addr = c->getHL();
+    // BYTE n = c->readByte(addr);
+    // BYTE res = n + 1;
+    // c->writeByte(addr, res); //SOSPETTA
+    // // unsigned char n = c->readByte(addr);
+    // // c->setHL(inc(c, n));
+    // c->resetFlag(FLAG_N);
+    // if(res == 0)        //res = 0
+    //     c->setFlag(FLAG_Z);
+    // else
+    //     c->resetFlag(FLAG_Z);
     
-    if((n & 0x0F) == 0x0F)    //if carry from bit 3
-        c->setFlag(FLAG_H);
-    else
-        c->resetFlag(FLAG_H);
+    // if((n & 0x0F) == 0x0F)    //if carry from bit 3
+    //     c->setFlag(FLAG_H);
+    // else
+    //     c->resetFlag(FLAG_H);
 
 }
 
@@ -1416,10 +1422,10 @@ static void scf(Cpu* c) {
 }
 static void nop(Cpu* c) {}
 static void halt(Cpu* c) { //SOSPETTO
-    if(c->isIntMasterEnable()){
-        c->setHalt();
-        std::cerr << "HALT\n";
-    }
+    // if(c->isIntMasterEnable()){
+    //     c->setHalt();
+    //     std::cerr << "HALT\n";
+    // }
     //else{
         ////std::cout << "\n** HALT with master enable == false **\n";
     //}
@@ -1665,7 +1671,7 @@ static void bit_b_r(Cpu* c, unsigned char r, unsigned char b) {
     c->setFlag(FLAG_H);
 
     //BYTE b = c->readByte(c->getPC());
-    c->incPC();//??? va tolto
+    //c->incPC();//??? va tolto
 
     b = (b >> r) & 0x01;
     if(!b)
@@ -2162,6 +2168,7 @@ static void call_c(Cpu* c) {
 static void rst(Cpu* c, unsigned char ls) {
     c->pushWord(c->getPC());
     c->setPC(0x0000 + ls);
+
 }
 static void rst_0(Cpu* c) {rst(c, 0x00);}
 static void rst_8(Cpu* c) {rst(c, 0x08);}
@@ -2177,6 +2184,8 @@ static void ret(Cpu* c) {
     //std::cerr<< "PC ORA: " << std::hex << (int)addr;
     //exit(1);
     c->setPC(addr);
+      //  std::cout<<"\n\n#############################################################################\n"<< std::hex << (int)addr<<  "\n";
+
 }
 static void ret_nz(Cpu* c) {
     if(!c->isFLAG_Zero()){

@@ -76,7 +76,7 @@ void Lcd::step(int cycles) {
 
 void Lcd::setLCDStatus() {
     if(!isLCDEnabled()){
-        std::cerr << "\nDISAB*************************************\n";
+        //std::cerr << "\nDISAB*************************************\n";
         Lcd::setLCDMode(MODE1);
         Lcd::setScanline(0);
         remainingCycles = 456;
@@ -143,7 +143,7 @@ bool Lcd::testCoincidence(){
 void Lcd::renderScreen(SDL_Window* t_window, SDL_Renderer* t_renderer) {
     std::vector<RGBColor> buffer = ppu->getRGBBuffer();
     RGBColor color;
-    for (int i = 0; i <SCREEN_HEIGHT ; ++i){
+    for (int i = 0; i < SCREEN_HEIGHT ; ++i){
         for(int j= 0; j< SCREEN_WIDTH;++j){
            color =  buffer[i*SCREEN_WIDTH + j];
           //  std::cout<<"\n R:" << (int)color.r <<" G:" << (int)color.g <<" B:" << (int)color.b <<std::endl;
@@ -155,5 +155,5 @@ void Lcd::renderScreen(SDL_Window* t_window, SDL_Renderer* t_renderer) {
          //SDL_RenderPresent(t_renderer);
     }
     SDL_RenderPresent(t_renderer);
-    getchar();
+    //getchar();
 }

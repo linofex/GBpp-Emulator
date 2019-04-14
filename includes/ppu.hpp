@@ -6,7 +6,7 @@
 class Ppu{
     private:
         Memory* memory;
-        std::vector<bool> pixelPriority;
+        std::vector<bool> spritePixelPriority;
         std::vector<RGBColor> RGBBuffer;
         
         
@@ -20,16 +20,21 @@ class Ppu{
         inline BYTE getWindowX(void) const {return memory->readByte(WINDOWX);}
         inline BYTE getWindowY(void) const {return memory->readByte(WINDOWY);}
         inline BYTE getLCDControlRegister(void) const {return memory->readByte(LCDCONTROL);}
+        inline bool isSpriteOnTop(BYTE t_attribs) {return ((t_attribs & 0x80) >> 7) == 0;}
+        inline bool isFlippedX(BYTE t_attribs) {return (t_attribs & 0x20) >> 5;}
+        inline bool isFlippedY(BYTE t_attribs) {return (t_attribs & 0x40) >> 6;}
+        inline BYTE getPaletteNum(BYTE t_attribs) {return ((t_attribs & 0x08) >> 4);}
 
         void fillLineOfTile(BYTE, int, BYTE, bool);
         void renderBGLine(BYTE);
-        void renderWindowLine();
-        void renderSpriteLine();
-        std::vector<RGBColor> toPixels(WORD);
+        void renderWindowLine(BYTE);
+        void renderSpriteLine(BYTE);
+        std::vector<RGBColor> toPixels(WORD, BYTE, bool);
         RGBColor getColorFromPaletteID(BYTE);
-        RGBColor getRGBColor(BYTE);
-
-
+        RGBColor getRGBColor(BYTE, BYTE);
+        sprite getSprite(BYTE);
+        std::vector<std::vector<RGBColor>> buildSprite(sprite);
+        //std::vector<RGBColor> flipY(std::vector<RGBColor>);
 
     public:
         Ppu(Memory*);

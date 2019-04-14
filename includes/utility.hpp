@@ -25,7 +25,6 @@ union REGISTER {
     };
 };
 
-
 // struct for colors
 struct RGBColor{
     BYTE r;
@@ -45,6 +44,12 @@ struct pixel{
     bool type;
 };
 
+struct sprite {
+    BYTE posY;
+    BYTE posX;
+    BYTE patternNum;
+    BYTE attribs;
+};
 // interrupt routines addresses
 #define VBLANK_ADD  0x40
 #define LCD_ADD     0x48

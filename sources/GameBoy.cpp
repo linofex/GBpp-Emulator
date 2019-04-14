@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <iostream>
 #include  <iomanip>
+
 // /GameBoy::GameBoy(){}
 GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory), lcd(&memory, &ppu), rom(t_RomFileName), timer(&memory), times(8,0){ 
 	// Bytes for ROM testing
@@ -121,14 +122,31 @@ void GameBoy::userInput() {
 
 void GameBoy::initSDL(){
     SDL_Init(SDL_INIT_VIDEO);
-    //SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
-     window = SDL_CreateWindow("Gbb-Emulator",
-                        SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED,
-                        WINDOW_WIDTH,WINDOW_HEIGHT,
+
+	//get the current display resolution
+	SDL_DisplayMode current;
+	int result = SDL_GetCurrentDisplayMode(0, &current);
+	if(result != 0) {
+		//SDL_Log("Could not get display mode for video display #%d: %s", SDL_GetError());
+	}
+	else {
+		//SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", current.w, current.h, current.refresh_rate);
+	}
+	//scaling keeps the ratio 160/144
+	int sizeX = current.w/2;// - 800;
+	int sizeY = sizeX*SCREEN_HEIGHT/SCREEN_WIDTH;
+	std::cerr<<"Display size is "<<sizeX<<"x"<<sizeY<<"px\n";
+	
+	//SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+	window = SDL_CreateWindow("Gbb-Emulator",
+                        SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED, 
+						sizeX, sizeY, 
+                        //WINDOW_WIDTH,WINDOW_HEIGHT,
                         0);
 
-        /* We must call SDL_CreateRenderer in order for draw calls to affect this window. */
-        renderer = SDL_CreateRenderer(window, -1, 0);
+    /* We must call SDL_CreateRenderer in order for draw calls to affect this window. */
+	renderer = SDL_CreateRenderer(window, -1, 0);
+	//SDL_Log("Display #%d: new display mode is %dx%dpx @ %dhz.", sizeX, sizeY, current.refresh_rate);
 
 	//SDL_RenderSetScale(renderer, 160,144);
     SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -137,7 +155,6 @@ void GameBoy::initSDL(){
 	SDL_RenderPresent(renderer);
 	return;
 }
-
 
 // This method loads the game in the ROM memory if all checks are correct
 bool GameBoy::loadGame(){
@@ -167,10 +184,10 @@ bool GameBoy::loadGame(){
 }
 
 void GameBoy::playGame(){
-		WORD pp = 0x204;
+	WORD pp = 0x2F0;
 
 	std::cerr << "dammi un pc: ";
-	std::cin >> std::hex >> pp;
+	//std::cin >> std::hex >> pp;
 	
 	bool flag = false;
 	for(;;){
@@ -180,7 +197,7 @@ void GameBoy::playGame(){
 		BYTE instructionCycles = cpu.step();
 		lcd.step(instructionCycles);
 		
-		if(SDL_GetTicks() - displayTime > 2){
+		if(SDL_GetTicks() - displayTime > 20){
 			lcd.renderScreen(window, renderer);
 			//getchar();
 			displayTime = SDL_GetTicks();
@@ -190,15 +207,19 @@ void GameBoy::playGame(){
 		//sync();
 		//std::cerr << o++ << " ";
 		o++;
-		std::cerr << std::hex << (int)cpu.getPC()<< " - ";
-		if(cpu.getPC() == pp || flag == true){
+		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
+		if(cpu.getPC() == pp|| flag == true){
 			flag = true;
+			flag = false;
 			
 			//ppu.fillLineOfTileDB(0x8010);
 			//getchar();	
-// /			cpu.printCpuState();
+			cpu.printCpuState();
+			system("PAUSE");
 			//sstd::cerr <<"\npop6: "<<std::hex <<(int)cpu.readByte(0xFFFF);
-//			std::cerr <<"metti pc: ";
+			//std::cerr <<"metti pc: ";
+			//std::cin >> std::hex >> pp;
+	
 //getchar();			// //std::cerr << " BOOM " << o;
 			// //std::cerr << (int)cpu.getPC();
 		}

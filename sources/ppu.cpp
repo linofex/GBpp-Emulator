@@ -1,6 +1,8 @@
 #include "../includes/ppu.hpp"
 #include <iostream>
-Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelPriority(160*144,0), RGBBuffer(160*144,{0,0,0}){
+#include <algorithm>
+
+Ppu::Ppu(Memory* t_memory): memory(t_memory), spritePixelPriority(160*144,false), RGBBuffer(160*144,{0,0,0}){
     bufferY = 0;
 }
 void Ppu::renderLine(BYTE t_currentline){
@@ -20,7 +22,7 @@ void Ppu::renderLine(BYTE t_currentline){
         //std::cout<< "WINDOW\n";
     }
     if(LCDcontrolRegister & 0x02){ //bit 1
-        renderSpriteLine();
+        renderSpriteLine(t_currentline);
         //std::cout<< "SPRITE";
     }
     int a = 0;
@@ -28,25 +30,43 @@ void Ppu::renderLine(BYTE t_currentline){
     // /bufferY = (++bufferY)%140;
 }
 
-std::vector<RGBColor> Ppu::toPixels(WORD t_lineOfTile){
+std::vector<RGBColor> Ppu::toPixels(WORD t_lineOfTile, BYTE t_palette, bool flipX){
+
+    BYTE palette;
+    switch(t_palette) {
+        case 0:
+            palette = getSpritePalette0();
+            break;
+        case 1:
+            palette = getSpritePalette1();
+            break;
+        case 2:
+            palette = getBGandWindowPalette();
+            break;
+        default:
+            palette = getBGandWindowPalette();
+    }
+
+
     BYTE data0 = t_lineOfTile & 0x00FF;
     BYTE data1 = t_lineOfTile >> 8;
-
+    int k;
     std::vector<RGBColor> pixelsInTileLine;
 
     for(int i = 0; i < 8; ++i) {
-        // remeber 8-1, otherwise tiles flip
-        BYTE lsb = (data0 & (1 << (7-i))) >> (7-i);
-        BYTE msb = (data1 & (1 << (7-i))) >> (7-i);
+        // remeber 7-1, otherwise tiles flip
+        k = (flipX == true) ? i : (7 - i);
+        
+        BYTE lsb = (data0 & (1 << k)) >> k;
+        BYTE msb = (data1 & (1 << k)) >> k;
         //RGBColor rgb = getRGBColor(((msb << 1) + lsb) >> 2*i);
-        RGBColor rgb = getRGBColor((msb << 1) + lsb);
+        RGBColor rgb = getRGBColor((msb << 1) + lsb, palette);
         pixelsInTileLine.push_back(rgb);
     }
     return pixelsInTileLine;
 }
 
-RGBColor Ppu::getRGBColor(BYTE t_colorID) {
-    BYTE palette = getBGandWindowPalette();
+RGBColor Ppu::getRGBColor(BYTE t_colorID, BYTE palette) {
     RGBColor rgb;
     switch(t_colorID) {
         case 0:     //look at bit 1-0 of the tile palette
@@ -111,7 +131,7 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
         //lineOfATile = tile.back();
         //tile.pop_back();
         lineOfATile = memory->readWord(startAddress + (t_currentline % 8)*2 + offset); //16B = tile dimension
-        std::vector<RGBColor> lineOfPixels = toPixels(lineOfATile);
+        std::vector<RGBColor> lineOfPixels = toPixels(lineOfATile, 2, false);
         // for(int k = 0 ; k< 8 ;++k){
         //     if(lineOfPixels.at(k).r == 255){
         //         std::cout << " ";
@@ -128,10 +148,13 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
         // fill in buffer using counterline and i
         int offsetTile = t_currentline*160 + i*8;
         
-       // //std::cout << (offset)<< " *";
-       for(int l = 0; l<8 ;++l){
-           RGBBuffer[offsetTile + l] = lineOfPixels.at(l);
-       }
+        // //std::cout << (offset)<< " *";
+        for(int l = 0; l < 8; ++l){
+            RGBBuffer[offsetTile + l] = lineOfPixels.at(l);
+
+            //bitmap for BG and sprites priority
+            spritePixelPriority[offsetTile + l] = (lineOfPixels.at(l).r == 255) ? false : true;
+        }
       //  std::copy (lineOfPixels.begin(), lineOfPixels.begin() + lineOfPixels.size(), RGBBuffer.begin()+offsetTile);
        // std::cout<<" R:" << (int)RGBBuffer.at(h).r <<" G:" << (int)RGBBuffer.at(h).g <<" B:" << (int)RGBBuffer.at(h).b <<std::endl;
               
@@ -161,7 +184,7 @@ void Ppu::fillLineOfTileDB(WORD t_addr){    //type = 0 -> BG, type = 1 -> Sprite
         for(int r = 0 ; r< 8 ; ++r){
             lineOfATile = (memory->readByte(t_addr +2*r)<<8) + (memory->readByte(t_addr +2*r +1)); //16B = tile dimension
            
-            std::vector<RGBColor> lineOfPixels = toPixels(lineOfATile);
+            std::vector<RGBColor> lineOfPixels = toPixels(lineOfATile, 2, false);
             for(int k = 0 ; k< 8 ;++k){
                 if(lineOfPixels.at(k).r == 255){
                     std::cout << "  ";
@@ -175,11 +198,6 @@ void Ppu::fillLineOfTileDB(WORD t_addr){    //type = 0 -> BG, type = 1 -> Sprite
         std::cout<< "\n";
         }
 }
-
-
-
-
-
 
 void Ppu::renderBGLine(BYTE t_currentline){
     // CI VUOLE ANCHE LA SCANLINEEEE
@@ -204,7 +222,7 @@ void Ppu::renderBGLine(BYTE t_currentline){
 
 }
 
-void Ppu::renderWindowLine(){
+void Ppu::renderWindowLine(BYTE){
     BYTE windowY = getWindowY() >> 3;
     BYTE windowX = (getWindowX() - 7) >> 3;
     BYTE windowMemoryStart = getLCDControlRegister() & 0x40 ? 0x9C00 : 0x9800;
@@ -218,7 +236,70 @@ void Ppu::renderWindowLine(){
 
 }
 
-void Ppu::renderSpriteLine(){
+sprite Ppu::getSprite(BYTE spriteNum) {
+    WORD spriteAddr = 0xFE00 + 4*spriteNum;
+    sprite spriteInfo;
+    spriteInfo.posY = memory->readByte(spriteAddr++);
+    spriteInfo.posX = memory->readByte(spriteAddr++);
+    spriteInfo.patternNum = memory->readByte(spriteAddr++);
+    spriteInfo.attribs = memory->readByte(spriteAddr);
+
+    return spriteInfo;    
+}
 
 
+/* std::vector<RGBColor> Ppu::flipY(std::vector<RGBColor> t_rgb) {
+    std::vector<RGBColor> reverse;// = std::reverse(t_rgb.begin(),t_rgb.end()); 
+    return reverse;
+} */
+
+std::vector<std::vector<RGBColor>> Ppu::buildSprite(sprite t_sprite) {  
+    BYTE height = 8;
+    std::vector<std::vector<RGBColor>> pixelOfASprite;
+    WORD lineOfASprite;
+    WORD spriteStartAddr = 0x8000 + 16*t_sprite.patternNum;
+    BYTE paletteNum;
+
+    if(getLCDControlRegister() & 0x04) {    //sprite size is 8x16
+        height = 16;
+    }
+    for(int i = 0; i < 8; ++i) {
+        lineOfASprite = (memory->readByte(spriteStartAddr +2*i)<<8) + (memory->readByte(spriteStartAddr +2*i +1));
+        
+        if(isFlippedX(t_sprite.attribs)) {
+            pixelOfASprite.push_back(toPixels(lineOfASprite, Ppu::getPaletteNum(t_sprite.attribs), true));
+            if(height == 16) {
+                pixelOfASprite.push_back(toPixels(lineOfASprite, Ppu::getPaletteNum(t_sprite.attribs), true));
+            }
+        }
+    }
+
+    if(isFlippedY(t_sprite.attribs)) {
+        std::reverse(pixelOfASprite.begin(),pixelOfASprite.end()); 
+    }
+    return pixelOfASprite;
+}
+
+void Ppu::renderSpriteLine(BYTE t_currentline) {  
+    std::vector<std::vector<RGBColor>> spritePixels;
+    sprite spriteInfo;
+    for(BYTE i = 0; i < 40; ++i) {
+        spriteInfo = Ppu::getSprite(i);
+        spritePixels = Ppu::buildSprite(spriteInfo);
+
+        int offsetTile = t_currentline*160 + spriteInfo.patternNum*8;        
+
+        for(int i = 0; i < spritePixels.size(); ++i){
+            for(int j = 0; j < 8; ++j){
+                std::cerr<<" --------------------------------------- \n";
+                //check if BG has priority on transparent pixels of the sprite
+                if(!isSpriteOnTop(spriteInfo.attribs) && spritePixelPriority[offsetTile + i] == false) {
+                    //check if the new sprite has a higher color priority wrt the previous sprite
+                    if(spritePixels.at(i).at(j).r > RGBBuffer[offsetTile + i].r) {
+                        RGBBuffer[offsetTile + i] = spritePixels.at(i).at(j);
+                    }
+                }
+            }
+        }
+    }
 }

@@ -76,7 +76,6 @@ void Lcd::step(int cycles) {
 
 void Lcd::setLCDStatus() {
     if(!isLCDEnabled()){
-        std::cerr << "\nDISAB*************************************\n";
         Lcd::setLCDMode(MODE1);
         Lcd::setScanline(0);
         remainingCycles = 456;
@@ -155,5 +154,5 @@ void Lcd::renderScreen(SDL_Window* t_window, SDL_Renderer* t_renderer) {
          //SDL_RenderPresent(t_renderer);
     }
     SDL_RenderPresent(t_renderer);
-    getchar();
+    //getchar();
 }

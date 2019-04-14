@@ -184,17 +184,11 @@ bool GameBoy::loadGame(){
 }
 
 void GameBoy::playGame(){
-<<<<<<< HEAD
 	WORD pp = 0x2F0;
 
-	std::cerr << "dammi un pc: ";
-	//std::cin >> std::hex >> pp;
-	
-=======
 	//std::cerr << "dammi un pc: ";
 	//std::cin >> std::hex >> pp;
-	WORD pp = 0x408;
->>>>>>> 2e757e937efa8c9e5add6dbd3c2bc22240b02f41
+	
 	bool flag = false;
 	for(;;){
 		userInput();
@@ -204,11 +198,7 @@ void GameBoy::playGame(){
 		instructionCycles *=2;
 		lcd.step(instructionCycles);
 		
-<<<<<<< HEAD
 		if(SDL_GetTicks() - displayTime > 20){
-=======
-		if(SDL_GetTicks() - displayTime > 1){
->>>>>>> 2e757e937efa8c9e5add6dbd3c2bc22240b02f41
 			lcd.renderScreen(window, renderer);
 			//getchar();
 			displayTime = SDL_GetTicks();
@@ -217,39 +207,23 @@ void GameBoy::playGame(){
 		InterruptHandler::doInterrupt(&memory, &cpu);
 		//sync();
 		//std::cerr << o++ << " ";
-<<<<<<< HEAD
 		o++;
 		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
-		if(cpu.getPC() == pp|| flag == true){
-			flag = true;
-			flag = false;
+		//if(cpu.getPC() == pp|| flag == true){
+		//	flag = true;
+		//	flag = false;
 			
 			//ppu.fillLineOfTileDB(0x8010);
 			//getchar();	
-			cpu.printCpuState();
-			system("PAUSE");
+			//cpu.printCpuState();
+			//system("PAUSE");
 			//sstd::cerr <<"\npop6: "<<std::hex <<(int)cpu.readByte(0xFFFF);
 			//std::cerr <<"metti pc: ";
 			//std::cin >> std::hex >> pp;
 	
 //getchar();			// //std::cerr << " BOOM " << o;
 			// //std::cerr << (int)cpu.getPC();
-		}
-=======
-		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
-
-// 		if(cpu.getPC() == pp || flag == true){
-// 			pp = 0x2f0;
-// 			//ppu.fillLineOfTileDB(0x8010);
-// 			cpu.printCpuState();
-// //			std::cerr <<"\npop6: "<<std::hex <<(int)cpu.readByte(0xFFFF);
-// 			std::cerr <<"Next:";
-// 			//getchar();
-// 			std::cin>>std::hex>> pp;
-// //getchar();std::cerr << " BOOM " << o;
-// 			// //std::cerr << (int)cpu.getPC();
-// 		}
->>>>>>> 2e757e937efa8c9e5add6dbd3c2bc22240b02f41
+		//}
 		
 
 	}

@@ -81,7 +81,7 @@ BYTE Cpu::step() {
         resetIntMasterEnable();
     }
     
-   // std::cout<<"PC: "<<std::hex << (int)getPC()<< "\n";
+    //std::cout<<"PC: "<<std::hex << (int)getPC()<< "\n";
     opcode = Cpu::fetch();
     if(opcode == 0x76){
          //std::cout<<"PAUSE\n";

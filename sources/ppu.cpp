@@ -152,8 +152,8 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
         for(int l = 0; l < 8; ++l){
             RGBBuffer[offsetTile + l] = lineOfPixels.at(l);
 
-            //bitmap for BG and sprites priority
-            spritePixelPriority[offsetTile + l] = (lineOfPixels.at(l).r == 255) ? false : true;
+            //bitmap for BG and sprites priority -> if BG is WHITE, sprite always on top (even if has no priority)
+            spritePixelPriority[offsetTile + l] = (lineOfPixels.at(l).r == 255) ? true : false;
         }
       //  std::copy (lineOfPixels.begin(), lineOfPixels.begin() + lineOfPixels.size(), RGBBuffer.begin()+offsetTile);
        // std::cout<<" R:" << (int)RGBBuffer.at(h).r <<" G:" << (int)RGBBuffer.at(h).g <<" B:" << (int)RGBBuffer.at(h).b <<std::endl;
@@ -237,12 +237,20 @@ void Ppu::renderWindowLine(BYTE){
 }
 
 sprite Ppu::getSprite(BYTE spriteNum) {
-    WORD spriteAddr = 0xFE00 + 4*spriteNum;
+    WORD spriteAddr = 0xFE00;// + 4*spriteNum;
     sprite spriteInfo;
     spriteInfo.posY = memory->readByte(spriteAddr++);
     spriteInfo.posX = memory->readByte(spriteAddr++);
     spriteInfo.patternNum = memory->readByte(spriteAddr++);
     spriteInfo.attribs = memory->readByte(spriteAddr);
+
+    if(spriteInfo.patternNum == 58) {    
+        std::cout<<"PosY: "<<std::hex<<(int)spriteInfo.posY<<std::endl;
+        std::cout<<"PosX: "<<std::hex<<(int)spriteInfo.posX<<std::endl;
+        std::cout<<"PatNumb: "<<std::hex<<(int)spriteInfo.patternNum<<std::endl;
+        std::cout<<"Attribs: "<<std::hex<<(int)spriteInfo.attribs<<std::endl;
+        std::cout<<"__________________________________________"<<std::endl;
+    }
 
     return spriteInfo;    
 }
@@ -259,46 +267,89 @@ std::vector<std::vector<RGBColor>> Ppu::buildSprite(sprite t_sprite) {
     WORD lineOfASprite;
     WORD spriteStartAddr = 0x8000 + 16*t_sprite.patternNum;
     BYTE paletteNum;
-
+   
     if(getLCDControlRegister() & 0x04) {    //sprite size is 8x16
         height = 16;
     }
+    bool flipOnX = isFlippedX(t_sprite.attribs);
     for(int i = 0; i < 8; ++i) {
         lineOfASprite = (memory->readByte(spriteStartAddr +2*i)<<8) + (memory->readByte(spriteStartAddr +2*i +1));
+        //if(t_sprite.patternNum == 0x58)
+           // std::cerr<<"\n___"<<pixelOfASprite.size()<<std::endl;
         
-        if(isFlippedX(t_sprite.attribs)) {
-            pixelOfASprite.push_back(toPixels(lineOfASprite, Ppu::getPaletteNum(t_sprite.attribs), true));
-            if(height == 16) {
-                pixelOfASprite.push_back(toPixels(lineOfASprite, Ppu::getPaletteNum(t_sprite.attribs), true));
-            }
-        }
+        //if(isFlippedX(t_sprite.attribs)) {
+        pixelOfASprite.push_back(toPixels(lineOfASprite, Ppu::getPaletteNum(t_sprite.attribs), flipOnX));
+        if(height == 16) {
+            pixelOfASprite.push_back(toPixels(lineOfASprite, Ppu::getPaletteNum(t_sprite.attribs), flipOnX));
+        }        
     }
+ //    }
 
     if(isFlippedY(t_sprite.attribs)) {
         std::reverse(pixelOfASprite.begin(),pixelOfASprite.end()); 
     }
+
+    //        std::cerr<<"\n________________________________"<<std::hex<<(int)lineOfASprite<<std::endl;
+    //if(t_sprite.patternNum == 0x58) {
+        //std::cerr<<"\n"<<std::hex<<(int)t_sprite.patternNum<<" "<<pixelOfASprite.size()<<std::endl;
+    //}
+    /* if(t_sprite.patternNum == 0x58) {
+        for(int i = 0 ; i < 8 ;++i){
+            for(int k = 0 ; k < 8 ;++k){
+                if(pixelOfASprite.at(i).at(k).r == 255){
+                    std::cout << " ";
+                }
+                else {
+                    std::cout << "1 ";
+                }
+            
+            }
+            std::cout <<"\n";
+        }
+    } */
+
+    
     return pixelOfASprite;
 }
 
 void Ppu::renderSpriteLine(BYTE t_currentline) {  
     std::vector<std::vector<RGBColor>> spritePixels;
     sprite spriteInfo;
-    for(BYTE i = 0; i < 40; ++i) {
+    
+    BYTE height = 8;
+    
+    for(int i = 0; i < 40; ++i) {
         spriteInfo = Ppu::getSprite(i);
         spritePixels = Ppu::buildSprite(spriteInfo);
+     
+        if(getLCDControlRegister() & 0x04) {    //sprite size is 8x16
+            height = 16;
+        }
 
-        int offsetTile = t_currentline*160 + spriteInfo.patternNum*8;        
+        int startY = (int)(spriteInfo.posY) - 16;
+        int startX = (int)(spriteInfo.posX) - 8;        
+        //int offsetSprite = ((int)spriteInfo.posY - 16) + ((int)spriteInfo.posX - 8);        
+        for(int j = 0; j < 8; ++j) {
 
-        for(int i = 0; i < spritePixels.size(); ++i){
-            for(int j = 0; j < 8; ++j){
-                std::cerr<<" --------------------------------------- \n";
+            /* if(spriteInfo.patternNum == 0x58) {
+                if(((int)spritePixels.at(i).at(j).r/255) == 0)
+                    std::cout<<"1 ";
+                else
+                    std::cout<<"  ";
+            } */
+         
+            //check if the current scanline is inside the sprite (Y bounds)
+            if((t_currentline >= startY) && (t_currentline < startY + height)) {     
                 //check if BG has priority on transparent pixels of the sprite
-                if(!isSpriteOnTop(spriteInfo.attribs) && spritePixelPriority[offsetTile + i] == false) {
-                    //check if the new sprite has a higher color priority wrt the previous sprite
-                    if(spritePixels.at(i).at(j).r > RGBBuffer[offsetTile + i].r) {
-                        RGBBuffer[offsetTile + i] = spritePixels.at(i).at(j);
+                if(   isSpriteOnTop(spriteInfo.attribs) || 
+                    (!isSpriteOnTop(spriteInfo.attribs) && spritePixelPriority[startY + startX + i])) {
+                    //check if the new sprite has a higher color priority wrt the previous sprite drawn
+                    if(spritePixels.at(t_currentline % 8).at(j).r < RGBBuffer[t_currentline*160 + startX + j].r) { 
+                
+                        RGBBuffer[t_currentline*160 + startX + j] = spritePixels.at(t_currentline % 8).at(j);
+                
                     }
-                }
+                }            
             }
         }
     }

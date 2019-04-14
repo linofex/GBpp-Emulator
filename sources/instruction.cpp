@@ -646,8 +646,6 @@ static void add(Cpu* c, unsigned char n) {
     else
         c->resetFlag(FLAG_Z);
 
-    c->setA((BYTE)(res & 0x00FF));
-
     c->resetFlag(FLAG_N);
         
     if(res > 0x00FF)  //sum overflow
@@ -660,6 +658,7 @@ static void add(Cpu* c, unsigned char n) {
     else
         c->resetFlag(FLAG_H);
 
+    c->setA((BYTE)(res & 0x00FF));
     ////std::cout<<"fine add"<<std::endl;
     
 }
@@ -705,16 +704,12 @@ static void adc_A_HL_ind(Cpu* c) {
 }
 
 static void sub(Cpu* c, unsigned char n) {
-    //signed short res = c->getA() - n;
+    signed short res = c->getA() - n;
 
-    c->setA(c->getA() - n);
-
-    if(c->getA())        //sub = 0
+    if(res == 0)        //sub = 0
         c->resetFlag(FLAG_Z);
     else
         c->setFlag(FLAG_Z);
-
-    
     
     c->setFlag(FLAG_N);
         
@@ -727,6 +722,8 @@ static void sub(Cpu* c, unsigned char n) {
         c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);
+    
+    c->setA(c->getA() - n);
 }
 static void sub_A_B(Cpu* c) {sub(c, c->getB());}
 static void sub_A_C(Cpu* c) {sub(c, c->getC());}
@@ -930,9 +927,10 @@ static void inc_H(Cpu* c) {c->setH(inc(c, c->getH()));}
 static void inc_L(Cpu* c) {c->setL(inc(c, c->getL()));}
 static void inc_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
+    c->writeByte(addr, inc(c, c->readByte(addr))); //SOSPETTA
+  /*   
     BYTE n = c->readByte(addr);
     BYTE res = n + 1;
-    c->writeByte(addr, res); //SOSPETTA
     // unsigned char n = c->readByte(addr);
     // c->setHL(inc(c, n));
     c->resetFlag(FLAG_N);
@@ -945,6 +943,8 @@ static void inc_HL_ind(Cpu* c) {
         c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);
+    
+    c->writeByte(addr, res); //SOSPETTA */
 
 }
 
@@ -1416,10 +1416,10 @@ static void scf(Cpu* c) {
 }
 static void nop(Cpu* c) {}
 static void halt(Cpu* c) { //SOSPETTO
-    if(c->isIntMasterEnable()){
+   /*  if(c->isIntMasterEnable()){
         c->setHalt();
         std::cerr << "HALT\n";
-    }
+    } */
     //else{
         ////std::cout << "\n** HALT with master enable == false **\n";
     //}
@@ -1665,7 +1665,7 @@ static void bit_b_r(Cpu* c, unsigned char r, unsigned char b) {
     c->setFlag(FLAG_H);
 
     //BYTE b = c->readByte(c->getPC());
-    c->incPC();//??? va tolto
+    //c->incPC();//??? va tolto
 
     b = (b >> r) & 0x01;
     if(!b)

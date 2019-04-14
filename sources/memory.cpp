@@ -107,7 +107,7 @@ void Memory::writeByte(const WORD t_add, BYTE t_value){
             //exit(1);
         }
         if(t_add == 0x0A98){
-            //t_value = 0xC9;
+            t_value = 0xC9;
             //exit(1);
         }
         

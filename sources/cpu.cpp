@@ -71,7 +71,7 @@ void Cpu::printCpuState(){
 
 BYTE Cpu::step() {
     if(isHalted() ||  isStopped()){
-        std::cout << "HALT";
+        //std::cout << "HALT";
         return 0;
     }
     if(isLastOpcode(0xFB)){  //EI

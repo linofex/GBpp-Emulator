@@ -92,10 +92,10 @@ class Cpu {
         inline void setE(const BYTE t_e) {regDE.low = t_e;}
         inline void setH(const BYTE t_h) {regHL.high = t_h;}
         inline void setL(const BYTE t_l) {regHL.low = t_l;}
-        inline void setHL(const WORD t_hl) {regHL.reg = t_hl;}
-        inline void setAF(const WORD t_af) {regAF.reg = t_af;}
+        inline void setAF(const WORD t_af) {regAF.reg = t_af & 0xFFF0;}
         inline void setBC(const WORD t_bc) {regBC.reg = t_bc;}
         inline void setDE(const WORD t_de) {regDE.reg = t_de;}
+        inline void setHL(const WORD t_hl) {regHL.reg = t_hl;}
         inline void setSP(const WORD t_sp) {sp = t_sp;}
 
         inline BYTE isFLAG_Zero(void) {return (regAF.low & FLAG_Z);}

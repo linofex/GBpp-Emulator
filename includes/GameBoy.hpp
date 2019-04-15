@@ -36,10 +36,13 @@
             //unsigned long clockCycles;
             SDL_Event event;
             
-            Uint32 hostOldTime;
             //std::chrono::time_point<std::chrono::system_clock> targetOldTime;
-            Uint32 targetOldTime;   
+            Uint64 targetOldTime;   
             Uint32 displayTime; 
+            Uint64 hostOldTime;
+            //Uint64 hostNewTime;
+            Uint64 hostFrequency;
+
             //Gpu gpu;
             //Display display;
             void pressedKey(int);

@@ -339,7 +339,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0x2F, instruction("CPL", 2, cpl)));
 
 
-    instrSet.insert(std::make_pair(0x30, instruction("JR NC, r8 ", 4, jp_nc)));
+    instrSet.insert(std::make_pair(0x30, instruction("JR NC, r8 ", 4, jr_nc)));
     instrSet.insert(std::make_pair(0x31, instruction("LD SP, d16 ", 6, load_SP_nn)));
     instrSet.insert(std::make_pair(0x32, instruction("LD (HL-), A ", 4, loadd_HL_ind_A)));
     instrSet.insert(std::make_pair(0x33, instruction("INC SP", 4, inc_SP)));  
@@ -347,7 +347,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0x35, instruction("DEC (HL)", 6, dec_HL_ind)));  
     instrSet.insert(std::make_pair(0x36, instruction("LD (HL), d8", 6, load_HL_ind_n)));
     instrSet.insert(std::make_pair(0x37, instruction("SCF", 2, scf)));
-    instrSet.insert(std::make_pair(0x38, instruction("JR C, r8", 0, jp_c)));
+    instrSet.insert(std::make_pair(0x38, instruction("JR C, r8", 0, jr_c)));
     instrSet.insert(std::make_pair(0x39, instruction("ADD HL, SP", 4, add_HL_SP)));  
     instrSet.insert(std::make_pair(0x3A, instruction("LD A, (HL-)", 4, loadd_A_HL_ind)));
     instrSet.insert(std::make_pair(0x3B, instruction("DEC SP", 4, dec_SP)));
@@ -451,7 +451,8 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0x94, instruction("SUB A, H", 2, sub_A_H)));
     instrSet.insert(std::make_pair(0x95, instruction("SUB A, L", 2, sub_A_L)));
     instrSet.insert(std::make_pair(0x96, instruction("SUB A, (HL)", 4, sub_A_HL_ind)));  
-    instrSet.insert(std::make_pair(0x97, instruction("SUB A, A", 2, sub_A_A)));  
+    instrSet.insert(std::make_pair(0x97, instruction("SUB A, A", 2, sub_A_A)));
+
     instrSet.insert(std::make_pair(0x98, instruction("SBC A, B", 2, sbc_A_B)));  
     instrSet.insert(std::make_pair(0x99, instruction("SBC A, C", 2, sbc_A_C)));
     instrSet.insert(std::make_pair(0x9A, instruction("SBC A, D", 2, sbc_A_D)));
@@ -550,7 +551,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     //----------------------instrSet.insert(std::make_pair(0xFE, instruction("CP A, #", 8, cp_A_n)));
 
     instrSet.insert(std::make_pair(0xE8, instruction("ADD SP, r8", 8, add_SP_n)));  
-    instrSet.insert(std::make_pair(0xE9, instruction("JP (HL)", 2, jp_hl)));
+    instrSet.insert(std::make_pair(0xE9, instruction("JP (HL)", 2, jp_hl_ind)));
     instrSet.insert(std::make_pair(0xEA, instruction("LD a16, A", 8, load_nn_ind_A)));
     instrSet.insert(std::make_pair(0xEB, instruction("UNDEFINED", 0, not_defined)));  
     instrSet.insert(std::make_pair(0xEC, instruction("UNDEFINED", 0, not_defined)));
@@ -637,18 +638,16 @@ static void not_defined(Cpu* c) {
 
 //-----------------------ADD-------------------------------------
 static void add(Cpu* c, unsigned char n) {
-   ////std::cout<<"inizio add"<<std::endl;
-
-   unsigned short res = c->getA() + n;
+    unsigned short res = c->getA() + n;
     
-    if(res == 0)        //sum = 0
+    if(((res) & 0x00FF) == 0)        //sum = 0
         c->setFlag(FLAG_Z);
     else
         c->resetFlag(FLAG_Z);
 
     c->resetFlag(FLAG_N);
         
-    if(res > 0x00FF)  //sum overflow
+    if(res & 0xFF00)  //sum overflow
         c->setFlag(FLAG_C);
     else
         c->resetFlag(FLAG_C);
@@ -658,8 +657,7 @@ static void add(Cpu* c, unsigned char n) {
     else
         c->resetFlag(FLAG_H);
 
-    c->setA((BYTE)(res & 0x00FF));
-    ////std::cout<<"fine add"<<std::endl;
+    c->setA(c->getA() + n);
     
 }
 
@@ -671,9 +669,31 @@ static void add_A_H(Cpu* c) {add(c, c->getH());}
 static void add_A_L(Cpu* c) {add(c, c->getL());}
 static void add_A_A(Cpu* c) {add(c, c->getA());}
 static void add_A_n(Cpu* c) {
-    BYTE data = c->readByte(c->getPC());
+    unsigned char n = c->readByte(c->getPC());
     c->incPC();
-    add(c, data);
+    add(c, n);
+/* 
+    unsigned short res = c->getA() + n;
+    
+    if(((res) & 0x00FF) == 0)        //sum = 0
+        c->setFlag(FLAG_Z);
+    else
+        c->resetFlag(FLAG_Z);
+
+    c->resetFlag(FLAG_N);
+        
+    if(res & 0xFF00)  //sum overflow
+        c->setFlag(FLAG_C);
+    else
+        c->resetFlag(FLAG_C);
+        
+    if(((n & 0x0F) + (c->getA() & 0x0F)) > 0x0F)    //if carry from bit 3
+        c->setFlag(FLAG_H);
+    else
+        c->resetFlag(FLAG_H);
+
+    c->setA(c->getA() + n); */
+
 }
 static void add_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
@@ -704,9 +724,14 @@ static void adc_A_HL_ind(Cpu* c) {
 }
 
 static void sub(Cpu* c, unsigned char n) {
-    signed short res = c->getA() - n;
+    ////////////
+    //if cpu.registers.A < cpu.registers.A &- reg { cpu.registers.F |= GameBoyRegisters.F_CARRY }
+    //if cpu.registers.A &- reg == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
+    //cpu.registers.A = cpu.registers.A &- reg */
+    ////////////
+    unsigned short res = c->getA() - n;
 
-    if(res == 0)        //sub = 0
+    if((c->getA() - n) == 0)        //sub = 0
         c->resetFlag(FLAG_Z);
     else
         c->setFlag(FLAG_Z);
@@ -714,10 +739,11 @@ static void sub(Cpu* c, unsigned char n) {
     c->setFlag(FLAG_N);
         
     if(n > c->getA())  //sub with no borrow //SOSPETTA
+    //if(c->getA() < (c->getA() - n))
         c->setFlag(FLAG_C);
     else
         c->resetFlag(FLAG_C);
-        
+    
     if((c->getA() & 0x0F) < (n & 0x0F))    //if no borrow from bit 4 //SOSPETTA
         c->setFlag(FLAG_H);
     else
@@ -988,8 +1014,6 @@ static void add_HL(Cpu* c, WORD val) { //v
     
     unsigned long res = c->getHL() + val;
 
-    c->setHL((unsigned short) (res & 0xFFFF));
- 
     c->resetFlag(FLAG_N);
 
     if(res & 0xFFFF0000)
@@ -1002,6 +1026,8 @@ static void add_HL(Cpu* c, WORD val) { //v
         c->setFlag(FLAG_H);
 	else
         c->resetFlag(FLAG_H);
+
+    c->setHL((unsigned short) (res & 0xFFFF));
 }
 static void add_HL_BC(Cpu* c) {add_HL(c, c->getBC());};
 static void add_HL_DE(Cpu* c) {add_HL(c, c->getDE());};
@@ -1010,27 +1036,25 @@ static void add_HL_SP(Cpu* c) {add_HL(c, c->getSP());};
 
 static void add_SP_n(Cpu* c) {
 
-    unsigned char n = c->readByte(c->getPC());
+    signed char n = c->readByte(c->getPC());
     c->incPC();
 
     c->resetFlag(FLAG_Z);
     c->resetFlag(FLAG_N);
 
-    unsigned long res = c->getSP() + n;
-
-    c->setSP((unsigned short) res);
- 
-    c->resetFlag(FLAG_N);
+    signed long res = c->getSP() + n;
 
     if(res & 0xFFFF0000)
         c->setFlag(FLAG_C);
     else
         c->resetFlag(FLAG_C);
     
-    if(((c->getSP() & 0x0F) + (n & 0x0F)) > 0x0F)
+    if(((c->getSP() & 0x000F) + (n & 0x0F)) > 0x0F)
         c->setFlag(FLAG_H);
 	else
         c->resetFlag(FLAG_H);
+    
+    c->setSP((unsigned short) res);
 
 };
 
@@ -1283,7 +1307,7 @@ static void load_SP_HL(Cpu* c) {
 
 // Put SP + n effective address into HL.
 static void loadhl_SP_n(Cpu* c) {
-    BYTE n = c->readByte(c->getPC());
+    signed char n = c->readByte(c->getPC());
     c->incPC();
 
     int res = c->getSP() + n;
@@ -1333,7 +1357,7 @@ static void push_HL(Cpu* c) {
 
 static WORD pop_nn(Cpu* c) {
     WORD nn = c->readWord(c->getSP());
-
+    
     c->incSP();
     c->incSP();
     return nn;
@@ -2057,7 +2081,7 @@ static void jp_c(Cpu* c) {
              
     }
 }
-static void jp_hl(Cpu* c) {
+static void jp_hl_ind(Cpu* c) {
     c->setPC(c->getHL());
 }
 

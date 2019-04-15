@@ -133,14 +133,14 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
         lineOfATile = memory->readWord(startAddress + (t_currentline % 8)*2 + offset); //16B = tile dimension
         
         std::vector<RGBColor> lineOfPixels = toPixels(lineOfATile, 2, false);
-        for(int k = 0 ; k< 8 ;++k){
+        /* for(int k = 0 ; k< 8 ;++k){
             if(lineOfPixels.at(k).r == 255){
                 std::cout << " ";
             }
             else {
                 std::cout << "1 ";
             }
-        }
+        } */
          //std::cout<< "\n\n";
         // std::cout << std::endl;
         //compute colors returns pixels
@@ -184,7 +184,7 @@ void Ppu::fillLineOfTileDB(WORD t_addr){    //type = 0 -> BG, type = 1 -> Sprite
             lineOfATile = (memory->readByte(t_addr +2*r)<<8) + (memory->readByte(t_addr +2*r +1)); //16B = tile dimension
            
             std::vector<RGBColor> lineOfPixels = toPixels(lineOfATile, 2, false);
-            for(int k = 0 ; k< 8 ;++k){
+            /* for(int k = 0 ; k< 8 ;++k){
                 if(lineOfPixels.at(k).r == 255){
                     std::cout << "  ";
                 }
@@ -192,9 +192,9 @@ void Ppu::fillLineOfTileDB(WORD t_addr){    //type = 0 -> BG, type = 1 -> Sprite
                 {
                     std::cout << "1 ";
                 }  
-        }
+            } */
         currentLine++;
-        std::cout<< "\n";
+        //std::cout<< "\n";
         }
 }
 
@@ -213,15 +213,15 @@ void Ppu::renderBGLine(BYTE t_currentline){
         }
         offset = ((scrollY/8 + (int)t_currentline/8)%32)*32 + ((scrollX/8 + i)%32);
         tileID = memory->readByte(BGMemoryStart + offset);
-        if(t_currentline % 8 == 0) {
-            std::cout <<std::hex<<(int) tileID<<" ";
+        //if(t_currentline % 8 == 0) {
+            //std::cout <<std::hex<<(int) tileID<<" ";
             //getchar();//system("PAUSE");
-        }
+        //}
         //std::cout << "Tile ID: "<< std::hex<< (int)tileID << "\t" << "memory address: "<< std::hex<< (int)(BGMemoryStart + i )<< "\n";
         fillLineOfTile(tileID, i, t_currentline, 0); //0 = tileID;
     }
-    if(t_currentline % 8 == 0)
-        std::cout<<std::endl;
+    //if(t_currentline % 8 == 0)
+        //std::cout<<std::endl;
 
     // increase scrollX e scrollY? quando? secondo me no va fatt noi
 
@@ -249,13 +249,13 @@ sprite Ppu::getSprite(BYTE spriteNum) {
     spriteInfo.patternNum = memory->readByte(spriteAddr++);
     spriteInfo.attribs = memory->readByte(spriteAddr);
 
-    if(spriteInfo.patternNum == 58) {    
+    /* if(spriteInfo.patternNum == 58) {    
         std::cout<<"PosY: "<<std::hex<<(int)spriteInfo.posY<<std::endl;
         std::cout<<"PosX: "<<std::hex<<(int)spriteInfo.posX<<std::endl;
         std::cout<<"PatNumb: "<<std::hex<<(int)spriteInfo.patternNum<<std::endl;
         std::cout<<"Attribs: "<<std::hex<<(int)spriteInfo.attribs<<std::endl;
         std::cout<<"__________________________________________"<<std::endl;
-    }
+    } */
 
     return spriteInfo;    
 }

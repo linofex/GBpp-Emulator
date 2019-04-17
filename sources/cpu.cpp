@@ -74,14 +74,14 @@ BYTE Cpu::step() {
         //std::cout << "HALT";
         return 100;
     }
-   // std::cout<<"PC: "<<std::hex << (int)getPC()<< "\n";
+    //std::cout<<"PC: "<<std::hex << (int)getPC()<< "\n";
     opcode = Cpu::fetch();
     
     //std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
     instruction instr = Cpu::decode(opcode);
     // std::cout<< o <<std::endl;
     BYTE ret = Cpu::execute(instr);
-    std::cout <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
+    //std::cout <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
     //printCpuState();
     if(isLastOpcode(0xFB) || isLastOpcode(0xD9)){  //EI and RETI sets interrupts one machine clock cycle after
         setIntMasterEnable();

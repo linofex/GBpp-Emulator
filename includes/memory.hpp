@@ -1,6 +1,6 @@
 #ifndef MEMORY_H
 #define MEMORY_H
-#include"utility.hpp"
+#include "utility.hpp"
 //#include"cpu.hpp"
 #include <vector>
 
@@ -19,6 +19,7 @@
 //   FFFF        Interrupt Enable Register
 
 class Cpu;
+class Timer;
 
 //namespace GBemulator{
     class Memory{
@@ -34,6 +35,7 @@ class Cpu;
             BYTE IEReg;                // Interrupt Enable Register
             BYTE keyStatus;
             bool readOnlyRom;
+            Timer* timer;
 
         public:
             Memory();
@@ -43,7 +45,7 @@ class Cpu;
             WORD readWord(const WORD t_add); 
 
             BYTE getJoypadStatus(void) const {return keyStatus;}
-            BYTE buildJoypadStatus(WORD)const;
+            BYTE buildJoypadStatus(WORD);
             void setJoypadStatus(BYTE);
 
             // this method writes one byte ad address t_add
@@ -54,6 +56,7 @@ class Cpu;
             void writeWord(const WORD t_add, WORD t_value);
 
             void writeInStack(Cpu* t_cpu, WORD t_value);
+            void linkTimer(Timer*);
 
             ~Memory();
     };

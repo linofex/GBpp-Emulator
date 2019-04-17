@@ -32,6 +32,7 @@
             Timer timer; //gameboy timer
             std::vector<Uint32> times;
             std::vector<BYTE> testRom;
+            const Uint8* keyState;
             
             //unsigned long clockCycles;
             SDL_Event event;
@@ -45,8 +46,8 @@
 
             //Gpu gpu;
             //Display display;
-            void pressedKey(int);
-            void releasedKey(int);
+            void pressedKey(BYTE);
+            void releasedKey(BYTE);
         public:
             long long int o;
             GameBoy();

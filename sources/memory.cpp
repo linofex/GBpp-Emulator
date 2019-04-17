@@ -1,6 +1,7 @@
 
 #include "../includes/memory.hpp"
 #include "../includes/dma.hpp"
+#include "../includes/timer.hpp"
 #include <iostream>
 //#include "../includes/cpu.hpp"
 
@@ -30,27 +31,47 @@ Memory::Memory():
         keyStatus = 0xFF;
         ioPorts[0xFF00 & 0x07F] = 0xCF;
         readOnlyRom = false;
+        timer = NULL;
     }
 
 void Memory::setJoypadStatus(BYTE t_joypadStatus){keyStatus = t_joypadStatus;}
-BYTE Memory::buildJoypadStatus(WORD t_add) const {
+
+BYTE Memory::buildJoypadStatus(WORD t_add) {
     BYTE joypad = ioPorts.at(t_add & 0x007F);
     BYTE keys = 0x00;
-    std::cout << "JOYPAD: "<< std::hex << (int)joypad << std::endl;
+    
 
-    if((joypad & 0x30) == 16) {     //Select direction keys (select = 0)
+    if((joypad & 0x30) == 32) {     //Select direction keys (select = 0)
         keys = (keyStatus & 0x0F);
+        /* BYTE tmp = keyStatus & 0x0F;
+        if(tmp == 0x07)
+            std::cout << "GIU"<< std::endl;
+        else if(tmp == 0x0B)
+            std::cout << "SU"<< std::endl;
+        if(tmp == 0x0D)
+            std::cout << "SX"<< std::endl;
+        else if(tmp == 0x0E)
+            std::cout << "DX"<< std::endl; */
     }
-    else {                          //Select button keys (select = 0)
+    else if((joypad & 0x30) == 16){                          //Select button keys (select = 0)
         keys = (keyStatus >> 4);
+        /* BYTE tmp = keyStatus & 0xF0;
+        if(tmp == 0x70)
+            std::cout << "START"<< std::endl;
+        else if(tmp == 0xB0)
+            std::cout << "SELECT"<< std::endl;
+        if(tmp == 0xD0)
+            std::cout << "B"<< std::endl;
+        else if(keyStatus == 0xE0)
+            std::cout << "A"<< std::endl; */
     }
     BYTE status = (joypad & 0xF0) | keys;
-    std::cout << "STATUS: "<<  std::hex << (int)status << std::endl;
-    return status;
-}
 
-BYTE Memory::readf(){
-    return ioPorts.at(0xFF00 & 0x007F);
+    if(true || (IEReg & 0x10) != 0) {
+        //std::cout << "JOYPAD: "<< std::hex << (int)joypad << std::endl;
+        //std::cout << "STATUS: "<<  std::hex << (int)status << std::endl;
+    }
+    return status;
 }
 
 BYTE Memory::readByte(const WORD t_add) {
@@ -85,6 +106,7 @@ BYTE Memory::readByte(const WORD t_add) {
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
         if(t_add == 0xFF00) {    //JOYPAD status register
+            //std::cout << "lettura FF00: "<< std::hex << (int)buildJoypadStatus(t_add) << std::endl;
             return buildJoypadStatus(t_add);
         }
        
@@ -110,12 +132,12 @@ void Memory::writeByte(const WORD t_add, BYTE t_value){
     // ROM
     if(t_add < 0x8000 && !readOnlyRom){
         if(t_add == 0x02f0){
-            //8t_value = 0x76; //for tetris
+            //t_value = 0x76; //for tetris
             //exit(1);
         }
 
         if(t_add == 0x0A98){
-           //t_value = 0xC9;
+            //t_value = 0xC9;
             //exit(1);
         }
         
@@ -155,20 +177,22 @@ void Memory::writeByte(const WORD t_add, BYTE t_value){
     }
     // I/O ports
     else if (t_add >= 0xFF00 && t_add < 0xFF80){
-        if(t_add == LCDCONTROL){
-            //std::cerr << " WRITE IN BGP: "<<std::hex<<(int)t_value << std::endl;
-          //  return;
+        if(t_add == TMC){
+            BYTE currFrequency = readByte(TMC) & 0x03;
+            ioPorts[t_add & 0x007F] = t_value;
+            BYTE newFrequency = readByte(TMC) & 0x03;
+
+            if(newFrequency != currFrequency) {
+                timer->setTimer();
+            }
+
+            return;
         }
+        
         if(t_add == 0xFF00){
-            BYTE status = ioPorts.at(t_add & 0x007F);
-            // std::cerr <<"\n\nSTATUS "<< std::hex << (int)status<< std::endl;
-            // std::cerr <<"\n\nJiiP "<< std::hex << (int)t_value<< std::endl; //     
+            BYTE status = ioPorts.at(t_add & 0x007F);    
         }
-        if(t_add == IRR_ADD){
-            //std::cout << "SCRIvO: " << std::hex << (int)t_value;
-        }
-        // if(t_add == 0xFF44)
-        //     std::cerr <<"CI SCRIV0 "<< std::hex << (int)t_value;
+
         ioPorts[t_add & 0x007F] = t_value; 
         
 
@@ -202,6 +226,9 @@ void Memory::writeWord(const WORD t_add, WORD t_value){
     writeWord(t_cpu->getSP(), t_value);
     t_cpu->decSP();
 } */
+void Memory::linkTimer(Timer* t_timer) {
+    timer = t_timer;
+}
 
 Memory::~Memory(){
     std::cout << "MEMORY distruttore\n";

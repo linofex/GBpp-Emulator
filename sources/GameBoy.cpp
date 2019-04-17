@@ -14,10 +14,10 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
                        			 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 
                        			 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E
     							};
-	//clockCycles = 0;
-    targetOldTime = (double)(1000.0*cpu.getClockCycles())/(4194304);//TARGETPERIOD * 0; // 0
-    //hostOldTime = SDL_GetTicks(); //  milliseconds
+	
+    memory.linkTimer(&timer);
 
+	targetOldTime = (double)(1000.0*cpu.getClockCycles())/(4194304);//TARGETPERIOD * 0; // 0
 	hostOldTime = SDL_GetPerformanceCounter();
 	hostFrequency = SDL_GetPerformanceFrequency();
 
@@ -28,14 +28,14 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
 
 
 // If a key is pressed this method requests a JOYPAD interrupt if necessary 
-void GameBoy::pressedKey(int t_key){
+void GameBoy::pressedKey(BYTE t_key){
 	BYTE keystatus = memory.getJoypadStatus();
 	//BYTE joypadStatus = memory.readf();
 	    // if ~ 0(pressed) && time expired
-    if(!(keystatus & (1 << t_key)) && SDL_GetTicks() - times[t_key] > PRESSION_DURATION){
+    /* if(!(keystatus & (1 << t_key)) && SDL_GetTicks() - times[t_key] > PRESSION_DURATION/50){
         keystatus |= (1 << t_key);
     }
-    else if(keystatus & (1 << t_key)){ // status is 1 and goes to 0
+    else  */if(keystatus & (1 << t_key)){ // status is 1 and goes to 0
         keystatus &= ~(1 << t_key);
        // if((t_key > 3 && !(joypadStatus & BUTTON) == 0x10) || (t_key < 4 && !(joypadStatus & DIRECTION)==0x20)){
             InterruptHandler::requestInterrupt(&memory, JOYPAD);
@@ -46,7 +46,12 @@ void GameBoy::pressedKey(int t_key){
 
 }
 // If a key is released this method reset the joypadstatus putting the bit at 1
-void GameBoy::releasedKey(int t_key){
+void GameBoy::releasedKey(BYTE t_key){
+	/* BYTE keystatus = memory.getJoypadStatus();
+    if(!(keystatus & (1 << t_key)) && SDL_GetTicks() - times[t_key] > PRESSION_DURATION/50){
+		std::cout << " TOLTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n";
+        keystatus |= (1 << t_key);
+    }  */
 	memory.setJoypadStatus(memory.getJoypadStatus() | (1 << t_key));
 }
 
@@ -195,32 +200,99 @@ void GameBoy::playGame(){
 	
 	bool flag = false;
 	for(;;){
-		userInput();
+		//userInput();
+		SDL_Event e;
+		keyState = SDL_GetKeyboardState(NULL);
+		
+		while((SDL_PollEvent(&e)) != 0) {
+			if(keyState[SDL_SCANCODE_8]) {
+				std::cout << "OFF"<< std::endl;
+				turnOff();
+			}
+
+			if(keyState[SDL_SCANCODE_SPACE]) {
+				pressedKey(START);
+				std::cout << "START"<< std::endl;
+			}
+			if(keyState[SDL_SCANCODE_B]) {
+				pressedKey(SELECT);
+				std::cout << "SELECT"<< std::endl;
+			}
+			if(keyState[SDL_SCANCODE_S]) {
+				pressedKey(_B);
+				std::cout << "B"<< std::endl;
+			}
+			if(keyState[SDL_SCANCODE_A]) {
+				pressedKey(_A);
+				std::cout << "A"<< std::endl;
+			}
+			if(keyState[SDL_SCANCODE_DOWN]) {
+				pressedKey(DOWN);	
+				std::cout << "DOWN"<< std::endl;
+			}
+			if(keyState[SDL_SCANCODE_UP]) {
+				pressedKey(UP);
+				std::cout << "UP"<< std::endl;
+			}
+			if(keyState[SDL_SCANCODE_LEFT]) {
+				pressedKey(LEFT);
+				std::cout << "LEFT"<< std::endl;
+			}
+			if(keyState[SDL_SCANCODE_RIGHT]) {
+				pressedKey(RIGHT);
+				std::cout << "RIGHT"<< std::endl;
+			}
+
+			if(!keyState[SDL_SCANCODE_SPACE]) {
+				releasedKey(START);	
+			}
+			if(!keyState[SDL_SCANCODE_B]) {
+				releasedKey(SELECT);
+			}
+			if(!keyState[SDL_SCANCODE_S]) {
+				releasedKey(_B);
+			}
+			if(!keyState[SDL_SCANCODE_A]) {
+				releasedKey(_A);
+			}
+			if(!keyState[SDL_SCANCODE_DOWN]) {
+				releasedKey(DOWN);	
+			}
+			if(!keyState[SDL_SCANCODE_UP]) {
+				releasedKey(UP);
+			}
+			if(!keyState[SDL_SCANCODE_LEFT]) {
+				releasedKey(LEFT);
+			}
+			if(!keyState[SDL_SCANCODE_RIGHT]) {
+				releasedKey(RIGHT);
+			}
+		} 
+	SDL_PumpEvents();
 		//std::cout<<"--------------------------------------------\n";
 
 		BYTE instructionCycles = cpu.step();
-		instructionCycles *=2;
+		//instructionCycles *=2;
 		lcd.step(instructionCycles);
 		
-		if(SDL_GetTicks() - displayTime > 2){
+		if(SDL_GetTicks() - displayTime > 20){
 			lcd.renderScreen(window, renderer);
-			//getchar();
 			displayTime = SDL_GetTicks();
 		}//		
 		cpu.addClockCycle(instructionCycles);
 		InterruptHandler::doInterrupt(&memory, &cpu);
-		timer.updateTimers(instructionCycles);
+		//timer.updateTimers(instructionCycles);
 		//sync();
 		//std::cerr << o++ << " ";
 		//o++;
 		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
-		if(cpu.getPC() == pp) { //|| flag == true){
+		//if(cpu.getPC() == pp) { //|| flag == true){
 		//	flag = true;
 		//	flag = false;
 			
 			//ppu.fillLineOfTileDB(0x8010);
 			//getchar();	
-			cpu.printCpuState();
+			//cpu.printCpuState();
 			//system("PAUSE");
 			//sstd::cerr <<"\npop6: "<<std::hex <<(int)cpu.readByte(0xFFFF);
 			//std::cerr <<"metti pc: ";
@@ -228,7 +300,7 @@ void GameBoy::playGame(){
 	
 //getchar();			// //std::cerr << " BOOM " << o;
 			// //std::cerr << (int)cpu.getPC();
-		}
+		//}
 
 	}
 }

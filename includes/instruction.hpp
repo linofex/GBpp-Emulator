@@ -360,6 +360,10 @@ static void ei(Cpu*);
 
 //------------------- RLC n -------------------
 static BYTE rlc(Cpu*, unsigned char);
+static BYTE rlc_n(Cpu*, unsigned char);
+static void rlca(Cpu*);
+
+
 static void rlc_A(Cpu*);
 static void rlc_B(Cpu*);
 static void rlc_C(Cpu*);
@@ -370,6 +374,9 @@ static void rlc_L(Cpu*);
 static void rlc_HL_ind(Cpu*);
 //------------------- RL n -------------------
 static BYTE rl(Cpu*, unsigned char);
+static BYTE rl_n(Cpu*, unsigned char);
+static void rla(Cpu*);
+
 static void rl_A(Cpu*);
 static void rl_B(Cpu*);
 static void rl_C(Cpu*);
@@ -380,6 +387,10 @@ static void rl_L(Cpu*);
 static void rl_HL_ind(Cpu*);
 //------------------- RRC n -------------------
 static BYTE rrc(Cpu*, unsigned char);
+static BYTE rrc_n(Cpu*, unsigned char);
+static void rrca(Cpu*);
+
+
 static void rrc_A(Cpu*);
 static void rrc_B(Cpu*);
 static void rrc_C(Cpu*);
@@ -390,6 +401,10 @@ static void rrc_L(Cpu*);
 static void rrc_HL_ind(Cpu*);
 //------------------- RR n -------------------
 static BYTE rr(Cpu*, unsigned char);
+static BYTE rr_n(Cpu*, unsigned char);
+static void rra(Cpu*);
+
+
 static void rr_A(Cpu*);
 static void rr_B(Cpu*);
 static void rr_C(Cpu*);

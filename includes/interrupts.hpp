@@ -13,7 +13,7 @@ class Memory;
         public:
             //InterruptHnadler(){}
             static void serveInterrupt(const BYTE, Memory*, Cpu*);
-            static void doInterrupt(Memory*, Cpu*);
+            static bool doInterrupt(Memory*, Cpu*);
             static void requestInterrupt(Memory*, const BYTE);
     };
 //}

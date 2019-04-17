@@ -162,6 +162,9 @@ void GameBoy::initSDL(){
     SDL_SetRenderDrawColor(renderer, 0, 0, 254, 0);
     SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
+
+	keyState = SDL_GetKeyboardState(NULL);
+
 	return;
 }
 
@@ -201,46 +204,45 @@ void GameBoy::playGame(){
 	bool flag = false;
 	for(;;){
 		//userInput();
-		SDL_Event e;
-		keyState = SDL_GetKeyboardState(NULL);
-		
+		SDL_Event e;	
+		SDL_PumpEvents();
 		while((SDL_PollEvent(&e)) != 0) {
 			if(keyState[SDL_SCANCODE_8]) {
-				std::cout << "OFF"<< std::endl;
+				//std::cout << "OFF"<< std::endl;
 				turnOff();
 			}
 
 			if(keyState[SDL_SCANCODE_SPACE]) {
 				pressedKey(START);
-				std::cout << "START"<< std::endl;
+				//std::cout << "START"<< std::endl;
 			}
 			if(keyState[SDL_SCANCODE_B]) {
 				pressedKey(SELECT);
-				std::cout << "SELECT"<< std::endl;
+				//std::cout << "SELECT"<< std::endl;
 			}
 			if(keyState[SDL_SCANCODE_S]) {
 				pressedKey(_B);
-				std::cout << "B"<< std::endl;
+				//std::cout << "B"<< std::endl;
 			}
 			if(keyState[SDL_SCANCODE_A]) {
 				pressedKey(_A);
-				std::cout << "A"<< std::endl;
+				//std::cout << "A"<< std::endl;
 			}
 			if(keyState[SDL_SCANCODE_DOWN]) {
 				pressedKey(DOWN);	
-				std::cout << "DOWN"<< std::endl;
+				//std::cout << "DOWN"<< std::endl;
 			}
 			if(keyState[SDL_SCANCODE_UP]) {
 				pressedKey(UP);
-				std::cout << "UP"<< std::endl;
+				//std::cout << "UP"<< std::endl;
 			}
 			if(keyState[SDL_SCANCODE_LEFT]) {
 				pressedKey(LEFT);
-				std::cout << "LEFT"<< std::endl;
+				//std::cout << "LEFT"<< std::endl;
 			}
 			if(keyState[SDL_SCANCODE_RIGHT]) {
 				pressedKey(RIGHT);
-				std::cout << "RIGHT"<< std::endl;
+				//std::cout << "RIGHT"<< std::endl;
 			}
 
 			if(!keyState[SDL_SCANCODE_SPACE]) {
@@ -268,7 +270,7 @@ void GameBoy::playGame(){
 				releasedKey(RIGHT);
 			}
 		} 
-	SDL_PumpEvents();
+	    SDL_PumpEvents();
 		//std::cout<<"--------------------------------------------\n";
 
 		BYTE instructionCycles = cpu.step();
@@ -278,9 +280,10 @@ void GameBoy::playGame(){
 		if(SDL_GetTicks() - displayTime > 20){
 			lcd.renderScreen(window, renderer);
 			displayTime = SDL_GetTicks();
-		}//		
+		}//	 	
 		cpu.addClockCycle(instructionCycles);
-		InterruptHandler::doInterrupt(&memory, &cpu);
+		if(InterruptHandler::doInterrupt(&memory, &cpu))
+		;	//lcd.renderScreen(window, renderer);
 		//timer.updateTimers(instructionCycles);
 		//sync();
 		//std::cerr << o++ << " ";

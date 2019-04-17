@@ -242,13 +242,13 @@ void Ppu::renderWindowLine(BYTE){
 }
 
 sprite Ppu::getSprite(BYTE spriteNum) {
-    WORD spriteAddr = 0xFE00;// + 4*spriteNum;
+    WORD spriteAddr = 0xFE00 + 4*spriteNum;
     sprite spriteInfo;
     spriteInfo.posY = memory->readByte(spriteAddr++);
     spriteInfo.posX = memory->readByte(spriteAddr++);
     spriteInfo.patternNum = memory->readByte(spriteAddr++);
     spriteInfo.attribs = memory->readByte(spriteAddr);
-
+    //std::cout<<"PatNumb: "<<std::hex<<(int)spriteInfo.patternNum<<std::endl;
     /* if(spriteInfo.patternNum == 58) {    
         std::cout<<"PosY: "<<std::hex<<(int)spriteInfo.posY<<std::endl;
         std::cout<<"PosX: "<<std::hex<<(int)spriteInfo.posX<<std::endl;
@@ -298,9 +298,9 @@ std::vector<std::vector<RGBColor>> Ppu::buildSprite(sprite t_sprite) {
     //if(t_sprite.patternNum == 0x58) {
         //std::cerr<<"\n"<<std::hex<<(int)t_sprite.patternNum<<" "<<pixelOfASprite.size()<<std::endl;
     //}
-    /* if(t_sprite.patternNum == 0x58) {
-        for(int i = 0 ; i < 8 ;++i){
-            for(int k = 0 ; k < 8 ;++k){
+    /* if(t_sprite.patternNum == 0x25) {
+        for(int i = 0; i < 8 ;++i){
+            for(int k = 0; k < 8 ;++k){
                 if(pixelOfASprite.at(i).at(k).r == 255){
                     std::cout << " ";
                 }
@@ -322,38 +322,39 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
     sprite spriteInfo;
     
     BYTE height = 8;
-    
+    //std::cout<<std::endl;   
     for(int i = 0; i < 40; ++i) {
         spriteInfo = Ppu::getSprite(i);
         spritePixels = Ppu::buildSprite(spriteInfo);
-     
+        //std::cout<<std::hex<<(int)spriteInfo.patternNum<<"\t";
         if(getLCDControlRegister() & 0x04) {    //sprite size is 8x16
             height = 16;
         }
 
         int startY = (int)(spriteInfo.posY) - 16;
         int startX = (int)(spriteInfo.posX) - 8;        
-        //int offsetSprite = ((int)spriteInfo.posY - 16) + ((int)spriteInfo.posX - 8);        
+        //int offsetSprite = ((int)spriteInfo.posY - 16) + ((int)spriteInfo.posX - 8);  
+           
         for(int j = 0; j < 8; ++j) {
 
-            /* if(spriteInfo.patternNum == 0x58) {
+            /* if(spriteInfo.patternNum == 0x25) {
                 if(((int)spritePixels.at(i).at(j).r/255) == 0)
                     std::cout<<"1 ";
                 else
                     std::cout<<"  ";
             } */
-         
+
             //check if the current scanline is inside the sprite (Y bounds)
             if((t_currentline >= startY) && (t_currentline < startY + height)) {     
                 //check if BG has priority on transparent pixels of the sprite
                 if(   isSpriteOnTop(spriteInfo.attribs) || 
-                    (!isSpriteOnTop(spriteInfo.attribs) && spritePixelPriority[startY + startX + i])) {
+                    (!isSpriteOnTop(spriteInfo.attribs) && spritePixelPriority[t_currentline*160 + startX + j])) {
                     //check if the new sprite has a higher color priority wrt the previous sprite drawn
-                    if(spritePixels.at(t_currentline % 8).at(j).r < RGBBuffer[t_currentline*160 + startX + j].r) { 
+                    //if(spritePixels.at(t_currentline % 8).at(j).r < RGBBuffer[t_currentline*160 + startX + j].r) { 
                 
                         RGBBuffer[t_currentline*160 + startX + j] = spritePixels.at(t_currentline % 8).at(j);
                 
-                    }
+                    //}
                 }            
             }
         }

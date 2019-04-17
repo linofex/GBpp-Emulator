@@ -51,16 +51,16 @@ void Cpu::printCpuState(){
     // std::cerr<< "H: "<< std::hex<< (int)getH() << "\t";
     // std::cerr<< "L: "<< std::hex<< (int)getL() << "\t";
     // std::cerr<< "F: "<< std::bitset<8>(getF()) << "\n";
-     std::cout<< "\nAF: "<< std::hex<< (int)getAF() << std::endl;
-     std::cout<< "BC: "<< std::hex<< (int)getBC() << std::endl;
-     std::cout<< "DE: "<< std::hex<< (int)getDE() << std::endl;
-     std::cout<< "HL: "<< std::hex<< (int)getHL() << std::endl;
-     std::cout<< "SP: "<< std::hex<< (int)getSP() << "\t";
-     std::cout<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
-     std::cout<< "0xFF44: "<< std::hex<< (int)mem->readByte(0xFF44) << std::endl;
-     std::cout<< "Opcode: "<< std::hex<< (int)opcode << std::endl;
-     //std::cout<< "Last Opcode: "<< std::hex<< (int)lastOpcode << std::endl;
-     std::cout<< "Instruction: "<< instrSet.at(opcode).name << std::endl;
+    std::cout<< "\nAF: "<< std::hex<< (int)getAF() << std::endl;
+    std::cout<< "BC: "<< std::hex<< (int)getBC() << std::endl;
+    std::cout<< "DE: "<< std::hex<< (int)getDE() << std::endl;
+    std::cout<< "HL: "<< std::hex<< (int)getHL() << std::endl;
+    std::cout<< "SP: "<< std::hex<< (int)getSP() << "\t";
+    std::cout<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
+    std::cout<< "0xFF44: "<< std::hex<< (int)mem->readByte(0xFF44) << std::endl;
+    std::cout<< "Opcode: "<< std::hex<< (int)opcode << std::endl;
+    //std::cout<< "Last Opcode: "<< std::hex<< (int)lastOpcode << std::endl;
+    std::cout<< "Instruction: "<< instrSet.at(opcode).name << std::endl;
      
     // std::cerr<< "0xFF44: "<< std::hex<< (int)getSP() << "\t";
     // std::cerr<< "\0xFF44: "<< std::hex<< (int)getPC()<< "\t";
@@ -72,31 +72,21 @@ void Cpu::printCpuState(){
 BYTE Cpu::step() {
     if(isHalted() ||  isStopped()){
         //std::cout << "HALT";
-        return 0;
+        return 100;
     }
-    if(isLastOpcode(0xFB)){  //EI
+   // std::cout<<"PC: "<<std::hex << (int)getPC()<< "\n";
+    opcode = Cpu::fetch();
+    
+    //std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
+    instruction instr = Cpu::decode(opcode);
+    // std::cout<< o <<std::endl;
+    BYTE ret = Cpu::execute(instr);
+    std::cout <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
+    //printCpuState();
+    if(isLastOpcode(0xFB) || isLastOpcode(0xD9)){  //EI and RETI sets interrupts one machine clock cycle after
         setIntMasterEnable();
     }
-    else if (isLastOpcode(0xF3)){ //DI
-        resetIntMasterEnable();
-    }
-    
-    //std::cout<<"PC: "<<std::hex << (int)getPC()<< "\n";
-    opcode = Cpu::fetch();
-    if(opcode == 0x76){
-         //std::cout<<"PAUSE\n";
-   //      system("PAUSE");
-    }
-  // std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
-    instruction instr = Cpu::decode(opcode);
-
-    
-        // std::cout<< o <<std::endl;
-    BYTE ret = Cpu::execute(instr);
-    //std::cout <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
-   //printCpuState();
-    
-   setLastOpcode(opcode);
+    setLastOpcode(opcode);
     return ret;
 }
 

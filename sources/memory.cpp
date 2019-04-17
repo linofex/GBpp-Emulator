@@ -36,14 +36,21 @@ void Memory::setJoypadStatus(BYTE t_joypadStatus){keyStatus = t_joypadStatus;}
 BYTE Memory::buildJoypadStatus(WORD t_add) const {
     BYTE joypad = ioPorts.at(t_add & 0x007F);
     BYTE keys = 0x00;
+    std::cout << "JOYPAD: "<< std::hex << (int)joypad << std::endl;
 
-    if((joypad & 0x30) == 32) {     //Select direction keys (select = 0)
+    if((joypad & 0x30) == 16) {     //Select direction keys (select = 0)
         keys = (keyStatus & 0x0F);
     }
     else {                          //Select button keys (select = 0)
         keys = (keyStatus >> 4);
     }
-    return (joypad & 0xF0) | keys;
+    BYTE status = (joypad & 0xF0) | keys;
+    std::cout << "STATUS: "<<  std::hex << (int)status << std::endl;
+    return status;
+}
+
+BYTE Memory::readf(){
+    return ioPorts.at(0xFF00 & 0x007F);
 }
 
 BYTE Memory::readByte(const WORD t_add) {
@@ -103,12 +110,12 @@ void Memory::writeByte(const WORD t_add, BYTE t_value){
     // ROM
     if(t_add < 0x8000 && !readOnlyRom){
         if(t_add == 0x02f0){
-            t_value = 0x76; //for tetris
+            //8t_value = 0x76; //for tetris
             //exit(1);
         }
 
         if(t_add == 0x0A98){
-           // t_value = 0xC9;
+           //t_value = 0xC9;
             //exit(1);
         }
         
@@ -124,20 +131,24 @@ void Memory::writeByte(const WORD t_add, BYTE t_value){
     }
     // external memory
     else if (t_add >= 0xA000 && t_add < 0xC000){
-         eRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
+        eRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
     }
     // work memory
     else if (t_add >= 0xC000 && t_add < 0xE000){
          //std::cout << "BG!: " << std::hex <<(int)t_value<< "\n";
-         wRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
+        wRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
+        echowRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
+         
     }
     // echo ram
     else if (t_add >= 0xE000 && t_add < 0xFE00){
-         eRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
+        echowRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
+        wRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
+         
     }
     // OAM
     else if (t_add >= 0xFE00 && t_add < 0xFEA0){
-         OAM[t_add & 0x00FF] = t_value; // from 0 to 159 (8KB)
+        OAM[t_add & 0x00FF] = t_value; // from 0 to 159 (8KB)
     }
     else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
       //std::cout << "[ERROR] MEMORY location not writable!\n";
@@ -151,13 +162,10 @@ void Memory::writeByte(const WORD t_add, BYTE t_value){
         if(t_add == 0xFF00){
             BYTE status = ioPorts.at(t_add & 0x007F);
             // std::cerr <<"\n\nSTATUS "<< std::hex << (int)status<< std::endl;
-            // std::cerr <<"\n\nJiiP "<< std::hex << (int)t_value<< std::endl;
-
-
-            status &= 0xCF;
-            t_value &= 0x30;
-            t_value |= status; 
-           // std::cerr <<"\n\nJP "<< std::hex << (int)t_value<< std::endl;
+            // std::cerr <<"\n\nJiiP "<< std::hex << (int)t_value<< std::endl; //     
+        }
+        if(t_add == IRR_ADD){
+            //std::cout << "SCRIvO: " << std::hex << (int)t_value;
         }
         // if(t_add == 0xFF44)
         //     std::cerr <<"CI SCRIV0 "<< std::hex << (int)t_value;

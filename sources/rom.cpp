@@ -21,12 +21,16 @@ Rom::Rom (const std::string t_RomFileName){
         ROMFile.seekg (0x00, ROMFile.beg); // Set the pointer at 0x100
         ROMFile.read((char*)game.data(), game.size());  // Read 4 bytes of Beginport
     }
-        else std::cout << "Unable to open file";
+    else std::cout << "Unable to open file";
 }
 
 
+BYTE Rom::getRomByte(BYTE t_currentRomBank, WORD t_addr){
+    return game.at(t_currentRomBank*0x4000 + t_addr);
+}
+
 void Rom::printRomName() const{
-    std::cout << "ROM name: ";
+    //std::cout << "ROM name: ";
     std::vector<BYTE>::const_iterator it = game.begin() + 0x0134;
     for (; it <= game.begin() + 0x0142; ++it){std::cout << *it;}
     std::cout << std::endl;

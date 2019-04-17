@@ -49,6 +49,7 @@ class Cpu;
             // this method writes one byte ad address t_add
             void writeByte(const WORD t_add, BYTE t_value);
             void setReadOnlyRom(){ readOnlyRom = true;}
+            BYTE readf(void);
             // this method writes 2 byte starting from t_add
             void writeWord(const WORD t_add, WORD t_value);
 

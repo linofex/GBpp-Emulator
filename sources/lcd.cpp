@@ -40,7 +40,6 @@ void Lcd::step(int cycles) {
     Lcd::setLCDStatus();
 
     if(!Lcd::isLCDEnabled()){
-    //std::cerr << "D";
         return;
     }
     else
@@ -51,8 +50,6 @@ void Lcd::step(int cycles) {
     
 
     unsigned char currentLine = Lcd::getScanline();
-   // std::cout << "*** CR ABILITATO **: "<<(int)currentLine << std::endl;
-
 
     if(remainingCycles <= 0) {
         remainingCycles = 456;
@@ -62,7 +59,6 @@ void Lcd::step(int cycles) {
             Lcd::setScanline(++currentLine);
         }
         else if(currentLine == 144) {   //VBLANK interrupt request
-            //std::cout<<"Interrupt VBLANK"<<std::endl;
             InterruptHandler::requestInterrupt(memory, VBLANK);
             Lcd::setScanline(++currentLine);
         }

@@ -37,7 +37,14 @@
             std::vector<BYTE> getNintendoLogo()const;
             std::vector<BYTE> getRomName()const;
             std::vector<BYTE> getRom()const{ return game; };
+            inline BYTE getRomBank() const {return game.at(0x147);}
+            BYTE getRomByte(BYTE, WORD);
+
             void printNintendoGraphic()const;
+
+            
+
+
             // void PrintBeginPoint() const;
             // void PrintRomSize()const;
             // void PrintRamSize()const;

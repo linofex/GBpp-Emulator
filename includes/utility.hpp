@@ -33,10 +33,10 @@ struct RGBColor{
 };
 
 //custom palette
-#define WHITE       {255, 255, 255}
-#define LIGHT_GREY  {224, 224, 224}
-#define DARK_GREY   {96, 96, 96}
-#define BLACK       {0, 0, 0}
+#define WHITE       {252, 232, 140}
+#define LIGHT_GREY  {220, 180, 92}
+#define DARK_GREY   {152, 124, 60}
+#define BLACK       {76, 60, 28}
 
 
 struct pixel{

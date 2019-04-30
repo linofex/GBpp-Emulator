@@ -23,17 +23,19 @@ class Ppu{
         inline bool isSpriteOnTop(BYTE t_attribs) {return ((t_attribs & 0x80) >> 7) == 0;}
         inline bool isFlippedX(BYTE t_attribs) {return (t_attribs & 0x20) >> 5;}
         inline bool isFlippedY(BYTE t_attribs) {return (t_attribs & 0x40) >> 6;}
-        inline BYTE getPaletteNum(BYTE t_attribs) {return ((t_attribs & 0x08) >> 4);}
+        inline BYTE getPaletteNum(BYTE t_attribs) {return ((t_attribs & 0x10) >> 4);}
 
         void fillLineOfTile(BYTE, int, BYTE, bool);
         void renderBGLine(BYTE);
         void renderWindowLine(BYTE);
         void renderSpriteLine(BYTE);
+        
         std::vector<RGBColor> toPixels(WORD, BYTE, bool);
         RGBColor getColorFromPaletteID(BYTE);
         RGBColor getRGBColor(BYTE, BYTE);
         sprite getSprite(BYTE);
         std::vector<std::vector<RGBColor>> buildSprite(sprite);
+        std::vector<RGBColor> getSpritePixelLine(sprite, BYTE);
         //std::vector<RGBColor> flipY(std::vector<RGBColor>);
 
     public:

@@ -17,7 +17,7 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
 	
     memory.linkTimer(&timer);
 
-	targetOldTime = (double)(1000.0*cpu.getClockCycles())/(4194304);//TARGETPERIOD * 0; // 0
+	targetOldTime = (double)(1000.0*cpu.getClockCycles())/(4194304); //TARGETPERIOD * 0; // 0
 	hostOldTime = SDL_GetPerformanceCounter();
 	hostFrequency = SDL_GetPerformanceFrequency();
 
@@ -57,161 +57,13 @@ void GameBoy::releasedKey(BYTE t_key){
 
 // This method gets user inputs
 void GameBoy::userInput() {
-	SDL_PollEvent(&event);
-	switch (event.type)	{
-		case (SDL_QUIT):
-			turnOff();
-		case (SDL_KEYDOWN):
-			switch (event.key.keysym.sym){
-				case (SDLK_8):
-					SDL_DestroyRenderer(renderer);
-					SDL_DestroyWindow(window);
-					SDL_Quit();
-					exit(1);
-					break;
-				case(SDLK_RIGHT):
-					pressedKey(RIGHT);
-					break;
-				case(SDLK_LEFT):
-					pressedKey(LEFT);
-					break;
-				case(SDLK_UP):
-					pressedKey(UP);
-					break;
-				case(SDLK_DOWN):
-					pressedKey(DOWN);
-					break;
-				case(SDLK_a):		//a
-					pressedKey(_A);
-					break;
-				case(SDLK_s): 		//b
-					pressedKey(_B);
-					break;
-				case(SDLK_b): 		//select
-					pressedKey(SELECT);
-					break;
-				case(SDLK_SPACE):	//start
-					pressedKey(START);
-					break;
-				default:
-					break;
-			}
-
-		case (SDL_KEYUP):
-			switch (event.key.keysym.sym){
-				case(SDLK_RIGHT):
-					releasedKey(RIGHT);
-					break;
-				case(SDLK_LEFT):
-					releasedKey(LEFT);
-					break;
-				case(SDLK_UP):
-					releasedKey(UP);
-					break;
-				case(SDLK_DOWN):
-					releasedKey(DOWN);
-					break;
-				case(SDLK_a):		//a
-					releasedKey(_A);
-					break;
-				case(SDLK_s): 		//b
-					releasedKey(_B);
-					break;
-				case(SDLK_b): 		//select
-					releasedKey(SELECT);
-					break;
-				case(SDLK_SPACE):	//start
-					releasedKey(START);
-					break;
-				default:
-					break;
-				}
-	}
-}
-
-void GameBoy::initSDL(){
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
-
-	//get the current display resolution
-	SDL_DisplayMode current;
-	int result = SDL_GetCurrentDisplayMode(0, &current);
-	if(result != 0) {
-		//SDL_Log("Could not get display mode for video display #%d: %s", SDL_GetError());
-	}
-	else {
-		//SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", current.w, current.h, current.refresh_rate);
-	}
-	//scaling keeps the ratio 160/144
-	int sizeX = current.w/2;// - 800;
-	int sizeY = sizeX*SCREEN_HEIGHT/SCREEN_WIDTH;
-	//std::cerr<<"Display size is "<<sizeX<<"x"<<sizeY<<"px\n";
-	
-	//SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
-	window = SDL_CreateWindow("Gbb-Emulator",
-                        SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED, 
-						sizeX, sizeY, 
-                        //WINDOW_WIDTH,WINDOW_HEIGHT,
-                        0);
-
-    /* We must call SDL_CreateRenderer in order for draw calls to affect this window. */
-	renderer = SDL_CreateRenderer(window, -1, 0);
-	//SDL_Log("Display #%d: new display mode is %dx%dpx @ %dhz.", sizeX, sizeY, current.refresh_rate);
-
-	//SDL_RenderSetScale(renderer, 160,144);
-    SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 254, 0);
-    SDL_RenderClear(renderer);
-	SDL_RenderPresent(renderer);
-
-	keyState = SDL_GetKeyboardState(NULL);
-
-	return;
-}
-
-// This method loads the game in the ROM memory if all checks are correct
-bool GameBoy::loadGame(){
-	
-	if(checkCartridge()){
-		std::vector<BYTE> game(rom.getRom());
-		WORD address = 0x0000;
-		std::vector<BYTE>::iterator it = game.begin();
-		int counter = 0;
-		for(; it != game.end() ; ++it){
-			if(address < 0x8000){			
-				memory.writeByte(address++, *it);
-				// std::cout << std::setfill('0') << std::setw(2) <<  std::hex << (int)*it;
-				// if(++counter % 16 == 0){
-				// 	std::cout << "\n";
-				// }
-			}
-			else{
-				std::cerr<< "Not enough memory";
-				return false;
-			}
-		}
-		memory.setReadOnlyRom();
-		return true;
-	}  
-	return false;
-}
-
-void GameBoy::playGame(){
-	WORD pp = 0x101;
-
-	//std::cerr << "dammi un pc: ";
-	//std::cin >> std::hex >> pp;
-	
-	bool flag = false;
-	for(;;){
-		//userInput();
-		SDL_Event e;	
+	SDL_Event e;	
 		SDL_PumpEvents();
 		while((SDL_PollEvent(&e)) != 0) {
-			if(keyState[SDL_SCANCODE_8]) {
+			if(keyState[SDL_SCANCODE_Q]) {
 				//std::cout << "OFF"<< std::endl;
 				turnOff();
 			}
-
 			if(keyState[SDL_SCANCODE_SPACE]) {
 				pressedKey(START);
 				//std::cout << "START"<< std::endl;
@@ -271,21 +123,94 @@ void GameBoy::playGame(){
 			}
 		} 
 	    SDL_PumpEvents();
-		//std::cout<<"--------------------------------------------\n";
+}
 
+void GameBoy::initSDL(){
+    SDL_Init(SDL_INIT_VIDEO);
+
+	//get the current display resolution
+	SDL_DisplayMode current;
+	int result = SDL_GetCurrentDisplayMode(0, &current);
+	if(result != 0) {
+		//SDL_Log("Could not get display mode for video display #%d: %s", SDL_GetError());
+	}
+	else {
+		//SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", current.w, current.h, current.refresh_rate);
+	}
+	//scaling keeps the ratio 160/144
+	int sizeX = current.w/2;// - 800;
+	int sizeY = sizeX*SCREEN_HEIGHT/SCREEN_WIDTH;
+	//std::cerr<<"Display size is "<<sizeX<<"x"<<sizeY<<"px\n";
+	
+	//SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+	window = SDL_CreateWindow("Gbb-Emulator",
+                        SDL_WINDOWPOS_CENTERED , SDL_WINDOWPOS_CENTERED, 
+						sizeX, sizeY, 
+                        //WINDOW_WIDTH,WINDOW_HEIGHT,
+                        0);
+
+    /* We must call SDL_CreateRenderer in order for draw calls to affect this window. */
+	renderer = SDL_CreateRenderer(window, -1, 0);
+	//SDL_Log("Display #%d: new display mode is %dx%dpx @ %dhz.", sizeX, sizeY, current.refresh_rate);
+
+	//SDL_RenderSetScale(renderer, 160,144);
+    SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
+	SDL_RenderPresent(renderer);
+
+	keyState = SDL_GetKeyboardState(NULL);
+
+	return;
+}
+
+// This method loads the game in the ROM memory if all checks are correct
+bool GameBoy::loadGame(){
+	if(checkCartridge()){
+		std::vector<BYTE> game(rom.getRom());
+		WORD address = 0x0000;
+		std::vector<BYTE>::iterator it = game.begin();
+		int counter = 0;
+		for(; it != game.end() ; ++it){
+			if(address < 0x8000){			
+				memory.writeByte(address++, *it);
+				// std::cout << std::setfill('0') << std::setw(2) <<  std::hex << (int)*it;
+				// if(++counter % 16 == 0){
+				// 	std::cout << "\n";
+				// }
+			}
+			else{
+				std::cerr<< "Not enough memory";
+				return false;
+			}
+		}
+		memory.setReadOnlyRom();
+		return true;
+	}  
+	return false;
+}
+
+void GameBoy::playGame(){
+	//WORD pp = 0x101;
+	//std::cerr << "dammi un pc: ";
+	//std::cin >> std::hex >> pp;
+	bool flag = false;
+
+	for(;;){
+		userInput();
 		BYTE instructionCycles = cpu.step();
 		//instructionCycles *=2;
 		lcd.step(instructionCycles);
 		
 		if(SDL_GetTicks() - displayTime > 20){
-			lcd.renderScreen(window, renderer);
-			displayTime = SDL_GetTicks();
-		}//	 	
+		  	//lcd.renderScreen(window, renderer);
+		 	displayTime = SDL_GetTicks();
+		 }//	 	
 		cpu.addClockCycle(instructionCycles);
 		if(InterruptHandler::doInterrupt(&memory, &cpu))
-		;	//lcd.renderScreen(window, renderer);
+			lcd.renderScreen(window, renderer);
 		//timer.updateTimers(instructionCycles);
-		//sync();
+		sync();
 		//std::cerr << o++ << " ";
 		//o++;
 		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
@@ -304,7 +229,6 @@ void GameBoy::playGame(){
 //getchar();			// //std::cerr << " BOOM " << o;
 			// //std::cerr << (int)cpu.getPC();
 		//}
-
 	}
 }
 
@@ -366,7 +290,7 @@ void GameBoy::sync(){
 		
     if(timeDifference > 2.0) {    //2 ms
 		//std::cerr<<"HITT!!  The diff is: "<<'\t'<< (long double)(timeDifference)<<std::endl;
-	    //Sleep(timeDifference); // sleep 
+	    usleep(timeDifference); // sleep 
 		hostOldTime =  SDL_GetPerformanceCounter();
    		targetOldTime = targetNewTime;//(double)(1000.0*cpu.getClockCycles())/(4194304);	
 		/*std::cout<<"The host updated time: "<<'\t'<<hostOldTime<<std::endl;

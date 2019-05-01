@@ -45,18 +45,15 @@ bool InterruptHandler::doInterrupt(Memory* t_memory, Cpu* t_cpu){
         // if(t_cpu->getInstrSetAt(t_cpu->getPC()).name == "HALT"){
         //     t_cpu->incPC();
         // }
-        //std::cout << "\n**enabled\n";
-        //std::cerr<< std::hex << (int)ier << std::endl;
-        //std::cout << std::hex << (int)irr << std::endl;
+
         /* If the interrupt is enabled AND the interrupt is requested --> ServeInterrupt */
         /*          IN ORDER OF PRIORITY            */
-        if(ier & VBLANK & irr)  {/* std::cout << "INT\n"; */serveInterrupt(VBLANK, t_memory, t_cpu); return true;} // Higher priority
-        if(ier & LCD & irr)     {/* std::cout << "INT\n"; */serveInterrupt(LCD, t_memory, t_cpu); return false;}
-        if(ier & TIMER & irr)   {/*std::cout << "INT\n";*/serveInterrupt(TIMER, t_memory, t_cpu); return false;}
-        if(ier & JOYPAD & irr)  {std::cerr << "JOYPAD\n";serveInterrupt(JOYPAD, t_memory, t_cpu); return false;}   
+        if(ier & VBLANK & irr)  {/* std::cout << "INT\n"; */    serveInterrupt(VBLANK, t_memory, t_cpu); return true;} // Higher priority
+        if(ier & LCD & irr)     {/* std::cout << "INT\n"; */    serveInterrupt(LCD, t_memory, t_cpu); return false;}
+        if(ier & TIMER & irr)   {/*std::cout << "INT\n";*/      serveInterrupt(TIMER, t_memory, t_cpu); return false;}
+        if(ier & JOYPAD & irr)  {/*std::cerr << "JOYPAD\n";*/   serveInterrupt(JOYPAD, t_memory, t_cpu); return false;}   
     }
     else{
-        //std::cout << "\ndisabled\n";
         if (t_cpu->isHalted() && ((ier & irr) > 0)) {
                 t_cpu->resethalt();
             }
@@ -67,7 +64,5 @@ bool InterruptHandler::doInterrupt(Memory* t_memory, Cpu* t_cpu){
 
 void InterruptHandler::requestInterrupt(Memory* t_mem, const BYTE t_interrupt){
     BYTE irr = t_mem->readByte(IRR_ADD);          // Read Interrupt Request Reister from memory at 0x0FF0F
-    //std::cout << "REQQ"<<std::hex << (int)(irr | t_interrupt) << std::endl;
-    t_mem->writeByte(IRR_ADD, irr | t_interrupt); // Set the Interrupt flag to 1, since requested
-    
+    t_mem->writeByte(IRR_ADD, irr | t_interrupt); // Set the Interrupt flag to 1, since requested    
 }

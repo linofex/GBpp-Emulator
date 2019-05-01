@@ -80,15 +80,17 @@ void Lcd::setLCDStatus() {
 
     unsigned char oldMode = Lcd::getLCDMode();
 
-    if(remainingCycles < 204)
-        Lcd::setLCDMode(MODE0);
-    else if(remainingCycles < 376)
-        Lcd::setLCDMode(MODE3);
-    else if(remainingCycles < 456)
-        Lcd::setLCDMode(MODE2);
-    
     if(Lcd::getScanline() >= 144 && Lcd::getScanline() <= 153)
         Lcd::setLCDMode(MODE1);
+    else{
+        if(remainingCycles < 204)
+            Lcd::setLCDMode(MODE0);
+        else if(remainingCycles < 376)
+            Lcd::setLCDMode(MODE3);
+        else if(remainingCycles < 456)
+            Lcd::setLCDMode(MODE2);
+    }
+    
     
     unsigned char newMode = Lcd::getLCDMode();
 

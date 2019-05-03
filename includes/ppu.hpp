@@ -30,12 +30,12 @@ class Ppu{
         void renderWindowLine(BYTE);
         void renderSpriteLine(BYTE);
         
-        std::vector<RGBColor> toPixels(WORD, BYTE, bool);
+        RGBColor toPixels(WORD, BYTE, bool, int);
         RGBColor getColorFromPaletteID(BYTE);
         RGBColor getRGBColor(BYTE, BYTE);
         sprite getSprite(BYTE);
-        std::vector<std::vector<RGBColor>> buildSprite(sprite);
-        std::vector<RGBColor> getSpritePixelLine(sprite, BYTE);
+        //std::vector<std::vector<RGBColor>> buildSprite(sprite);
+        RGBColor getSpritePixel(sprite, BYTE, int);
         //std::vector<RGBColor> flipY(std::vector<RGBColor>);
 
     public:

@@ -295,7 +295,7 @@ void GameBoy::sync(){
 		
     if(timeDifference > 2.0) {    //2 ms
 		//std::cerr<<"HITT!!  The diff is: "<<'\t'<< (long double)(timeDifference)<<std::endl;
-	    usleep(timeDifference*1000); // sleep 
+	    //usleep(timeDifference*1000); // sleep 
 		hostOldTime =  SDL_GetPerformanceCounter();
    		targetOldTime = targetNewTime;//(double)(1000.0*cpu.getClockCycles())/(4194304);	
 		/*std::cout<<"The host updated time: "<<'\t'<<hostOldTime<<std::endl;

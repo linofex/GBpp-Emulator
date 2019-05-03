@@ -70,8 +70,12 @@ void Cpu::printCpuState(){
     std::cout << "IRR: " << std::hex<< (int)mem->readByte(IRR_ADD) << std::endl;
     std::cout << "LCDCONTROL: " << std::hex<< (int)mem->readByte(LCDCONTROL) << std::endl;
     std::cout << "LCDSTATUS: " << std::hex<< (int)mem->readByte(LCDSTATUS) << std::endl;
-    std::cout << "LCDLY: " << std::hex<< (int)mem->readByte(LCDLY) << std::endl;
+    std::cout << "SCANLINE: " << std::hex<< (int)mem->readByte(LCDLY) << std::endl;
     std::cout << "LCDLYC: " << std::hex<< (int)mem->readByte(LCDLYC) << std::endl;
+
+    std::cout << "SCROLLX: " << std::hex<< (int)mem->readByte(SCROLLX) << std::endl;
+    std::cout << "SCROLLY: " << std::hex<< (int)mem->readByte(SCROLLY) << std::endl;
+
 
     std::cout << "INTERRUPTS: " << ((isIntMasterEnable() == true) ? "ENABLED" : "DISAABLED") <<  std::endl;
 

@@ -202,29 +202,34 @@ void GameBoy::playGame(){
 		//instructionCycles *=2;
 		lcd.step(instructionCycles);
 		
-		if(SDL_GetTicks() - displayTime > 20){
-		  	//lcd.renderScreen(window, renderer);
-		 	displayTime = SDL_GetTicks();
-		 }//	 	
+		//if(SDL_GetTicks() - displayTime > 900){
+		    //lcd.renderScreen(window, renderer);
+		  	//displayTime = SDL_GetTicks();
+		//}	 	
 		cpu.addClockCycle(instructionCycles);
 		if(InterruptHandler::doInterrupt(&memory, &cpu))
 			lcd.renderScreen(window, renderer);
-		//timer.updateTimers(instructionCycles);
-		sync();
+		timer.updateTimers(instructionCycles);
+		//sync();
 		//std::cerr << o++ << " ";
-		//o++;
+		//std::cout<< o++ << "  ";
 		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
-		//if(cpu.getPC() == pp) { //|| flag == true){
-		//	flag = true;
-		//	flag = false;
-			
-			//ppu.fillLineOfTileDB(0x8010);
-			//getchar();	
-			//cpu.printCpuState();
-			//system("PAUSE");
-			//sstd::cerr <<"\npop6: "<<std::hex <<(int)cpu.readByte(0xFFFF);
-			//std::cerr <<"metti pc: ";
-			//std::cin >> std::hex >> pp;
+		//if(cpu.getPC() == 0x26f){
+		//if(++o == 269596 ) { //|| flag == true){
+		
+		// //	flag = true;
+		// //	flag = false;
+		// 	std::string pp;
+		// 	//ppu.fillLineOfTileDB(0x8010);
+		// 	//getchar();	
+		 //	cpu.printCpuState();
+		//	getchar();
+		//}
+		// // 	//system("PAUSE");
+		// 	//sstd::cerr <<"\npop6: "<<std::hex <<(int)cpu.readByte(0xFFFF);
+		// 	std::cerr <<"metti pc: ";
+		// 	std::cin >> std::hex >> pp;
+		// }
 	
 //getchar();			// //std::cerr << " BOOM " << o;
 			// //std::cerr << (int)cpu.getPC();
@@ -290,7 +295,7 @@ void GameBoy::sync(){
 		
     if(timeDifference > 2.0) {    //2 ms
 		//std::cerr<<"HITT!!  The diff is: "<<'\t'<< (long double)(timeDifference)<<std::endl;
-	    usleep(timeDifference); // sleep 
+	    usleep(timeDifference*1000); // sleep 
 		hostOldTime =  SDL_GetPerformanceCounter();
    		targetOldTime = targetNewTime;//(double)(1000.0*cpu.getClockCycles())/(4194304);	
 		/*std::cout<<"The host updated time: "<<'\t'<<hostOldTime<<std::endl;

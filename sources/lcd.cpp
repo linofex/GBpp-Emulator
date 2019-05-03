@@ -138,18 +138,18 @@ bool Lcd::testCoincidence(){
 }
 
 void Lcd::renderScreen(SDL_Window* t_window, SDL_Renderer* t_renderer) {
-    std::vector<RGBColor> buffer = ppu->getRGBBuffer();
+    const std::vector<RGBColor>* buffer = ppu->getRGBBuffer();
     RGBColor color;
     for (int i = 0; i < SCREEN_HEIGHT ; ++i){
         for(int j= 0; j< SCREEN_WIDTH;++j){
-           color =  buffer[i*SCREEN_WIDTH + j];
+           color =  buffer->at(i*SCREEN_WIDTH + j);
           //  std::cout<<"\n R:" << (int)color.r <<" G:" << (int)color.g <<" B:" << (int)color.b <<std::endl;
 
           //SDL_SetRenderDrawColor(t_renderer, rand()/255, rand()/255, rand()/255,255);
            SDL_SetRenderDrawColor(t_renderer, (Uint8)color.r, (Uint8)color.g, (Uint8)color.b, 255);
            SDL_RenderDrawPoint(t_renderer, j, i);
         }
-         //SDL_RenderPresent(t_renderer);
+       //SDL_RenderPresent(t_renderer);
     }
     SDL_RenderPresent(t_renderer);
     //getchar();

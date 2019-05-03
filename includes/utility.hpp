@@ -1,6 +1,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <iostream>
+
 typedef unsigned char BYTE; // 8bit unsigned
 typedef unsigned short WORD; // 16bit unsigned
 

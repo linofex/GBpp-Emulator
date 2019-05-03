@@ -18,7 +18,7 @@ void Ppu::renderLine(BYTE t_currentline){
     //}
     
     if(LCDcontrolRegister & 0x20){ //bit 5
-       // renderWindowLine();
+       //renderWindowLine(t_currentline);
         //std::cout<< "WINDOW\n";
     }
     if(LCDcontrolRegister & 0x02){ //bit 1
@@ -145,7 +145,7 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
         // std::cout << std::endl;
         //compute colors returns pixels
         // fill in buffer using counterline and i
-        int offsetTile = t_currentline*160 + i*8;
+        int offsetTile =  t_currentline*160 + i*8;
         
         // //std::cout << (offset)<< " *";
         for(int l = 0; l < 8; ++l){
@@ -199,7 +199,6 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
 } */
 
 void Ppu::renderBGLine(BYTE t_currentline){
-    // CI VUOLE ANCHE LA SCANLINEEEE
     BYTE scrollY = getScrollY() >> 3;
     BYTE scrollX = getScrollX() >> 3;  
     BYTE LCDcontrolRegister = getLCDControlRegister();    
@@ -210,21 +209,14 @@ void Ppu::renderBGLine(BYTE t_currentline){
     for(int i = 0; i < SCREEN_WIDTH/8 ; ++i){
         if((LCDcontrolRegister & 0x10) && (t_currentline >= getWindowY()) && (i > (getWindowX() - 7)/8)){
            // return;
+           //continue;
+
+           // TO FIX
         }
-        offset = ((scrollY/8 + (int)t_currentline/8)%32)*32 + ((scrollX/8 + i)%32);
+        offset = ((scrollY + (int)t_currentline/8)%32)*32 + ((scrollX + i)%32);
         tileID = memory->readByte(BGMemoryStart + offset);
-        //if(t_currentline % 8 == 0) {
-            //std::cout <<std::hex<<(int) tileID<<" ";
-            //getchar();//system("PAUSE");
-        //}
-        //std::cout << "Tile ID: "<< std::hex<< (int)tileID << "\t" << "memory address: "<< std::hex<< (int)(BGMemoryStart + i )<< "\n";
-        fillLineOfTile(tileID, i, t_currentline, 0); //0 = tileID;
+        fillLineOfTile(tileID, i, t_currentline, 0); //0 = tile, 1 = sprite;
     }
-    //if(t_currentline % 8 == 0)
-        //std::cout<<std::endl;
-
-    // increase scrollX e scrollY? quando? secondo me no va fatt noi
-
 }
 
 void Ppu::renderWindowLine(BYTE){
@@ -271,20 +263,26 @@ std::vector<RGBColor> Ppu::getSpritePixelLine(sprite t_sprite, BYTE t_currentlin
     std::vector<RGBColor> pixelOfASpriteLine;
     WORD lineOfASprite;
     WORD spriteStartAddr = 0x8000 + 16*t_sprite.patternNum;
-
-    if(getLCDControlRegister() & 0x04) {    //sprite size is 8x16
-        height = 16;
-    }
     bool flipOnX = isFlippedX(t_sprite.attribs);
     bool flipOnY = isFlippedY(t_sprite.attribs);
-
     WORD offset;
-    if(flipOnY) {
-        offset = 2*(7 - (t_currentline % 8));
+
+    if(getLCDControlRegister() & 0x04) {    //sprite size is 8x16
+        offset = (t_sprite.posY - t_currentline);
+         if(!flipOnY) {
+        // std::cout << (int)t_sprite.patternNum << "   ";
+            offset = (16 - offset);
+        }
+    }   
+    else{
+        offset = t_currentline % 8;
+        if(flipOnY) {
+        // std::cout << (int)t_sprite.patternNum << "   ";
+        offset = (7 - offset);
+        }
     }
-    else {
-        offset = 2*(t_currentline % 8);
-    }
+     
+    offset *= 2;
 
     lineOfASprite = (memory->readByte(spriteStartAddr + offset)<<8) + (memory->readByte(spriteStartAddr + offset + 1));
     pixelOfASpriteLine = toPixels(lineOfASprite, getPaletteNum(t_sprite.attribs), flipOnX);
@@ -302,7 +300,7 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
     for(int i = 0; i < 40; ++i) {
         spriteInfo = Ppu::getSprite(i);
         //spritePixels = Ppu::buildSprite(spriteInfo);
-        spritePixelsLine = Ppu::getSpritePixelLine(spriteInfo, t_currentline);
+       
         //std::cout<<std::hex<<(int)spriteInfo.patternNum<<"\t";
         if(getLCDControlRegister() & 0x04) {    //sprite size is 8x16
             height = 16;
@@ -314,7 +312,8 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
            
         for(int j = 0; j < 8; ++j) {
             //check if the current scanline is inside the sprite (Y bounds)
-            if((t_currentline >= startY) && (t_currentline < startY + height)) {     
+            if((t_currentline >= startY) && (t_currentline < startY + height)) { 
+                 spritePixelsLine = Ppu::getSpritePixelLine(spriteInfo, t_currentline);    
                 //check if BG has priority on transparent pixels of the sprite
                 if(isSpriteOnTop(spriteInfo.attribs) || 
                   (!isSpriteOnTop(spriteInfo.attribs) && RGBBuffer[t_currentline*160 + startX + j].r == 0xFC)) {

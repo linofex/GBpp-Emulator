@@ -41,7 +41,7 @@ class Ppu{
     public:
         Ppu(Memory*);
         void renderLine(BYTE);
-        inline std::vector<RGBColor> getRGBBuffer(void) const {return RGBBuffer;}
+        inline const std::vector<RGBColor>* getRGBBuffer(void) const {return &RGBBuffer;}
         void fillLineOfTileDB(WORD);
 
 

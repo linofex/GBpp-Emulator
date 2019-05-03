@@ -56,9 +56,10 @@ void Timer::stepDivider(unsigned long t_cycles) {
     
     if(dividerCounter >= 0xFF) {   //next is an overflow (255)
         dividerCounter = 0x00;
-        memory->writeByte(DIVIDER, dividerCounter);
+        memory->writeByte(DIVIDER, memory->readByte(DIVIDER) + 1); // the emulator cannot do this..
     }
 }
+
 
 void Timer::stepTimer(unsigned long t_cycles) {
     if(!isTimerOn())
@@ -73,6 +74,8 @@ void Timer::stepTimer(unsigned long t_cycles) {
             BYTE tma = memory->readByte(TMA);
             memory->writeByte(TIMA, tma);
             InterruptHandler::requestInterrupt(memory, TIMER); //send timer interrupt
+            std::cout << "\ninterrupt\n";
+
         } else {            //increment the counter
             memory->writeByte(TIMA, tima + 1);
         }

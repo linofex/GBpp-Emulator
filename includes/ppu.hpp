@@ -6,7 +6,7 @@
 class Ppu{
     private:
         Memory* memory;
-        std::vector<bool> spritePixelPriority;
+        std::vector<pixelInfo> pixelInfoBuffer;
         std::vector<RGBColor> RGBBuffer;
         
         
@@ -30,12 +30,13 @@ class Ppu{
         void renderWindowLine(BYTE);
         void renderSpriteLine(BYTE);
         
-        RGBColor toPixels(WORD, BYTE, bool, int);
+        pixel toPixels(WORD, BYTE, bool, int);
         RGBColor getColorFromPaletteID(BYTE);
         RGBColor getRGBColor(BYTE, BYTE);
         sprite getSprite(BYTE);
         //std::vector<std::vector<RGBColor>> buildSprite(sprite);
-        RGBColor getSpritePixel(sprite, BYTE, int);
+        pixel getSpritePixel(sprite, BYTE, int);
+        bool checkBufferPriority(BYTE, pixelInfo, pixelInfo);
         //std::vector<RGBColor> flipY(std::vector<RGBColor>);
 
     public:

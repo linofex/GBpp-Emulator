@@ -9,7 +9,7 @@ void Ppu::renderLine(BYTE t_currentline){
     bufferY = t_currentline;
     BYTE LCDcontrolRegister = getLCDControlRegister();
     if(LCDcontrolRegister & 0x01){ // bit 0
-        renderBGLine(t_currentline);
+        renderBGWindowLine(t_currentline);
         //std::cout<< "BG--------\n";
     }
     else{
@@ -110,7 +110,7 @@ RGBColor Ppu::getColorFromPaletteID(BYTE t_paletteID) {
     }     
 }
 
-void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){    //type = 0 -> BG, type = 1 -> Sprite
+void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, sourceType t_type){    //type = 0 -> BG, type = 1 -> Sprite
     BYTE controlRegister = getLCDControlRegister();
     WORD lineOfATile;
     signed char signedTileID;
@@ -127,15 +127,10 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
 
     BYTE posY = getScrollY();
     BYTE posX = getScrollX();
-    if(t_type) {    //it is window
+    if(t_type == WN) {    //it is window
         posY = getWindowY();
         posX = getWindowX() - 7;
-
-        //std::cout<<std::hex<<(int)(startAddress + ((posY + t_currentline)% 8)*2 + offset)<<std::endl;
     }
-
-    if((startAddress + ((posY + t_currentline)% 8)*2 + offset) == 0x9070)
-        ;//std::cout<<"OFgfhdf"<<std::endl;
 
     lineOfATile = memory->readWord(startAddress + ((posY + t_currentline)% 8)*2 + offset); //16B = tile dimension
     pixel p = toPixels(lineOfATile, 2, false, (i + posX)%8);
@@ -182,7 +177,7 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, bool t_type){
     // std::cout << std::endl;
 }
 
-void Ppu::renderBGLine(BYTE t_currentline){
+void Ppu::renderBGWindowLine(BYTE t_currentline){
     BYTE scrollY = getScrollY();// >> 3;
     BYTE scrollX = getScrollX();// >> 3;  
     BYTE LCDcontrolRegister = getLCDControlRegister();    
@@ -197,36 +192,21 @@ void Ppu::renderBGLine(BYTE t_currentline){
 
     for(int i = 0; i < SCREEN_WIDTH; ++i){
         if((LCDcontrolRegister & 0x20) && (t_currentline >= windowY) && (i >= windowX)){
-        
-            //if((t_currentline >= windowY*8) && (i > windowX) && (i < 20)){ 
-            //offset = windowY*32 + (windowX + i);// % 32;
-            offset = (((BYTE)(32 + windowY + t_currentline))/8)*32 + (((BYTE)(0 + windowX + i))/8);
+            offset = (((BYTE)(t_currentline - windowY))/8)*32 + (((BYTE)(i - windowX))/8);
             tileID = memory->readByte(windowMemoryStart + offset);
-            /* if(t_currentline == 112) {
-                std::cout<<"scrollX: "<<std::hex<<(int) scrollX<<std::endl;
-                std::cout<<"scrollY: "<<std::hex<<(int) scrollY<<std::endl;
-                
-                std::cout<<"windowX: "<<std::hex<<(int) windowX<<std::endl;
-                std::cout<<"windowY: "<<std::hex<<(int) windowY<<std::endl;
-                
-                std::cout<<"currentline: "<<std::hex<<(int) t_currentline<<std::endl;
-                std::cout<<"offset: "<<std::hex<<(int) (windowMemoryStart+offset)<<std::endl;
-            } */
-            fillLineOfTile(tileID, i, t_currentline, true);
-            //}
+
+            fillLineOfTile(tileID, i, t_currentline, WN);
         
-            continue;
-        
+            continue;        
         }
 
         offset = (((BYTE)(scrollY + t_currentline))/8)*32 + (((BYTE)(scrollX + i))/8);
-        //offset = ((scrollY/8 + (int)t_currentline/8)%32)*32 + ((scrollX/8 + i)%32);
         tileID = memory->readByte(BGMemoryStart + offset);
-        fillLineOfTile(tileID, i, t_currentline, 0); //0 = tile, 1 = window;
+        fillLineOfTile(tileID, i, t_currentline, BG);
     }
 }
 
-void Ppu::renderWindowLine(BYTE t_currentline){
+/* void Ppu::renderWindowLine(BYTE t_currentline){
     BYTE windowY = getWindowY() >> 3;
     BYTE windowX = (getWindowX() - 7) >> 3;
     BYTE windowMemoryStart = (getLCDControlRegister() & 0x40) ? 0x9C00 : 0x9800;
@@ -241,7 +221,7 @@ void Ppu::renderWindowLine(BYTE t_currentline){
         }
     }
 
-}
+} */
 
 sprite Ppu::getSprite(BYTE spriteNum) {
     WORD spriteAddr = 0xFE00 + 4*spriteNum;

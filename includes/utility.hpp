@@ -40,7 +40,7 @@ struct RGBColor{
 #define DARK_GREY   {152, 124, 60}
 #define BLACK       {76, 60, 28}
 
-enum sourceType {BG, SP};
+enum sourceType {BG, SP, WN};
 struct pixelInfo {
     BYTE colorID;
     sourceType type;

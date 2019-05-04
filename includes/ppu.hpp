@@ -25,9 +25,9 @@ class Ppu{
         inline bool isFlippedY(BYTE t_attribs) {return (t_attribs & 0x40) >> 6;}
         inline BYTE getPaletteNum(BYTE t_attribs) {return ((t_attribs & 0x10) >> 4);}
 
-        void fillLineOfTile(BYTE, int, BYTE, bool);
-        void renderBGLine(BYTE);
-        void renderWindowLine(BYTE);
+        void fillLineOfTile(BYTE, int, BYTE, sourceType);
+        void renderBGWindowLine(BYTE);
+        //void renderWindowLine(BYTE);
         void renderSpriteLine(BYTE);
         
         pixel toPixels(WORD, BYTE, bool, int);

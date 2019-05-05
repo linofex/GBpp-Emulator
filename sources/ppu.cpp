@@ -55,7 +55,14 @@ pixel Ppu::toPixels(WORD t_lineOfTile, BYTE t_palette, bool flipX, int i){
         BYTE lsb = (data0 & (1 << k)) >> k;
         BYTE msb = (data1 & (1 << k)) >> k;
         //RGBColor rgb = getRGBColor(((msb << 1) + lsb) >> 2*i);
-        BYTE b = (msb << 1) + lsb;
+        BYTE b;
+        //If is a sprite I have to change the bits (I do not why, but it works)
+        if(t_palette < 2){
+             b = (lsb<< 1) + msb;
+        }
+        else{       
+            b  = (msb << 1) + lsb;
+        }
         RGBColor rgb = getRGBColor(b, palette);
 
         //to keep the information about the current item on the screen
@@ -256,7 +263,6 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
 
 
 bool Ppu::checkBufferPriority(BYTE t_spriteAttrib, pixelInfo t_spriteInfoNew, pixelInfo t_spriteInfoOld) {
-    return true;
     //check sprite transparency
     if(t_spriteInfoNew.colorID == 0)
         return false;

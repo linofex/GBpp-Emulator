@@ -32,9 +32,14 @@ class Timer;
             std::vector<BYTE>OAM;      // FE00-FE9F space  where sprite attributes reside (Sprite Attribute Table)
             std::vector<BYTE>ioPorts;  // FF00-FF7F I/O ports
             std::vector<BYTE>hRam;     // high ram
+            std::vector<BYTE>bios; 
+
             BYTE IEReg;                // Interrupt Enable Register
+
             BYTE keyStatus;
             bool readOnlyRom;
+            bool bootPhase;
+            
             Timer* timer;
 
         public:
@@ -51,6 +56,12 @@ class Timer;
             // this method writes one byte ad address t_add
             void writeByte(const WORD t_add, BYTE t_value);
             void setReadOnlyRom(){ readOnlyRom = true;}
+            void resetReadOnlyRom(){ readOnlyRom = false;}
+            
+            void ResetBootPhase(){ bootPhase = false;}
+            void setBootPhase(){ bootPhase = false;}
+
+
             BYTE readf(void);
             // this method writes 2 byte starting from t_add
             void writeWord(const WORD t_add, WORD t_value);

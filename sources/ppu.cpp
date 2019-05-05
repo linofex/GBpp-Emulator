@@ -286,11 +286,13 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
             height = 16;
         }
 
-        int startY = (int)(spriteData.posY) - 16;
+        int startY = (int)(spriteData.posY) - 16 ;
         int startX = (int)(spriteData.posX) - 8;     
 
+
+
         for(int j = 0; j < 8; ++j) {
-            WORD offset = (t_currentline)*160 + startX + j;
+            int offset = (t_currentline)*160 + startX + j;
             if((t_currentline >= startY) && (t_currentline < startY + height)) {
                 spritePixel = Ppu::getSpritePixel(spriteData, t_currentline, j);  
             }
@@ -300,22 +302,23 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
  
             //check if the current scanline is inside the sprite (Y bounds)
             if((t_currentline >= startY) && (t_currentline < startY + height)) {
+                if(offset < 0 ){
+                    continue;
+                }
                 if(checkBufferPriority(spriteData.attribs, spritePixel.info, pixelInfoBuffer[offset])) {
+                    
                 //check if BG has priority on transparent pixels of the sprite
-                //if((isSpriteOnTop(spriteInfo.attribs) || (!isSpriteOnTop(spriteInfo.attribs) && RGBBuffer[t_currentline*160 + startX + j].r == 252) && spritePixel.r != 252))  {
-                    //(!isSpriteOnTop(spriteInfo.attribs) && spritePixelPriority[t_currentline*160 + startX + j])) {
-                    //check if the new sprite has a higher color priority wrt the previous sprite drawn
-                    //if(spritePixelsLine.at(j).r < RGBBuffer[t_currentline*160 + startX + j].r) {
-                        pixelInfoBuffer[offset] = spritePixel.info;
+                         
+                        //     std::cerr <<"OFFSET: "<< (int) offset << std::endl;
+                        //     std::cerr <<"CL "<< (int)t_currentline<< std::endl;;
+                        //     std::cerr <<"START X: "<< (int)startX<< std::endl;;
+                        //     std::cerr <<"j: "<< (int)j<< std::endl;;
+                        //     std::cerr <<"SNUM: "<<std::hex<< (int) spriteData.patternNum << std::endl;
+                        //  }
+                        
                         RGBBuffer[offset] = spritePixel.color;
+                        pixelInfoBuffer[offset] = spritePixel.info;
 
-                        /*if(spriteData.patternNum == 0x22) {
-                            std::cout<<"colorID: "<<std::hex<<(int)spritePixel.info.colorID<<std::endl;
-                            std::cout<<"color: "<<std::hex<<(int)spritePixel.color.r<<std::endl;
-                            //std::cout<<"palette: "<<std::hex<<(int)spriteData.attribs<<std::endl;
-                        }*/
-                
-                    //}
                 }            
             }
         }

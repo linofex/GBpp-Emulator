@@ -2,7 +2,8 @@
 #include <vector>
 #include <unistd.h>
 #include <iostream>
-#include  <iomanip>
+#include <iomanip>
+
 //#include <windows.h>
 
 // /GameBoy::GameBoy(){}
@@ -16,11 +17,9 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
     							};
 	
     memory.linkTimer(&timer);
-
 	targetOldTime = (double)(1000.0*cpu.getClockCycles())/(4194304); //TARGETPERIOD * 0; // 0
 	hostOldTime = SDL_GetPerformanceCounter();
 	hostFrequency = SDL_GetPerformanceFrequency();
-
 	displayTime = SDL_GetTicks();
 	initSDL();
 	o = 0;
@@ -57,70 +56,71 @@ void GameBoy::releasedKey(BYTE t_key){
 
 // This method gets user inputs
 void GameBoy::userInput() {
-	SDL_Event e;	
-		while((SDL_PollEvent(&e)) != 0) {
-			if(keyState[SDL_SCANCODE_Q]) {
-				//std::cout << "OFF"<< std::endl;
-				turnOff();
-			}
-			if(keyState[SDL_SCANCODE_SPACE]) {
-				pressedKey(START);
-				//std::cout << "START"<< std::endl;
-			}
-			if(keyState[SDL_SCANCODE_B]) {
-				pressedKey(SELECT);
-				//std::cout << "SELECT"<< std::endl;
-			}
-			if(keyState[SDL_SCANCODE_S]) {
-				pressedKey(_B);
-				//std::cout << "B"<< std::endl;
-			}
-			if(keyState[SDL_SCANCODE_A]) {
-				pressedKey(_A);
-				//std::cout << "A"<< std::endl;
-			}
-			if(keyState[SDL_SCANCODE_DOWN]) {
-				pressedKey(DOWN);	
-				//std::cout << "DOWN"<< std::endl;
-			}
-			if(keyState[SDL_SCANCODE_UP]) {
-				pressedKey(UP);
-				//std::cout << "UP"<< std::endl;
-			}
-			if(keyState[SDL_SCANCODE_LEFT]) {
-				pressedKey(LEFT);
-				//std::cout << "LEFT"<< std::endl;
-			}
-			if(keyState[SDL_SCANCODE_RIGHT]) {
-				pressedKey(RIGHT);
-				//std::cout << "RIGHT"<< std::endl;
-			}
+	SDL_Event e;
+	// /SDL_PumpEvents(); //faster with this or with wwhile((SDL_PollEvent(&e)) != 0)??
+	while((SDL_PollEvent(&e)) != 0) {
+		if(keyState[SDL_SCANCODE_Q]) {
+			//std::cout << "OFF"<< std::endl;
+			turnOff();
+		}
+		if(keyState[SDL_SCANCODE_SPACE]) {
+			pressedKey(START);
+			//std::cout << "START"<< std::endl;
+		}
+		if(keyState[SDL_SCANCODE_B]) {
+			pressedKey(SELECT);
+			//std::cout << "SELECT"<< std::endl;
+		}
+		if(keyState[SDL_SCANCODE_S]) {
+			pressedKey(_B);
+			//std::cout << "B"<< std::endl;
+		}
+		if(keyState[SDL_SCANCODE_A]) {
+			pressedKey(_A);
+			//std::cout << "A"<< std::endl;
+		}
+		if(keyState[SDL_SCANCODE_DOWN]) {
+			pressedKey(DOWN);	
+			//std::cout << "DOWN"<< std::endl;
+		}
+		if(keyState[SDL_SCANCODE_UP]) {
+			pressedKey(UP);
+			//std::cout << "UP"<< std::endl;
+		}
+		if(keyState[SDL_SCANCODE_LEFT]) {
+			pressedKey(LEFT);
+			//std::cout << "LEFT"<< std::endl;
+		}
+		if(keyState[SDL_SCANCODE_RIGHT]) {
+			pressedKey(RIGHT);
+			//std::cout << "RIGHT"<< std::endl;
+		}
 
-			if(!keyState[SDL_SCANCODE_SPACE]) {
-				releasedKey(START);	
-			}
-			if(!keyState[SDL_SCANCODE_B]) {
-				releasedKey(SELECT);
-			}
-			if(!keyState[SDL_SCANCODE_S]) {
-				releasedKey(_B);
-			}
-			if(!keyState[SDL_SCANCODE_A]) {
-				releasedKey(_A);
-			}
-			if(!keyState[SDL_SCANCODE_DOWN]) {
-				releasedKey(DOWN);	
-			}
-			if(!keyState[SDL_SCANCODE_UP]) {
-				releasedKey(UP);
-			}
-			if(!keyState[SDL_SCANCODE_LEFT]) {
-				releasedKey(LEFT);
-			}
-			if(!keyState[SDL_SCANCODE_RIGHT]) {
-				releasedKey(RIGHT);
-			}
-		} 
+		if(!keyState[SDL_SCANCODE_SPACE]) {
+			releasedKey(START);	
+		}
+		if(!keyState[SDL_SCANCODE_B]) {
+			releasedKey(SELECT);
+		}
+		if(!keyState[SDL_SCANCODE_S]) {
+			releasedKey(_B);
+		}
+		if(!keyState[SDL_SCANCODE_A]) {
+			releasedKey(_A);
+		}
+		if(!keyState[SDL_SCANCODE_DOWN]) {
+			releasedKey(DOWN);	
+		}
+		if(!keyState[SDL_SCANCODE_UP]) {
+			releasedKey(UP);
+		}
+		if(!keyState[SDL_SCANCODE_LEFT]) {
+			releasedKey(LEFT);
+		}
+		if(!keyState[SDL_SCANCODE_RIGHT]) {
+			releasedKey(RIGHT);
+		}
+	} 
 }
 
 void GameBoy::initSDL(){
@@ -165,17 +165,16 @@ void GameBoy::initSDL(){
 // This method loads the game in the ROM memory if all checks are correct
 bool GameBoy::loadGame(){
 	if(checkCartridge()){
-		std::vector<BYTE> game(rom.getRom());
+		const std::vector<BYTE> *game = rom.getRom();
 		WORD address = 0x0000;
-		std::vector<BYTE>::iterator it = game.begin();
+		std::vector<BYTE>::const_iterator it = game->begin();
 		int counter = 0;
-		for(; it != game.end() ; ++it){
-			if(address < 0x8000){			
-				memory.writeByte(address++, *it);
-				// std::cout << std::setfill('0') << std::setw(2) <<  std::hex << (int)*it;
-				// if(++counter % 16 == 0){
-				// 	std::cout << "\n";
-				// }
+		for(; it != (*game).end() ; ++it){
+			if(address < 0x8000){
+				if(isTetris && address == 0x2F0){
+					memory.writeByte(address++, 0x76);
+				}		
+				else{memory.writeByte(address++, *it);}
 			}
 			else{
 				std::cerr<< "Not enough memory";
@@ -192,6 +191,7 @@ void GameBoy::playGame(){
 	//WORD pp = 0x101;
 	//std::cerr << "dammi un pc: ";
 	//std::cin >> std::hex >> pp;
+	//cpu.reset();
 	bool flag = false;
 
 	for(;;){
@@ -199,11 +199,7 @@ void GameBoy::playGame(){
 		BYTE instructionCycles = cpu.step();
 		//instructionCycles *=2;
 		lcd.step(instructionCycles);
-		
-		//if(SDL_GetTicks() - displayTime > 900){
-		    //lcd.renderScreen(window, renderer);
-		  	//displayTime = SDL_GetTicks();
-		//}	 	
+		// }	 	
 		cpu.addClockCycle(instructionCycles);
 		if(InterruptHandler::doInterrupt(&memory, &cpu))
 			lcd.renderScreen(window, renderer);
@@ -238,6 +234,7 @@ void GameBoy::playGame(){
 void GameBoy::printByte(WORD t_add){
     //std::cout << memory.readByte(t_add); 
 }
+
 void GameBoy::printNintendoGraphic(){
 	rom.printNintendoGraphic();
 	//std::cout<< "Nintendo Graphic: ";
@@ -246,6 +243,7 @@ void GameBoy::printNintendoGraphic(){
     //std::cout << std::endl;
 	}
 }
+
 void GameBoy::printRomInfo(){
 	rom.printRomName();
 	// rom.PrintRamSize();

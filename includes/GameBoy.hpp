@@ -1,7 +1,7 @@
 #ifndef GAMEBOY_H
 #define GAMEBOY_H
 
-#include <string>
+
 #include "utility.hpp"
 #include "cpu.hpp"
 #include "memory.hpp"
@@ -9,14 +9,16 @@
 #include "instruction.hpp"
 #include "rom.hpp"
 #include "lcd.hpp"
-
 #include "timer.hpp"
+#include "ppu.hpp"
+
 #include <vector>
 #include <chrono>
 #include <ctime>
-//#include <ncurses.h>
+#include <string>
 #include <SDL2/SDL.h>
-#include "ppu.hpp"
+//#include <ncurses.h>
+
 
 //namespace GBemulator{
     class GameBoy{

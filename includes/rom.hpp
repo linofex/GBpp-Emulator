@@ -6,7 +6,6 @@
 #include <string.h>
 #include <vector>
 #include <iostream>
-#include <iterator>
 
 //namespace GBemulator {
 
@@ -35,8 +34,8 @@
             Rom (const std::string t_RomFileName);
             void printRomName() const;
             std::vector<BYTE> getNintendoLogo()const;
-            std::vector<BYTE> getRomName()const;
-            std::vector<BYTE> getRom()const{ return game; };
+            std::string getRomName()const;
+            const std::vector<BYTE>* getRom()const{ return &game; };
             inline BYTE getRomBank() const {return game.at(0x147);}
             BYTE getRomByte(BYTE, WORD);
 

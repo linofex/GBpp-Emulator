@@ -16,7 +16,7 @@ Cpu::Cpu(void) { }
 Cpu::Cpu(Memory* m) {
     mem = m; //RICORDATELO
     Cpu::reset();
-    o = 0;
+    Cpu::initInstructions();
     clockCycles = 0;
     flag = false;
     lastOpcode = 0x00;
@@ -94,14 +94,12 @@ BYTE Cpu::step() {
         //std::cout << "HALT";
         return 100;
     }
-    //std::cout<<"PC: "<<std::hex << (int)getPC()<< "\n";
+    //std::cerr<<"PC: "<<std::hex << (int)getPC()<< "\n";
     opcode = Cpu::fetch();
-    
-    //std::cout<<std::hex<<"OPCODE: " << (int)opcode<<std::endl;
     instruction instr = Cpu::decode(opcode);
     // std::cout<< o <<std::endl;
     BYTE ret = Cpu::execute(instr);
-    //std::cout <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
+   // std::cerr <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
     //printCpuState();
     if(isLastOpcode(0xFB) || isLastOpcode(0xD9)){  //EI and RETI sets interrupts one machine clock cycle after
         setIntMasterEnable();
@@ -151,7 +149,7 @@ void Cpu::reset() {
 
     //std::cout<<"initInstructions called"<<std::endl;
     //fill the instructions map
-    Cpu::initInstructions();
+    //Cpu::initInstructions();
     //std::cout<<"initInstructions done"<<std::endl;
     //std::cout<<"---------------------------------------------> "<<instrSet.size()<<std::endl;
     //std::cout<<"---------------------------------------------> "<<instrSetCBPrefix.size()<<std::endl;
@@ -200,23 +198,12 @@ BYTE Cpu::fetch(void) {
     //unsigned char opcode = 0x80;//
    
     BYTE opcode = mem->readByte(pc);
-
-     if(pc == 0xA98){
-        // std::cout<<"\n\n**********************************************************************************n\n";
-        // std::cout<< std::hex << (int)opcode;
-        // getchar();
-        // opcode = 0xC9;
-    }
-
     incPC();
     return opcode;
 }
 
 
 struct instruction Cpu::decode(BYTE opcode) {
-   // std::cout<<"decode"<<std::endl;
-    
-    //return instrSet.at(0x80);
     return instrSet.at(opcode);
 }
 

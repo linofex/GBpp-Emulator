@@ -2,6 +2,8 @@
 #define UTIL_H
 
 #include <iostream>
+extern bool isTetris;
+
 
 typedef unsigned char BYTE; // 8bit unsigned
 typedef unsigned short WORD; // 16bit unsigned
@@ -52,8 +54,8 @@ struct pixel {
 };
 
 struct sprite {
-    BYTE posY;
-    BYTE posX;
+    int posY;
+    int posX;
     BYTE patternNum;
     BYTE attribs;
 };
@@ -125,5 +127,6 @@ struct sprite {
 #define SCROLLY 0xFF42
 #define WINDOWX 0xFF4B
 #define WINDOWY 0xFF4A
+
 
 #endif

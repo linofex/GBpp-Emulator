@@ -58,7 +58,6 @@ void GameBoy::releasedKey(BYTE t_key){
 // This method gets user inputs
 void GameBoy::userInput() {
 	SDL_Event e;	
-		SDL_PumpEvents();
 		while((SDL_PollEvent(&e)) != 0) {
 			if(keyState[SDL_SCANCODE_Q]) {
 				//std::cout << "OFF"<< std::endl;
@@ -122,7 +121,6 @@ void GameBoy::userInput() {
 				releasedKey(RIGHT);
 			}
 		} 
-	    SDL_PumpEvents();
 }
 
 void GameBoy::initSDL(){

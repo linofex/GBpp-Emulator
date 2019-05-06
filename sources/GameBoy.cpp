@@ -149,6 +149,13 @@ void GameBoy::initSDL(){
 
     /* We must call SDL_CreateRenderer in order for draw calls to affect this window. */
 	renderer = SDL_CreateRenderer(window, -1, 0);
+
+	texture = SDL_CreateTexture(renderer,
+								SDL_PIXELFORMAT_RGB24,
+								SDL_TEXTUREACCESS_STREAMING, 
+								sizeX,
+								sizeY);
+								
 	//SDL_Log("Display #%d: new display mode is %dx%dpx @ %dhz.", sizeX, sizeY, current.refresh_rate);
 
 	//SDL_RenderSetScale(renderer, 160,144);
@@ -202,7 +209,7 @@ void GameBoy::playGame(){
 		// }	 	
 		cpu.addClockCycle(instructionCycles);
 		if(InterruptHandler::doInterrupt(&memory, &cpu))
-			lcd.renderScreen(window, renderer);
+			lcd.renderScreen(renderer, texture);
 		timer.updateTimers(instructionCycles);
 		//sync();
 		//std::cerr << o++ << " ";

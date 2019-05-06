@@ -1,8 +1,9 @@
 #include "../includes/ppu.hpp"
 #include <iostream>
-#include <algorithm>
+#include <SDL2/SDL.h>
+//#include <algorithm>
 
-Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelInfoBuffer(160*144, {0, BG}), RGBBuffer(160*144, BLACK){
+Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelInfoBuffer(160*144, {0, BG}), RGBBuffer(160*144){
 }
 
 void Ppu::renderLine(BYTE t_currentline){
@@ -143,7 +144,9 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, sourceType t_
     pixel p = toPixels(lineOfATile, 2, false, (i + posX)%8);
         
     int offsetTile =  t_currentline*160 + i;
-    RGBBuffer[offsetTile] = p.color;
+    SDL_PixelFormat* pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB24);
+    RGBBuffer[offsetTile] = SDL_MapRGB(pixelFormat, p.color.r, p.color.g, p.color.b);
+    std::cout<<RGBBuffer[offsetTile]<<"\t";
     pixelInfoBuffer[offsetTile] = p.info;
 }
 
@@ -252,7 +255,8 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
                 int offset = (t_currentline)*160 + spriteData.posX + j;
                 if (offset < 0 || offset > (160*144)) {continue;}
                 if(checkBufferPriority(spriteData.attribs, spritePixel.info, pixelInfoBuffer[offset])) {
-                        RGBBuffer[offset] = spritePixel.color;
+                        SDL_PixelFormat* pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB24);
+                        RGBBuffer[offset] = SDL_MapRGB(pixelFormat, spritePixel.color.r, spritePixel.color.g, spritePixel.color.b);
                         pixelInfoBuffer[offset] = spritePixel.info;
 
                 }         

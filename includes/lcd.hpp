@@ -31,7 +31,8 @@ class Lcd {
         Lcd(void);
         Lcd(Memory*, Ppu*);
         void step(int);
-        void renderScreen(SDL_Window*, SDL_Renderer*);
+        void renderScreen(SDL_Renderer*, SDL_Texture*);
+        //void renderScreen(SDL_Window*, SDL_Renderer*);
 
 
     

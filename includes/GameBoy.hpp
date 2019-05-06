@@ -31,6 +31,7 @@
             Rom rom;
             SDL_Window* window; // gameboy screen
             SDL_Renderer* renderer; // gameboy renderer
+            SDL_Texture* texture;
             Timer timer; //gameboy timer
             std::vector<Uint32> times;
             std::vector<BYTE> testRom;

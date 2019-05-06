@@ -7,8 +7,8 @@ class Ppu{
     private:
         Memory* memory;
         std::vector<pixelInfo> pixelInfoBuffer;
-        std::vector<RGBColor> RGBBuffer;
-        
+        //std::vector<RGBColor> RGBBuffer;
+        std::vector<uint32_t> RGBBuffer;
         
         BYTE bufferY;
      
@@ -42,7 +42,7 @@ class Ppu{
     public:
         Ppu(Memory*);
         void renderLine(BYTE);
-        inline const std::vector<RGBColor>* getRGBBuffer(void) const {return &RGBBuffer;}
+        inline const std::vector<uint32_t>* getRGBBuffer(void) const {return &RGBBuffer;}
         void fillLineOfTileDB(WORD);
 
 

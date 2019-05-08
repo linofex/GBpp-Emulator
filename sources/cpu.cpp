@@ -15,12 +15,13 @@ Cpu::Cpu(void) { }
 
 Cpu::Cpu(Memory* m) {
     mem = m; //RICORDATELO
-    Cpu::reset();
+    // Cpu::reset();
     Cpu::initInstructions();
     clockCycles = 0;
     flag = false;
     lastOpcode = 0x00;
     opcode = 0x00;
+    pc = 0x00;
 }
 Cpu::~Cpu(void) {
     std::cout << "CPU distruttore\n";
@@ -95,6 +96,10 @@ BYTE Cpu::step() {
         return 100;
     }
     //std::cerr<<"PC: "<<std::hex << (int)getPC()<< "\n";
+    if(pc == 0xFE && mem->isBooting()){
+        mem->resetBootPhase();
+        reset();
+    }
     opcode = Cpu::fetch();
     instruction instr = Cpu::decode(opcode);
     // std::cout<< o <<std::endl;
@@ -104,6 +109,9 @@ BYTE Cpu::step() {
     if(isLastOpcode(0xFB) || isLastOpcode(0xD9)){  //EI and RETI sets interrupts one machine clock cycle after
         setIntMasterEnable();
     }
+
+
+
     setLastOpcode(opcode);
     return ret;
 }

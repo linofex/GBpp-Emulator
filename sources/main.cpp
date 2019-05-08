@@ -15,6 +15,7 @@ int main(int argc, char** argv){
         if (std::string(argv[1]) == "tetris.gb"){ isTetris = true;}
         GameBoy gameboy = GameBoy(romName);
         if(gameboy.loadGame()){
+            gameboy.boot();
             gameboy.playGame();
         }
         else{

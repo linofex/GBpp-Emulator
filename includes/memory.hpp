@@ -58,8 +58,9 @@ class Timer;
             void setReadOnlyRom(){ readOnlyRom = true;}
             void resetReadOnlyRom(){ readOnlyRom = false;}
             
-            void ResetBootPhase(){ bootPhase = false;}
-            void setBootPhase(){ bootPhase = false;}
+            bool isBooting(){return bootPhase;}
+            void resetBootPhase(){ bootPhase = false;}
+            void setBootPhase(){ bootPhase = true;}
 
 
             BYTE readf(void);

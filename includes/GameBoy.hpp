@@ -59,6 +59,7 @@
             GameBoy(std::string);
             bool checkCartridge(void);
             bool loadGame(void);
+            void boot(void);
             void playGame(void);
             void sync(void);
             void userInput(void);

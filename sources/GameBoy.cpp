@@ -57,8 +57,8 @@ void GameBoy::releasedKey(BYTE t_key){
 // This method gets user inputs
 void GameBoy::userInput() {
 	SDL_Event e;
-	// /SDL_PumpEvents(); //faster with this or with wwhile((SDL_PollEvent(&e)) != 0)??
-	while((SDL_PollEvent(&e)) != 0) {
+	SDL_PumpEvents(); //faster with this or with wwhile((SDL_PollEvent(&e)) != 0)??
+	//while((SDL_PollEvent(&e)) != 0) {
 		if(keyState[SDL_SCANCODE_Q]) {
 			//std::cout << "OFF"<< std::endl;
 			turnOff();
@@ -120,7 +120,7 @@ void GameBoy::userInput() {
 		if(!keyState[SDL_SCANCODE_RIGHT]) {
 			releasedKey(RIGHT);
 		}
-	} 
+	//} 
 }
 
 void GameBoy::initSDL(){
@@ -148,19 +148,20 @@ void GameBoy::initSDL(){
                         0);
 
     /* We must call SDL_CreateRenderer in order for draw calls to affect this window. */
-	renderer = SDL_CreateRenderer(window, -1, 0);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
 	texture = SDL_CreateTexture(renderer,
-								SDL_PIXELFORMAT_RGB24,
+								SDL_PIXELFORMAT_RGB888,
 								SDL_TEXTUREACCESS_STREAMING, 
-								sizeX,
-								sizeY);
+								SCREEN_WIDTH,
+								SCREEN_HEIGHT);
 								
 	//SDL_Log("Display #%d: new display mode is %dx%dpx @ %dhz.", sizeX, sizeY, current.refresh_rate);
 
 	//SDL_RenderSetScale(renderer, 160,144);
+
     SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_SetRenderDrawColor(renderer, 23, 120, 32, 0);
     SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 
@@ -207,11 +208,12 @@ void GameBoy::playGame(){
 		//instructionCycles *=2;
 		lcd.step(instructionCycles);
 		// }	 	
+
 		cpu.addClockCycle(instructionCycles);
 		if(InterruptHandler::doInterrupt(&memory, &cpu))
 			lcd.renderScreen(renderer, texture);
 		timer.updateTimers(instructionCycles);
-		//sync();
+		sync();
 		//std::cerr << o++ << " ";
 		//std::cout<< o++ << "  ";
 		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
@@ -296,7 +298,7 @@ void GameBoy::sync(){
 	double timeDifference =  targetElapsedTime - hostElapsedTime;
 	//std::cout<<"DIFF: "<<'\t'<< (double)(timeDifference)<<std::endl;    
 		
-    if(timeDifference > 2.0) {    //2 ms
+    if(timeDifference > 10) {    //2 ms
 		//std::cerr<<"HITT!!  The diff is: "<<'\t'<< (long double)(timeDifference)<<std::endl;
 	    //usleep(timeDifference*1000); // sleep 
 		hostOldTime =  SDL_GetPerformanceCounter();

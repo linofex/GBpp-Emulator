@@ -138,23 +138,21 @@ bool Lcd::testCoincidence(){
 }
 
 void Lcd::renderScreen(SDL_Renderer* t_renderer, SDL_Texture* t_texture) {
-    const std::vector<uint32_t>* buffer = ppu->getRGBBuffer();
-
-    SDL_UpdateTexture(t_texture, NULL, buffer, SCREEN_WIDTH * sizeof (uint32_t));
-
+    SDL_UpdateTexture(t_texture, NULL, ppu->getRGBBuffer(), SCREEN_WIDTH * sizeof (uint32_t));
     SDL_RenderClear(t_renderer);
     SDL_RenderCopy(t_renderer, t_texture, NULL, NULL);
     SDL_RenderPresent(t_renderer);
+
     
-    for (int i = 0; i < SCREEN_HEIGHT ; ++i){
-        for(int j= 0; j< SCREEN_WIDTH;++j){
-           std::cerr<<buffer->at(i*SCREEN_WIDTH + j)<<"\t";
-           //color =  buffer->at(i*SCREEN_WIDTH + j);
-           //SDL_SetRenderDrawColor(t_renderer, (Uint8)color.r, (Uint8)color.g, (Uint8)color.b, 255);
-           //SDL_RenderDrawPoint(t_renderer, j, i);
-        }
-        std::cerr<<""<<std::endl;
-    }    
+    // for (int i = 0; i < SCREEN_HEIGHT ; ++i){
+    //     for(int j= 0; j< SCREEN_WIDTH;++j){
+    //        std::cerr<<buffer->at(i*SCREEN_WIDTH + j)<<"\t";
+    //        //color =  buffer->at(i*SCREEN_WIDTH + j);
+    //        //SDL_SetRenderDrawColor(t_renderer, (Uint8)color.r, (Uint8)color.g, (Uint8)color.b, 255);
+    //        //SDL_RenderDrawPoint(t_renderer, j, i);
+    //     }
+    //     std::cerr<<""<<std::endl;
+  //  }    
     
     /*const std::vector<RGBColor>* buffer = ppu->getRGBBuffer();
     RGBColor color;

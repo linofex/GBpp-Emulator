@@ -44,6 +44,8 @@
             Uint64 targetOldTime;   
             Uint32 displayTime; 
             Uint64 hostOldTime;
+            double accumulator; 
+            
             //Uint64 hostNewTime;
             Uint64 hostFrequency;
 

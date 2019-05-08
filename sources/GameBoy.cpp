@@ -21,6 +21,7 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
 	hostOldTime = SDL_GetPerformanceCounter();
 	hostFrequency = SDL_GetPerformanceFrequency();
 	displayTime = SDL_GetTicks();
+	accumulator = 0.0;
 	initSDL();
 	o = 0;
 }
@@ -209,11 +210,14 @@ void GameBoy::playGame(){
 		lcd.step(instructionCycles);
 		// }	 	
 
+		
 		cpu.addClockCycle(instructionCycles);
-		if(InterruptHandler::doInterrupt(&memory, &cpu))
+		if(InterruptHandler::doInterrupt(&memory, &cpu)){
 			lcd.renderScreen(renderer, texture);
+			sync();
+		}
 		timer.updateTimers(instructionCycles);
-		sync();
+		// sync();
 		//std::cerr << o++ << " ";
 		//std::cout<< o++ << "  ";
 		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
@@ -282,34 +286,50 @@ void GameBoy::turnOff(){
 // This method emulates the timing of the gameboy.
 // Since the host machine is faster than target machines, a sleep time
 // syncronizes the machines
+
+
 void GameBoy::sync(){
-
-	Uint64 hostNewTime = SDL_GetPerformanceCounter();
-	double hostElapsedTime = (double)(hostNewTime - hostOldTime) / (double)(hostFrequency);
- 	
-    double targetNewTime = (double)(1000.0*cpu.getClockCycles())/(4194304);
-    double targetElapsedTime = targetNewTime - targetOldTime;
+	double elapsedTime =   (double)(SDL_GetPerformanceCounter() - hostOldTime) / (double)hostFrequency;
 	
-	//std::cout<<"Clock cycles: "<<'\t'<<cpu.getClockCycles()<<std::endl;
-	//std::cout<<"The host elapsed time is: "<<'\t'<<(double)hostElapsedTime<<std::endl;
-	//std::cout<<"The host elapsed time is: "<<'\t'<<hostNewTime<<std::endl;
-	//std::cout<<"The target elapsed time is: "<<'\t'<<targetElapsedTime<<std::endl;
-
-	double timeDifference =  targetElapsedTime - hostElapsedTime;
-	//std::cout<<"DIFF: "<<'\t'<< (double)(timeDifference)<<std::endl;    
-		
-    if(timeDifference > 10) {    //2 ms
-		//std::cerr<<"HITT!!  The diff is: "<<'\t'<< (long double)(timeDifference)<<std::endl;
-	    //usleep(timeDifference*1000); // sleep 
-		hostOldTime =  SDL_GetPerformanceCounter();
-   		targetOldTime = targetNewTime;//(double)(1000.0*cpu.getClockCycles())/(4194304);	
-		/*std::cout<<"The host updated time: "<<'\t'<<hostOldTime<<std::endl;
-		std::cout<<"The target updated time: "<<'\t'<<targetOldTime<<std::endl;*/
+	if(elapsedTime < (double)1/60){
+		//std::cerr << elapsedTime << "\n";
+		useconds_t t  = ((double)1/60 - elapsedTime)*1000*1000;
+		accumulator += (((double)1/60 - elapsedTime)*1000*1000) - t;
+		//std::cerr << accumulator << "\n";
+		if(accumulator > 100){t+= accumulator;accumulator = 0.0;}
+		usleep(t);
 	}
-	//else {
-	//	//std::cerr<<"MISS!!  The diff is: "<<'\t'<< (float)(timeDifference)<<std::endl;
-	//}
+	hostOldTime = SDL_GetPerformanceCounter();
 }
+
+// void GameBoy::sync(){
+
+// 	Uint64 hostNewTime = SDL_GetPerformanceCounter();
+// 	double hostElapsedTime = (double)(hostNewTime - hostOldTime) / (double)(hostFrequency);
+ 	
+//     double targetNewTime = (double)(1000.0*cpu.getClockCycles())/(4194304);
+//     double targetElapsedTime = targetNewTime - targetOldTime;
+	
+// 	//std::cout<<"Clock cycles: "<<'\t'<<cpu.getClockCycles()<<std::endl;
+// 	//std::cout<<"The host elapsed time is: "<<'\t'<<(double)hostElapsedTime<<std::endl;
+// 	//std::cout<<"The host elapsed time is: "<<'\t'<<hostNewTime<<std::endl;
+// 	//std::cout<<"The target elapsed time is: "<<'\t'<<targetElapsedTime<<std::endl;
+
+// 	double timeDifference =  targetElapsedTime - hostElapsedTime;
+// 	//std::cout<<"DIFF: "<<'\t'<< (double)(timeDifference)<<std::endl;    
+		
+//     if(timeDifference > 10) {    //2 ms
+// 		//std::cerr<<"HITT!!  The diff is: "<<'\t'<< (long double)(timeDifference)<<std::endl;
+// 	    //usleep(timeDifference*1000); // sleep 
+// 		hostOldTime =  SDL_GetPerformanceCounter();
+//    		targetOldTime = targetNewTime;//(double)(1000.0*cpu.getClockCycles())/(4194304);	
+// 		/*std::cout<<"The host updated time: "<<'\t'<<hostOldTime<<std::endl;
+// 		std::cout<<"The target updated time: "<<'\t'<<targetOldTime<<std::endl;*/
+// 	}
+// 	//else {
+// 	//	//std::cerr<<"MISS!!  The diff is: "<<'\t'<< (float)(timeDifference)<<std::endl;
+// 	//}
+// }
 
 GameBoy::~GameBoy(){
     //std::cout << "GAMEBOY distruttore\n";

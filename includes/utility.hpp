@@ -91,8 +91,8 @@ struct sprite {
 // LCD modes
 #define MODE0 0x00
 #define MODE1 0x01
-#define MODE2 0x10
-#define MODE3 0x11
+#define MODE2 0x02
+#define MODE3 0x03
 
 // DMA
 #define DMA 0xFF46

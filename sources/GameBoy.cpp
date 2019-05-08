@@ -162,7 +162,7 @@ void GameBoy::initSDL(){
 	//SDL_RenderSetScale(renderer, 160,144);
 
     SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    SDL_SetRenderDrawColor(renderer, 23, 120, 32, 0);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
 
@@ -196,51 +196,24 @@ bool GameBoy::loadGame(){
 	return false;
 }
 
+void GameBoy::boot(){
+	memory.setBootPhase();
+// cpu.reset();
+}
+
 void GameBoy::playGame(){
-	//WORD pp = 0x101;
-	//std::cerr << "dammi un pc: ";
-	//std::cin >> std::hex >> pp;
-	//cpu.reset();
 	bool flag = false;
 
 	for(;;){
 		userInput();
-		BYTE instructionCycles = cpu.step();
-		//instructionCycles *=2;
+  		BYTE instructionCycles = cpu.step();
 		lcd.step(instructionCycles);
-		// }	 	
-
-		
 		cpu.addClockCycle(instructionCycles);
 		if(InterruptHandler::doInterrupt(&memory, &cpu)){
 			lcd.renderScreen(renderer, texture);
 			sync();
 		}
 		timer.updateTimers(instructionCycles);
-		// sync();
-		//std::cerr << o++ << " ";
-		//std::cout<< o++ << "  ";
-		//std::cerr << std::hex << (int)cpu.getPC()<< " - ";
-		//if(cpu.getPC() == 0x26f){
-		//if(++o == 269596 ) { //|| flag == true){
-		
-		// //	flag = true;
-		// //	flag = false;
-		// 	std::string pp;
-		// 	//ppu.fillLineOfTileDB(0x8010);
-		// 	//getchar();	
-		 //	cpu.printCpuState();
-		//	getchar();
-		//}
-		// // 	//system("PAUSE");
-		// 	//sstd::cerr <<"\npop6: "<<std::hex <<(int)cpu.readByte(0xFFFF);
-		// 	std::cerr <<"metti pc: ";
-		// 	std::cin >> std::hex >> pp;
-		// }
-	
-//getchar();			// //std::cerr << " BOOM " << o;
-			// //std::cerr << (int)cpu.getPC();
-		//}
 	}
 }
 

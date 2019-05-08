@@ -14,8 +14,10 @@ void Ppu::renderLine(BYTE t_currentline){
         //std::cout<< "BG--------\n";
     }
     else{
-        // std::cout<< "BBBBBB--------\n";
-       //RGBBuffer = std::vector<RGBColor>(160*144,WHITE);
+        SDL_PixelFormat* pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
+        RGBColor white = WHITE;
+        uint32_t color = SDL_MapRGB(pixelFormat, white.r, white.g, white.b);
+        RGBBuffer = std::vector<Uint32>(160*144,color);
     }
     
     if(LCDcontrolRegister & 0x20){ //bit 5

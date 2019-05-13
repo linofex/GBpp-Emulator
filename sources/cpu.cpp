@@ -54,27 +54,27 @@ void Cpu::printCpuState(){
     // std::cerr<< "F: "<< std::bitset<8>(getF()) << "\n";
     
     // Print CPU registers states
-    std::cout<< "\nAF: "<< std::hex<< (int)getAF() << std::endl;
-    std::cout<< "BC: "<< std::hex<< (int)getBC() << std::endl;
-    std::cout<< "DE: "<< std::hex<< (int)getDE() << std::endl;
-    std::cout<< "HL: "<< std::hex<< (int)getHL() << std::endl;
-    std::cout<< "SP: "<< std::hex<< (int)getSP() << "\t";
-    std::cout<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
-    std::cout<< "0xFF44: "<< std::hex<< (int)mem->readByte(0xFF44) << std::endl;
+    // std::cout<< "\nAF: "<< std::hex<< (int)getAF() << std::endl;
+    // std::cout<< "BC: "<< std::hex<< (int)getBC() << std::endl;
+    // std::cout<< "DE: "<< std::hex<< (int)getDE() << std::endl;
+    // std::cout<< "HL: "<< std::hex<< (int)getHL() << std::endl;
+    // std::cout<< "SP: "<< std::hex<< (int)getSP() << "\t";
+    // std::cout<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
+    // std::cout<< "0xFF44: "<< std::hex<< (int)mem->readByte(0xFF44) << std::endl;
     
-    std::cout<< "Opcode: "<< std::hex<< (int)opcode << std::endl;
-    std::cout<< "Instruction: "<< instrSet.at(opcode).name << std::endl;
+    // std::cout<< "Opcode: "<< std::hex<< (int)opcode << std::endl;
+    // std::cout<< "Instruction: "<< instrSet.at(opcode).name << std::endl;
     //std::cout<< "Last Opcode: "<< std::hex<< (int)lastOpcode << std::endl;
     
     // Print registers
-    std::cout << "IER: " << std::hex<< (int)mem->readByte(IER_ADD) << std::endl;
-    std::cout << "IRR: " << std::hex<< (int)mem->readByte(IRR_ADD) << std::endl;
-    std::cout << "LCDCONTROL: " << std::hex<< (int)mem->readByte(LCDCONTROL) << std::endl;
-    std::cout << "LCDSTATUS: " << std::hex<< (int)mem->readByte(LCDSTATUS) << std::endl;
-    std::cout << "SCANLINE: " << std::hex<< (int)mem->readByte(LCDLY) << std::endl;
-    std::cout << "LCDLYC: " << std::hex<< (int)mem->readByte(LCDLYC) << std::endl;
+    // std::cout << "IER: " << std::hex<< (int)mem->readByte(IER_ADD) << std::endl;
+    // std::cout << "IRR: " << std::hex<< (int)mem->readByte(IRR_ADD) << std::endl;
+     std::cout << "LCDCONTROL: " << std::hex<< (int)mem->readByte(LCDCONTROL) << std::endl;
+    //std::cout << "LCDSTATUS: " << std::hex<< (int)mem->readByte(LCDSTATUS) << std::endl;
+    // std::cout << "SCANLINE: " << std::hex<< (int)mem->readByte(LCDLY) << std::endl;
+    // std::cout << "LCDLYC: " << std::hex<< (int)mem->readByte(LCDLYC) << std::endl;
 
-    std::cout << "SCROLLX: " << std::hex<< (int)mem->readByte(SCROLLX) << std::endl;
+    //std::cout << "SCROLLX: " << std::hex<< (int)mem->readByte(SCROLLX) << std::endl;
     std::cout << "SCROLLY: " << std::hex<< (int)mem->readByte(SCROLLY) << std::endl;
 
 
@@ -87,15 +87,16 @@ void Cpu::printCpuState(){
     // std::cerr<< "\0xFF44: "<< std::hex<< (int)getPC()<< "\t";
 
      
-
+    std::cout << "_____________________________________\n";
 }
 
 BYTE Cpu::step() {
     if(isHalted() ||  isStopped()){
         //std::cout << "HALT";
-        return 100;
+        return 1;
     }
     //std::cerr<<"PC: "<<std::hex << (int)getPC()<< "\n";
+       
     if(pc == 0xFE && mem->isBooting()){
         mem->resetBootPhase();
         reset();

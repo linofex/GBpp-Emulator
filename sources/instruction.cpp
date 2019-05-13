@@ -2169,12 +2169,12 @@ static void jp(Cpu* c) {
 }
 static void jp_nz(Cpu* c) {
     if(!c->isFLAG_Zero()){
-        c->addClockCycle(16);
+        c->addClockCycles(16);
         jp(c);
         
     }
     else{
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         c->incPC();
         c->incPC(); //MESSO 16 aprile
         
@@ -2182,11 +2182,11 @@ static void jp_nz(Cpu* c) {
 }
 static void jp_z(Cpu* c) {
     if(c->isFLAG_Zero()){
-       c->addClockCycle(16);
+       c->addClockCycles(16);
         jp(c);
     }
     else{
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         c->incPC();
         c->incPC(); //MESSO 16 aprile
         
@@ -2195,11 +2195,11 @@ static void jp_z(Cpu* c) {
 }
 static void jp_nc(Cpu* c) {
     if(!c->isFLAG_Carry()){
-        c->addClockCycle(16);
+        c->addClockCycles(16);
         jp(c);
     }
     else{
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         c->incPC();
         c->incPC(); //MESSO 16 aprile
 
@@ -2208,11 +2208,11 @@ static void jp_nc(Cpu* c) {
 }
 static void jp_c(Cpu* c) {
     if(c->isFLAG_Carry()){
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         jp(c);
     }
     else{
-        c->addClockCycle(8);
+        c->addClockCycles(8);
         c->incPC();
         c->incPC(); //MESSO 16 aprile
              
@@ -2232,41 +2232,41 @@ static void jr(Cpu* c) { //v
 }
 static void jr_nz(Cpu* c) {
     if(!c->isFLAG_Zero()){
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         jr(c);
     }
     else{
-        c->addClockCycle(8);
+        c->addClockCycles(8);
         c->incPC();
     }
 }
 static void jr_z(Cpu* c) {
     if(c->isFLAG_Zero()){
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         jr(c);
     }
     else{
-        c->addClockCycle(8);
+        c->addClockCycles(8);
         c->incPC();
     }
 }
 static void jr_nc(Cpu* c) {
     if(!c->isFLAG_Carry()){
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         jr(c);
     }
     else{
-        c->addClockCycle(8);
+        c->addClockCycles(8);
         c->incPC();
     }
 }
 static void jr_c(Cpu* c) {
     if(c->isFLAG_Carry()){
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         jr(c);   
     }
     else{
-        c->addClockCycle(8);
+        c->addClockCycles(8);
         c->incPC();
     }
 }
@@ -2277,22 +2277,22 @@ static void call(Cpu* c) {
 }
 static void call_nz(Cpu* c) {
     if(!c->isFLAG_Zero()){
-        c->addClockCycle(24);
+        c->addClockCycles(24);
         call(c);
     }
     else{
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         c->incPC();
         c->incPC();        
     }
 }
 static void call_z(Cpu* c) {
     if(c->isFLAG_Zero()){
-        c->addClockCycle(24);
+        c->addClockCycles(24);
         call(c);
     }
     else{
-        c->addClockCycle(12);
+        c->addClockCycles(12);
 
         c->incPC();
         c->incPC();        
@@ -2300,22 +2300,22 @@ static void call_z(Cpu* c) {
 }
 static void call_nc(Cpu* c) {
     if(!c->isFLAG_Carry()){
-        c->addClockCycle(24);
+        c->addClockCycles(24);
         call(c);
     }
     else{
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         c->incPC();
         c->incPC();        
     }
 }
 static void call_c(Cpu* c) {
     if(c->isFLAG_Carry()){
-        c->addClockCycle(24);
+        c->addClockCycles(24);
         call(c);
     }
     else{
-        c->addClockCycle(12);
+        c->addClockCycles(12);
         c->incPC();
         c->incPC();        
     }
@@ -2341,41 +2341,41 @@ static void ret(Cpu* c) {
 }
 static void ret_nz(Cpu* c) {
     if(!c->isFLAG_Zero()){
-        c->addClockCycle(20);
+        c->addClockCycles(20);
 
         ret(c);
     }
     else{
-        c->addClockCycle(8);
+        c->addClockCycles(8);
 
     }
 }
 static void ret_z(Cpu* c) {
     if(c->isFLAG_Zero()){
-        c->addClockCycle(20);
+        c->addClockCycles(20);
         ret(c);
     }
     else{
-        c->addClockCycle(8);
+        c->addClockCycles(8);
     }
 }
 static void ret_nc(Cpu* c) {
     if(!c->isFLAG_Carry()){
-        c->addClockCycle(20);
+        c->addClockCycles(20);
         ret(c);
     }
     else{
-        c->addClockCycle(8);
+        c->addClockCycles(8);
 
     }
 }
 static void ret_c(Cpu* c) {
     if(c->isFLAG_Carry()){
-        c->addClockCycle(20);
+        c->addClockCycles(20);
         ret(c);
     }
     else{
-        c->addClockCycle(8);
+        c->addClockCycles(8);
 
     }
 }

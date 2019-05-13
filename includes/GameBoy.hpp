@@ -44,6 +44,8 @@
             Uint64 targetOldTime;   
             Uint32 displayTime; 
             Uint64 hostOldTime;
+            Uint32 lcdLastTime;
+            Uint32 onesecond;
             double accumulator; 
             
             //Uint64 hostNewTime;
@@ -62,6 +64,7 @@
             void boot(void);
             void playGame(void);
             void sync(void);
+            void refreshLcdScreen(void);
             void userInput(void);
             void initSDL(void);
             void printRomInfo(void);

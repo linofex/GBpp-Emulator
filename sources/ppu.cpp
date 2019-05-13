@@ -4,6 +4,10 @@
 //#include <algorithm>
 
 Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelInfoBuffer(160*144, {0, BG}), RGBBuffer(160*144){
+    SDL_PixelFormat* pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
+    RGBColor white = WHITE;
+    uint32_t color = SDL_MapRGB(pixelFormat, white.r, white.g, white.b);
+    RGBBuffer = std::vector<Uint32>(160*144,color);
 }
 
 void Ppu::renderLine(BYTE t_currentline){

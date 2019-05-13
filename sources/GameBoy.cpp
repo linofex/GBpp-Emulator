@@ -19,8 +19,12 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
     memory.linkTimer(&timer);
 	targetOldTime = (double)(1000.0*cpu.getClockCycles())/(4194304); //TARGETPERIOD * 0; // 0
 	hostOldTime = SDL_GetPerformanceCounter();
+
+	lcdLastTime = SDL_GetPerformanceCounter();
 	hostFrequency = SDL_GetPerformanceFrequency();
 	displayTime = SDL_GetTicks();
+	onesecond = SDL_GetTicks();
+	
 	accumulator = 0.0;
 	initSDL();
 	o = 0;
@@ -203,17 +207,26 @@ void GameBoy::boot(){
 
 void GameBoy::playGame(){
 	bool flag = false;
-
 	for(;;){
-		userInput();
+		userInput(); 
   		BYTE instructionCycles = cpu.step();
 		lcd.step(instructionCycles);
-		cpu.addClockCycle(instructionCycles);
-		if(InterruptHandler::doInterrupt(&memory, &cpu)){
+		cpu.addClockCycles(instructionCycles);
+		timer.updateTimers(instructionCycles);
+		InterruptHandler::doInterrupt(&memory, &cpu);
+		// if((SDL_GetTicks() - onesecond) > 1000/60){
+		// 	std::cout <<  "diff: " << SDL_GetTicks() - onesecond << " ";
+		// 	std::cout << "cycles" << cpu.getClockCycles() << "\n";
+		// 	cpu.resetClockCycles();
+		// 	onesecond = SDL_GetTicks();
+		// }
+		if(cpu.getClockCycles() > REFRESH_CLOCKS_CYCLE){
+			cpu.resetClockCycles();
 			lcd.renderScreen(renderer, texture);
 			sync();
 		}
-		timer.updateTimers(instructionCycles);
+		
+		//cpu.printCpuState();
 	}
 }
 
@@ -261,18 +274,29 @@ void GameBoy::turnOff(){
 // syncronizes the machines
 
 
+void GameBoy::refreshLcdScreen(){
+	double elapsedTime =   (double)(SDL_GetPerformanceCounter() - lcdLastTime) / (double)hostFrequency;
+	if((SDL_GetTicks () - displayTime) > 16){
+		//std::cerr << SDL_GetTicks () - displayTime << std::endl;
+		lcd.renderScreen(renderer, texture);
+		displayTime = SDL_GetTicks();
+	}
+}
+
 void GameBoy::sync(){
 	double elapsedTime =   (double)(SDL_GetPerformanceCounter() - hostOldTime) / (double)hostFrequency;
-	
 	if(elapsedTime < (double)1/60){
-		//std::cerr << elapsedTime << "\n";
+		//std::cerr << "ETIME: " << elapsedTime << "\n";
 		useconds_t t  = ((double)1/60 - elapsedTime)*1000*1000;
 		accumulator += (((double)1/60 - elapsedTime)*1000*1000) - t;
 		//std::cerr << accumulator << "\n";
 		if(accumulator > 100){t+= accumulator;accumulator = 0.0;}
 		usleep(t);
+		
 	}
+	//else{std::cerr << "ELSE: " << elapsedTime << "\n";}
 	hostOldTime = SDL_GetPerformanceCounter();
+	
 }
 
 // void GameBoy::sync(){
@@ -289,19 +313,19 @@ void GameBoy::sync(){
 // 	//std::cout<<"The target elapsed time is: "<<'\t'<<targetElapsedTime<<std::endl;
 
 // 	double timeDifference =  targetElapsedTime - hostElapsedTime;
-// 	//std::cout<<"DIFF: "<<'\t'<< (double)(timeDifference)<<std::endl;    
-		
-//     if(timeDifference > 10) {    //2 ms
-// 		//std::cerr<<"HITT!!  The diff is: "<<'\t'<< (long double)(timeDifference)<<std::endl;
-// 	    //usleep(timeDifference*1000); // sleep 
+// 	std::cerr<<"HITT!!  The diff is: "<<'\t'<< (long double)(timeDifference)<<std::endl;
+
+//     if(timeDifference < 0.0160) {    //2 ms
+// 		std::cerr<<"HITT!!  The diff is: "<<'\t'<< (long double)(timeDifference)<<std::endl;
+// 	    usleep(timeDifference*1000); // sleep 
 // 		hostOldTime =  SDL_GetPerformanceCounter();
 //    		targetOldTime = targetNewTime;//(double)(1000.0*cpu.getClockCycles())/(4194304);	
 // 		/*std::cout<<"The host updated time: "<<'\t'<<hostOldTime<<std::endl;
 // 		std::cout<<"The target updated time: "<<'\t'<<targetOldTime<<std::endl;*/
 // 	}
-// 	//else {
-// 	//	//std::cerr<<"MISS!!  The diff is: "<<'\t'<< (float)(timeDifference)<<std::endl;
-// 	//}
+// 	else {
+// 		//std::cerr<<"MISS!!  The diff is: "<<'\t'<< (float)(timeDifference)<<std::endl;
+// 	}
 // }
 
 GameBoy::~GameBoy(){

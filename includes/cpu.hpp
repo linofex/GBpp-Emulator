@@ -131,7 +131,9 @@ class Cpu {
         inline bool isStopped() const {return stop;}
 
         inline unsigned long getClockCycles() const {return clockCycles;}
-        inline void addClockCycle(int t_clock){clockCycles += t_clock;}
+        inline void addClockCycles(int t_clock){clockCycles += t_clock;}
+        inline void resetClockCycles(void){clockCycles = 0;}
+        
 
 
 

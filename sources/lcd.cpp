@@ -134,7 +134,7 @@ void Lcd::step(int cycles){
         case MODE0: //HBLANK
             if(remainingCycles < 0){
                 setScanline(++currentLine);
-                if(currentLine == 143){
+                if(currentLine == 144){
                     Lcd::setLCDMode(MODE1);
                     InterruptHandler::requestInterrupt(memory, VBLANK);
                     if(Lcd::testInterrupt(MODE1))

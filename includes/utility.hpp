@@ -20,6 +20,9 @@ typedef unsigned short WORD; // 16bit unsigned
 #define FLAG_H 0x20 // bit 5
 #define FLAG_C 0x10 // bit 4
 
+#define REFRESH_CLOCKS_CYCLE 69768
+
+
 //regAF.reg -> AF, regAF.high -> A, regAF.low -> F
 union REGISTER {
     WORD reg;
@@ -127,6 +130,5 @@ struct sprite {
 #define SCROLLY 0xFF42
 #define WINDOWX 0xFF4B
 #define WINDOWY 0xFF4A
-
 
 #endif

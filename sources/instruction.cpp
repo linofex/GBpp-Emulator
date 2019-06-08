@@ -413,7 +413,7 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0x73, instruction("LD (HL), E", 4, load_HL_ind_E)));  
     instrSet.insert(std::make_pair(0x74, instruction("LD (HL), H", 4, load_HL_ind_H)));
     instrSet.insert(std::make_pair(0x75, instruction("LD (HL), L", 4, load_HL_ind_L)));
-    instrSet.insert(std::make_pair(0x76, instruction("HALT", 2, halt)));  
+    instrSet.insert(std::make_pair(0x76, instruction("HALT", 4, halt)));  
     instrSet.insert(std::make_pair(0x77, instruction("LD (HL), A", 4, load_HL_ind_A)));
     instrSet.insert(std::make_pair(0x78, instruction("LD A, B", 2, load_A_B)));  
     instrSet.insert(std::make_pair(0x79, instruction("LD A, C", 2, load_A_C)));

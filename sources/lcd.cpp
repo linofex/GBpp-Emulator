@@ -3,21 +3,20 @@
 #include "../includes/memory.hpp"
 #include"../includes/interrupts.hpp"
 #include <iostream>
-Lcd::Lcd() {
-    
-}
+Lcd::Lcd() {}
 
 Lcd::Lcd(Memory* t_memory, Ppu* t_ppu) : memory(t_memory), ppu(t_ppu){
-    remainingCycles = 456;
-    setLCDMode(MODE2);
+    MODE_cycles = 0;
+    setLCDMode(MODE0); // initially LCD controller is MODE0 = HBLANK
+    setScanline(0);
 }
 
 bool Lcd::isLCDEnabled() {
-    return (memory->readByte(LCDCONTROL) >> 7);
+    return (memory->readByte(LCDCONTROL) >> 7); // control bit 7 of FF40
 }
 
 BYTE Lcd::getLCDMode() {
-    return (memory->readByte(LCDSTATUS) & 0x03);
+    return (memory->readByte(LCDSTATUS) & 0x03); // get first 2bits of FF41
 }
 
 BYTE Lcd::getLCDModeRegister() {
@@ -26,9 +25,7 @@ BYTE Lcd::getLCDModeRegister() {
 
 void Lcd::setLCDMode(BYTE t_val) {
     unsigned char mode = Lcd::getLCDModeRegister() & 0xFC;   //11111100
-    unsigned char newMode = mode | t_val;
-
-    memory->writeByte(LCDSTATUS, newMode);
+    memory->writeByte(LCDSTATUS, mode | t_val); // set the first 2 bits of FF41
 }
 
 unsigned char Lcd::getScanline() {
@@ -39,89 +36,36 @@ void Lcd::setScanline(BYTE t_val) {
     memory->writeByte(LCDLY, t_val);
 }
 
-// void Lcd::step(int cycles) {
-//     Lcd::setLCDStatus();
-
-//     if(!Lcd::isLCDEnabled()){
-//         return;
-//     }
-//     else
-//         remainingCycles -= cycles;
+/*  from pandocs: http://bgb.bircd.org/pandocs.htm
+    The Mode Flag goes through the values 0, 2, and 3 at a cycle of about 109uS.
+    0 is present about 48.6uS, 2 about 19uS, and 3 about 41uS. This is interrupted 
+    every 16.6ms by the VBlank (1). The mode flag stays set at 1 for about 1.08 ms.
     
-//     // std::cout <<"RC: "<<(int)remainingCycles<< std::endl;
-//     // std::cout <<"CCC: "<<cycles<< std::endl;
-    
-
-//     unsigned char currentLine = Lcd::getScanline();
-
-//     if(remainingCycles <= 0) {
-//         remainingCycles = 456;
-
-//         if(currentLine < 144) {         //visible scanlines [0, 143]
-//             ppu->renderLine(currentLine);
-//             Lcd::setScanline(++currentLine);
-//         }
-//         else if(currentLine == 144) {   //VBLANK interrupt request
-//             InterruptHandler::requestInterrupt(memory, VBLANK);
-//             Lcd::setScanline(++currentLine);
-//         }
-//         else if(currentLine == 154) {   //invisible scanlines [144, 153]
-//             Lcd::setScanline(0);        //go to the next line
-//         }
-//         else
-//             Lcd::setScanline(++currentLine);
-//     }
-// }
-
-// void Lcd::setLCDStatus() {
-//     if(!isLCDEnabled()){
-//         Lcd::setLCDMode(MODE1);
-//         Lcd::setScanline(0);
-//         remainingCycles = 456;
-//         return;
-//     }
-
-//     unsigned char oldMode = Lcd::getLCDMode();
-
-//     if(Lcd::getScanline() >= 144 && Lcd::getScanline() <= 153)
-//         Lcd::setLCDMode(MODE1);
-//     else{
-//         if(remainingCycles < 204)
-//             Lcd::setLCDMode(MODE0);
-//         else if(remainingCycles < 376)
-//             Lcd::setLCDMode(MODE3);
-//         else if(remainingCycles < 456)
-//             Lcd::setLCDMode(MODE2);
-//     }
-    
-    
-//     unsigned char newMode = Lcd::getLCDMode();
-
-//     if((oldMode != newMode) && (newMode != MODE3))
-//         if(Lcd::testInterrupt(newMode))
-//             InterruptHandler::requestInterrupt(memory, LCD);
-//     if(testCoincidence()){
-//         InterruptHandler::requestInterrupt(memory, LCD);
-//     }
-// }
-
-
+    Mode 0 is present between 201-207 clks, 2 about 77-83 clks, and 3 about 169-175 clks. 
+    A complete cycle through these states takes 456 clks. VBlank lasts 4560 clks. 
+    A complete screen refresh occurs every 70224 clks.)
+*/
+ 
 void Lcd::step(int cycles){
-    if(memory->readByte(LCDLY) == memory->readByte(LCDLYC)){
-        BYTE lcdstatus = memory->readByte(LCDSTATUS);
-        lcdstatus |= 0X04; //set bit 2 to 1
+    if(getScanline() == memory->readByte(LCDLYC)){
+        BYTE lcdstatus = getLCDModeRegister();
+        lcdstatus |= 0x04; //set bit 2 to 1
         memory->writeByte(LCDSTATUS, lcdstatus);
     }
-    remainingCycles -= cycles;
+
+    MODE_cycles += cycles;
+        
     unsigned char currentLine = Lcd::getScanline();
+
     switch (getLCDMode()) {
         case MODE2: //OAM
-            if (remainingCycles < 376){
+            if (MODE_cycles >= 80){
                 Lcd::setLCDMode(MODE3);
+                MODE_cycles -= 80;
             }
             break;
         case MODE3: //LCD Driver
-            if(remainingCycles < 204){
+            if(MODE_cycles >= 172){
                 Lcd::setLCDMode(MODE0);
                 if(isLCDEnabled()){
                     ppu->renderLine(currentLine);
@@ -129,17 +73,17 @@ void Lcd::step(int cycles){
                 if(Lcd::testInterrupt(MODE0))
                     InterruptHandler::requestInterrupt(memory, LCD);
 
+                MODE_cycles -= 172;
             }
             break;
         case MODE0: //HBLANK
-            if(remainingCycles < 0){
+            if(MODE_cycles >= 204){
                 setScanline(++currentLine);
                 if(currentLine == 144){
                     Lcd::setLCDMode(MODE1);
                     InterruptHandler::requestInterrupt(memory, VBLANK);
                     if(Lcd::testInterrupt(MODE1))
                         InterruptHandler::requestInterrupt(memory, LCD);
-                    
                 }
                 else{
                     setLCDMode(MODE2);
@@ -148,35 +92,37 @@ void Lcd::step(int cycles){
                     if(Lcd::testCoincidence())
                         InterruptHandler::requestInterrupt(memory, LCD);   
                 }
-                remainingCycles = 456;
+                MODE_cycles -= 204;
             }
             break;
         case MODE1: //VBLANK
-            if (remainingCycles < 0){
+            if (MODE_cycles  >= 456 ){
                 setScanline(++currentLine);
-                if(currentLine == 153){
+                if(currentLine > 153){
                     setLCDMode(MODE2);
                     setScanline(0);
+
                 }
-                //else{
-                    remainingCycles = 456;
-                //}
+
+                MODE_cycles -= 456;
+
             }
             break;
     }
 }
 
-
+// this method checks bits 3 to 6 for LCD interrupt from MODE
 bool Lcd::testInterrupt(BYTE t_mode) {
+    BYTE lcdstatus = memory->readByte(LCDSTATUS);
     switch(t_mode) {
         case MODE0:
-            if(t_mode & 0x08)       //MODE0 interrupt enabled
+            if(lcdstatus & 0x08)       //MODE0 interrupt enabled
                 return true;
         case MODE1:
-            if(t_mode & 0x10)       //MODE1 interrupt enabled
+            if(lcdstatus & 0x10)       //MODE1 interrupt enabled
                 return true;
         case MODE2:
-            if(t_mode & 0x20)       //MODE2 interrupt enabled
+            if(lcdstatus & 0x20)       //MODE2 interrupt enabled
                 return true;
         default:
             return false;
@@ -193,58 +139,11 @@ bool Lcd::testCoincidence(){
     }
     return false;
 }
-//         lcdstatus |= 0X04; //set bit 2 to 1
-//         coincidenceFlag = true;
-//     }
 
-//}
-// bool Lcd::testCoincidence(){
-//     BYTE lcdstatus = memory->readByte(LCDSTATUS);
-//     bool coincidenceFlag = false;
-//     if(memory->readByte(LCDLY) == memory->readByte(LCDLYC)){
-//         lcdstatus |= 0X04; //set bit 2 to 1
-//         coincidenceFlag = true;
-//     }
-//     // else{
-//     //     lcdstatus &= 0XFB; //set bit 2 to 0
-//     // }
-//     memory->writeByte(LCDSTATUS, lcdstatus);
-//     if(coincidenceFlag && (lcdstatus & 0x40)){ // check coincidence enable bit 6
-//         return true;    //request interrupt
-//     }
-//     return false; // do nothing
-// }
-
+// this method updates the screen
 void Lcd::renderScreen(SDL_Renderer* t_renderer, SDL_Texture* t_texture) {
     SDL_UpdateTexture(t_texture, NULL, ppu->getRGBBuffer(), SCREEN_WIDTH * sizeof (uint32_t));
     SDL_RenderClear(t_renderer);
     SDL_RenderCopy(t_renderer, t_texture, NULL, NULL);
     SDL_RenderPresent(t_renderer);
-
-    
-    // for (int i = 0; i < SCREEN_HEIGHT ; ++i){
-    //     for(int j= 0; j< SCREEN_WIDTH;++j){
-    //        std::cerr<<buffer->at(i*SCREEN_WIDTH + j)<<"\t";
-    //        //color =  buffer->at(i*SCREEN_WIDTH + j);
-    //        //SDL_SetRenderDrawColor(t_renderer, (Uint8)color.r, (Uint8)color.g, (Uint8)color.b, 255);
-    //        //SDL_RenderDrawPoint(t_renderer, j, i);
-    //     }
-    //     std::cerr<<""<<std::endl;
-  //  }    
-    
-    /*const std::vector<RGBColor>* buffer = ppu->getRGBBuffer();
-    RGBColor color;
-    for (int i = 0; i < SCREEN_HEIGHT ; ++i){
-        for(int j= 0; j< SCREEN_WIDTH;++j){
-           color =  buffer->at(i*SCREEN_WIDTH + j);
-          //  std::cout<<"\n R:" << (int)color.r <<" G:" << (int)color.g <<" B:" << (int)color.b <<std::endl;
-
-          //SDL_SetRenderDrawColor(t_renderer, rand()/255, rand()/255, rand()/255,255);
-           SDL_SetRenderDrawColor(t_renderer, (Uint8)color.r, (Uint8)color.g, (Uint8)color.b, 255);
-           SDL_RenderDrawPoint(t_renderer, j, i);
-        }
-       //SDL_RenderPresent(t_renderer);
-    }
-    SDL_RenderPresent(t_renderer);*/
-    //getchar();
 }

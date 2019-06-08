@@ -23,6 +23,7 @@ Cpu::Cpu(Memory* m) {
     opcode = 0x00;
     pc = 0x00;
 }
+
 Cpu::~Cpu(void) {
     std::cout << "CPU distruttore\n";
     //exit(1);
@@ -40,7 +41,6 @@ struct instruction Cpu::getInstrSetAt(BYTE t_opcode) {
 struct instruction Cpu::getInstrSetCBPrefixAt(BYTE t_opcode) {
     return instrSetCBPrefix.at(t_opcode);
 }
-
 
 
 void Cpu::printCpuState(){
@@ -91,57 +91,21 @@ void Cpu::printCpuState(){
 }
 
 BYTE Cpu::step() {
-    if(isHalted() ||  isStopped()){
-        //std::cout << "HALT";
-        return 1;
+    if(isHalted() || isStopped()){
+        return getInstrSetAt(0x76).cycles;
     }
-    //std::cerr<<"PC: "<<std::hex << (int)getPC()<< "\n";
-       
     if(pc == 0xFE && mem->isBooting()){
         mem->resetBootPhase();
         reset();
     }
     opcode = Cpu::fetch();
     instruction instr = Cpu::decode(opcode);
-    // std::cout<< o <<std::endl;
-    BYTE ret = Cpu::execute(instr);
-   // std::cerr <<  "\tI: " <<instr.name<<"\toc: "<<std::hex<<(int)opcode<< std::endl;
-    //printCpuState();
+    BYTE cycles = Cpu::execute(instr);
     if(isLastOpcode(0xFB) || isLastOpcode(0xD9)){  //EI and RETI sets interrupts one machine clock cycle after
         setIntMasterEnable();
     }
-
-
-
     setLastOpcode(opcode);
-    return ret;
-}
-
-void Cpu::stepDebug(std::set<BYTE>* old_opcode){
-    bool flag = false;
-    std::cout<< "********************************************************************************************\n";
-    printCpuState();
-    opcode = Cpu::fetch();
-    instruction instr = Cpu::decode(opcode);
-    if(old_opcode->find(opcode) == old_opcode->end()){
-        old_opcode->insert(opcode);
-        flag = true;
-        //std::cout<<instr.name<<'\t'<<(int)opcode<<std::endl;
-    }
-    Cpu::execute(instr);
-    // if(old_opcode->find(opcode) == old_opcode->end()){
-    //     old_opcode->insert(opcode);
-    //     std::cout<<instr.name<<'\t'<<(int)opcode<<std::endl;
-    //     if(old_opcode->find(opcode) == old_opcode->end()){
-    //     old_opcode->insert(opcode);
-    //     std::cout<<instr.name<<'\t'<<(int)opcode<<std::endl;
-    // }
-    printCpuState();
-    std::cout<< (flag==true?"\nNEW":"\nDONE") << "\tInstruction: " <<instr.name<<"\topcode: "<<(int)opcode<< std::endl;
-    std::cout<< "********************************************************************************************\n";
-
-
-    
+    return cycles;
 }
 
 void Cpu::reset() {
@@ -155,13 +119,6 @@ void Cpu::reset() {
     regBC.reg = 0x0013;
     regDE.reg = 0x00D8;
     regHL.reg = 0x014D;
-
-    //std::cout<<"initInstructions called"<<std::endl;
-    //fill the instructions map
-    //Cpu::initInstructions();
-    //std::cout<<"initInstructions done"<<std::endl;
-    //std::cout<<"---------------------------------------------> "<<instrSet.size()<<std::endl;
-    //std::cout<<"---------------------------------------------> "<<instrSetCBPrefix.size()<<std::endl;
 
     //initialization of I/O registers in the internal RAM
     mem->writeByte(0xFF05, 0x00);	//mem->writeByte
@@ -199,7 +156,6 @@ void Cpu::reset() {
     intMasterEnable = false;
     halt = false;
     stop = false;
-    //Cpu::step();        //for debug
 }
 
 BYTE Cpu::fetch(void) {
@@ -210,7 +166,6 @@ BYTE Cpu::fetch(void) {
     incPC();
     return opcode;
 }
-
 
 struct instruction Cpu::decode(BYTE opcode) {
     return instrSet.at(opcode);
@@ -228,8 +183,7 @@ void Cpu::pushWord(WORD t_val) {
     decSP();
     decSP();
     mem->writeWord(getSP(), t_val);
-//     std::cout << "SP_value: " << std::hex << (int)t_val<< "\n";
-//     std::cout << "SP_add: " << std::hex << (int)sp<< "\n";
+
 }
 
 void Cpu::push(BYTE t_val) {

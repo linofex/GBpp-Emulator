@@ -141,6 +141,7 @@ void GameBoy::initSDL(){
 
 // This method loads the game in the ROM memory if all checks are correct
 bool GameBoy::loadGame(){
+	if(!rom.loadRom()){return false;}
 	if(checkCartridge()){
 		const std::vector<BYTE> *game = rom.getRom();
 

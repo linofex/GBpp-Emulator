@@ -1,42 +1,38 @@
 #include "../includes/ppu.hpp"
 #include <iostream>
-#include <SDL2/SDL.h>
+
 //#include <algorithm>
 
-Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelInfoBuffer(160*144, {0, BG}), RGBBuffer(160*144){
-    SDL_PixelFormat* pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
+Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelInfoBuffer(160*144, {0, BG}){
+    pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
     RGBColor white = WHITE;
     uint32_t color = SDL_MapRGB(pixelFormat, white.r, white.g, white.b);
     RGBBuffer = std::vector<Uint32>(160*144,color);
 }
 
 void Ppu::renderLine(BYTE t_currentline){
-    bufferY = t_currentline;
     BYTE LCDcontrolRegister = getLCDControlRegister();
+    //if bit 0 of FF40 is 1 then
     if(LCDcontrolRegister & 0x01){ // bit 0
         renderBGWindowLine(t_currentline);
         //std::cout<< "BG--------\n";
     }
     else{
-        SDL_PixelFormat* pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
         RGBColor white = WHITE;
         uint32_t color = SDL_MapRGB(pixelFormat, white.r, white.g, white.b);
         RGBBuffer = std::vector<Uint32>(160*144,color);
     }
     
-    if(LCDcontrolRegister & 0x20){ //bit 5
-        //renderWindowLine(t_currentline);
-        //std::cout<< "WINDOW\n";
-    }
+    //sprite enabled bit
     if(LCDcontrolRegister & 0x02){ //bit 1
         renderSpriteLine(t_currentline);
-        //std::cout<< "SPRITE";
     }
 }
 
 pixel Ppu::toPixels(WORD t_lineOfTile, BYTE t_palette, bool flipX, int i){
 
     BYTE palette;
+    //palette for sprite or bg
     switch(t_palette) {
         case 0:
             palette = getSpritePalette0();
@@ -74,7 +70,6 @@ pixel Ppu::toPixels(WORD t_lineOfTile, BYTE t_palette, bool flipX, int i){
 
         //to keep the information about the current item on the screen
         sourceType type = (t_palette == 2) ? BG : SP;
-
         pixel p = {rgb, {b, type}};
     //}
     return p;
@@ -131,6 +126,7 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, sourceType t_
     WORD startAddress;
     WORD offset;
 
+    //choose the correct memory zone
     if(controlRegister & 0x10){
         startAddress = 0x8000;
         offset = t_tileID*16;
@@ -141,6 +137,7 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, sourceType t_
 
     BYTE posY = getScrollY();
     BYTE posX = getScrollX();
+
     if(t_type == WN) {    //it is window
         posY = getWindowY();
         posX = getWindowX() - 7;
@@ -150,11 +147,15 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, sourceType t_
     pixel p = toPixels(lineOfATile, 2, false, (i + posX)%8);
         
     int offsetTile =  t_currentline*160 + i;
-    SDL_PixelFormat* pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
-    RGBBuffer[offsetTile] = SDL_MapRGB(pixelFormat, p.color.r, p.color.g, p.color.b);
-    //std::cout<<RGBBuffer[offsetTile]<<"\t";
-    pixelInfoBuffer[offsetTile] = p.info;
+
+    // write in the buffer
+    if ((offsetTile >= 0 && offsetTile < (160*144))) {
+        SDL_PixelFormat* pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
+        RGBBuffer[offsetTile] = SDL_MapRGB(pixelFormat, p.color.r, p.color.g, p.color.b);
+        pixelInfoBuffer[offsetTile] = p.info;
+    }
 }
+
 
 void Ppu::renderBGWindowLine(BYTE t_currentline){
     BYTE scrollY = getScrollY();// >> 3;
@@ -169,39 +170,21 @@ void Ppu::renderBGWindowLine(BYTE t_currentline){
     BYTE windowX = (getWindowX() - 7);
     WORD windowMemoryStart = (LCDcontrolRegister & 0x40) ? 0x9C00 : 0x9800;
 
-    for(int i = 0; i < SCREEN_WIDTH; ++i){
+    for(int i = 0; i < SCREEN_WIDTH; ++i){ // for evey pixel
         if((LCDcontrolRegister & 0x20) && (t_currentline >= windowY) && (i >= windowX)){
             offset = (((BYTE)(t_currentline - windowY))/8)*32 + (((BYTE)(i - windowX))/8);
             tileID = memory->readByte(windowMemoryStart + offset);
-
             fillLineOfTile(tileID, i, t_currentline, WN);
-        
             continue;        
         }
-
         offset = (((BYTE)(scrollY + t_currentline))/8)*32 + (((BYTE)(scrollX + i))/8);
         tileID = memory->readByte(BGMemoryStart + offset);
         fillLineOfTile(tileID, i, t_currentline, BG);
     }
 }
 
-/* void Ppu::renderWindowLine(BYTE t_currentline){
-    BYTE windowY = getWindowY() >> 3;
-    BYTE windowX = (getWindowX() - 7) >> 3;
-    BYTE windowMemoryStart = (getLCDControlRegister() & 0x40) ? 0x9C00 : 0x9800;
-    BYTE tileID;
-    BYTE offset;
-    //std::cerr<<std::hex<<(int)(getWindowY())<<"\n";
-    for(int i = 0; i < SCREEN_WIDTH/8; ++i){
-        if((t_currentline >= windowY*8) && (i > windowX) && (i < 20)){ 
-            offset = windowY*32 + (windowX + i);// % 32;
-            tileID = memory->readByte(windowMemoryStart + offset);
-            fillLineOfTile(tileID, i, t_currentline, 0);
-        }
-    }
 
-} */
-
+//return sprite info
 sprite Ppu::getSprite(BYTE spriteNum) {
     WORD spriteAddr = 0xFE00 + 4*spriteNum;
     sprite spriteInfo;
@@ -225,7 +208,7 @@ pixel Ppu::getSpritePixel(sprite t_sprite, BYTE t_currentline, int j) {
 
     pixel pixelOfASprite;
     WORD lineOfASprite;
-    WORD spriteStartAddr = 0x8000 + 16*t_sprite.patternNum;
+    WORD spriteStartAddr = 0x8000 + 16*t_sprite.patternNum; //sprites start at 80000 ALWAYS
     bool flipOnX = isFlippedX(t_sprite.attribs);
     bool flipOnY = isFlippedY(t_sprite.attribs);
     WORD offset;
@@ -250,6 +233,7 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
     int spriteCount=0;    
     BYTE height;
   
+    //for every sprite..
     for(int i = 0; i < 40; ++i) {
         spriteData = Ppu::getSprite(i);
         getLCDControlRegister() & 0x04 ? height = 16: height = 8;  //sprite height (8x8 || 8x16)
@@ -259,12 +243,9 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
             for(int j = 0; j < 8; ++j) { // * pixel
                 spritePixel = Ppu::getSpritePixel(spriteData, t_currentline, j);  
                 int offset = (t_currentline)*160 + spriteData.posX + j;
-                if (offset < 0 || offset > (160*144)) {continue;}
-                if(checkBufferPriority(spriteData.attribs, spritePixel.info, pixelInfoBuffer[offset])) {
-                        SDL_PixelFormat* pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
+                if (offset >= 0 && offset < (160*144) && checkBufferPriority(spriteData.attribs, spritePixel.info, pixelInfoBuffer[offset])) {
                         RGBBuffer[offset] = SDL_MapRGB(pixelFormat, spritePixel.color.r, spritePixel.color.g, spritePixel.color.b);
                         pixelInfoBuffer[offset] = spritePixel.info;
-
                 }         
             }
         }            
@@ -272,23 +253,14 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
 }
 
 
-bool Ppu::checkBufferPriority(BYTE t_spriteAttrib, pixelInfo t_spriteInfoNew, pixelInfo t_spriteInfoOld) {
+bool Ppu::checkBufferPriority(BYTE t_spriteAttrib, pixelInfo t_spriteInfoNew, pixelInfo t_pixelInfoOld) {
     //check sprite transparency
-    if(t_spriteInfoNew.colorID == 0)
-        return false;
+    if(t_spriteInfoNew.colorID == 0) {return false;}
     //sprite over BG and sprite is on top (priority = 0)
-    if(t_spriteInfoOld.type == BG && isSpriteOnTop(t_spriteAttrib)) {
-        return true;
-    }
-    else if(t_spriteInfoOld.type == BG && !isSpriteOnTop(t_spriteAttrib) && t_spriteInfoOld.colorID == 0) {
-        return true;
-    }
+    if(t_pixelInfoOld.type == BG && isSpriteOnTop(t_spriteAttrib)) {return true;}
+    else if(t_pixelInfoOld.type == BG && !isSpriteOnTop(t_spriteAttrib) && t_pixelInfoOld.colorID == 0) {return true;}
     //sprite over olds prite and new sprite is on top
-    else if(t_spriteInfoOld.type == SP && (t_spriteInfoNew.colorID > t_spriteInfoOld.colorID)) {
-        return true;
-    }
-    else {
-        return false;
-    }
+    else if(t_pixelInfoOld.type == SP && (t_spriteInfoNew.colorID > t_pixelInfoOld.colorID) && isSpriteOnTop(t_spriteAttrib)) {return true;}
+    else {return false;}
  
 }

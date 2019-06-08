@@ -44,8 +44,8 @@ class Cpu {
         BYTE fetch(void);
         struct instruction decode(BYTE);
         BYTE execute(instruction);
+       
    
-
     public:
             void printCpuState(void);
 

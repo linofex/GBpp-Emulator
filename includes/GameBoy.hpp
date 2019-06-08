@@ -27,26 +27,20 @@
             Cpu cpu;
             Ppu ppu;
             Lcd lcd;
-            //InterruptHandler interruptHandler;
             Rom rom;
+            Timer timer; //gameboy timer
+
+            //SDL setup
             SDL_Window* window; // gameboy screen
             SDL_Renderer* renderer; // gameboy renderer
-            SDL_Texture* texture;
-            Timer timer; //gameboy timer
-            std::vector<Uint32> times;
+            SDL_Texture* texture; // gameboy texture
+            SDL_Event event;
+           
             std::vector<BYTE> testRom;
             const Uint8* keyState;
-            
-            //unsigned long clockCycles;
-            SDL_Event event;
-            
-            //std::chrono::time_point<std::chrono::system_clock> targetOldTime;
-            Uint64 targetOldTime;   
-            Uint32 displayTime; 
-            Uint64 hostOldTime;
-            Uint32 lcdLastTime;
-            Uint32 onesecond;
-            double accumulator; 
+ 
+            float hostOldTime;
+            float accumulator; 
             
             //Uint64 hostNewTime;
             Uint64 hostFrequency;
@@ -56,7 +50,6 @@
             void pressedKey(BYTE);
             void releasedKey(BYTE);
         public:
-            long long int o;
             GameBoy();
             GameBoy(std::string);
             bool checkCartridge(void);
@@ -64,12 +57,9 @@
             void boot(void);
             void playGame(void);
             void sync(void);
-            void refreshLcdScreen(void);
             void userInput(void);
             void initSDL(void);
-            void printRomInfo(void);
-            void printNintendoGraphic(void);
-            void printByte(WORD);
+
             void turnOff(void);
             ~GameBoy();
         };

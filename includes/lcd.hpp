@@ -13,9 +13,8 @@ class Lcd {
     private:
         Memory* memory;
         Ppu* ppu;
-
-        unsigned char currentLine;
-        signed short remainingCycles;
+        signed short MODE_cycles;
+     
 
         void setLCDStatus(void);
         unsigned char getScanline(void);
@@ -32,7 +31,6 @@ class Lcd {
         Lcd(Memory*, Ppu*);
         void step(int);
         void renderScreen(SDL_Renderer*, SDL_Texture*);
-        //void renderScreen(SDL_Window*, SDL_Renderer*);
 
 
     

@@ -2,15 +2,15 @@
 #define PPU_H
 
 #include "memory.hpp"
-
+#include <SDL2/SDL.h>
 class Ppu{
     private:
         Memory* memory;
         std::vector<pixelInfo> pixelInfoBuffer;
         //std::vector<RGBColor> RGBBuffer;
         std::vector<uint32_t> RGBBuffer;
-        
-        BYTE bufferY;
+        SDL_PixelFormat *pixelFormat;
+
      
         inline BYTE getBGandWindowPalette(void) const {return memory->readByte(BGP);}   //Background palette 0xFF47
         inline BYTE getSpritePalette0(void) const {return memory->readByte(OBP0);}      //Object Palette spirtes0 0xFF48

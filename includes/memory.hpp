@@ -53,6 +53,7 @@ class Timer;
             BYTE buildJoypadStatus(WORD);
             void setJoypadStatus(BYTE);
 
+            void loadROM(const std::vector<BYTE>*);
             // this method writes one byte ad address t_add
             void writeByte(const WORD t_add, BYTE t_value);
             void setReadOnlyRom(){ readOnlyRom = true;}
@@ -63,7 +64,6 @@ class Timer;
             void setBootPhase(){ bootPhase = true;}
 
 
-            BYTE readf(void);
             // this method writes 2 byte starting from t_add
             void writeWord(const WORD t_add, WORD t_value);
 

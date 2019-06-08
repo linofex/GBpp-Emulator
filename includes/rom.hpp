@@ -27,12 +27,14 @@
             // BYTE MaskROM;           // 014C Mask ROM Version Number
             // BYTE CompCheck;         // 014D Complement check
             //                         // 014E-014F Checksum not needed for GB
-            std::vector<BYTE> game;               // 
+            std::vector<BYTE> game;
+            std::string RomFileName;               // 
         public:
             Rom();
             ~Rom();
             Rom (const std::string t_RomFileName);
             void printRomName() const;
+            bool loadRom(void);
             std::vector<BYTE> getNintendoLogo()const;
             std::string getRomName()const;
             const std::vector<BYTE>* getRom()const{ return &game; };

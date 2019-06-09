@@ -20,9 +20,9 @@ typedef unsigned short WORD; // 16bit unsigned
 #define FLAG_H 0x20 // bit 5
 #define FLAG_C 0x10 // bit 4
 
-#define REFRESH_CLOCKS_CYCLE 70224
-#define REFRESH_RATE 1.0/60.0
-
+#define CPU_FRQ 4194304 // Hz
+#define REFRESH_RATE 1.0/59.73 // 1/Hz
+#define REFRESH_CLOCKS_CYCLE CPU_FRQ*REFRESH_RATE
 
 //regAF.reg -> AF, regAF.high -> A, regAF.low -> F
 union REGISTER {

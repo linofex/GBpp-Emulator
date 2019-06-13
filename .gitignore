@@ -1,8 +1,10 @@
 # ignore folder vscode
 .vscode/
 
-# ignore main executable
+# ignore gameboy executables
 sources/main
 gameboy
-# ignore gameboy executable
 gameboy.exe
+
+# ignore object files
+*.o

@@ -8,7 +8,7 @@ Lcd::Lcd() {}
 Lcd::Lcd(Memory* t_memory, Ppu* t_ppu) : memory(t_memory), ppu(t_ppu){
     MODE_cycles = 0;
     setLCDMode(MODE0); // initially LCD controller is MODE0 = HBLANK
-    setScanline(0);
+    setScanline(0); 
 }
 
 bool Lcd::isLCDEnabled() {
@@ -103,9 +103,7 @@ void Lcd::step(int cycles){
                     setScanline(0);
 
                 }
-
-                MODE_cycles -= 456;
-
+                MODE_cycles -= 456; 
             }
             break;
     }

@@ -6,7 +6,7 @@
 
 void InterruptHandler::serveInterrupt(const BYTE t_interrupt, Memory* t_memory, Cpu* t_cpu){
     t_cpu->resetIntMasterEnable();                    // RETI and EI instructions enable it again
-    t_cpu->resethalt(); // power on the CPU
+    t_cpu->resethalt(); // exit halt CPU
     t_cpu->pushWord(t_cpu->getPC());  // Save PC in the stack
 
     BYTE irr = t_memory->readByte(IRR_ADD);          // Read Interrupt Request Reister from memory at 0x0FF0F

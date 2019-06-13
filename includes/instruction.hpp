@@ -1,11 +1,11 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
-#include "cpu.hpp"
+#include "utility.hpp"
 #include <string>
 #include <map>
 
-//class Cpu;
+class Cpu;
 
 struct instruction {
     std::string name;

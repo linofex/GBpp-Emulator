@@ -22,7 +22,6 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
 	initSDL();
 }
 
-
 // If a key is pressed this method requests a JOYPAD interrupt if necessary 
 void GameBoy::pressedKey(BYTE t_key){
 	BYTE keystatus = memory.getJoypadStatus();

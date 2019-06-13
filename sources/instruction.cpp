@@ -1,4 +1,6 @@
 #include "../includes/instruction.hpp"
+#include "../includes/cpu.hpp"
+
 #include <iostream>
 #include <map>
 #include <vector>
@@ -8,7 +10,6 @@ instruction::instruction(std::string name, BYTE cycles, void (*f)(Cpu*)) {
     this->cycles = cycles;
 	function = f;
 }
-
 
 void initCBPrefix(std::map<unsigned char, instruction>& instrSetCBPrefix) {
     instrSetCBPrefix.insert(std::make_pair(0x00, instruction("RLC B", 8, rlc_B)));

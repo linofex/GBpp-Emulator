@@ -1,7 +1,6 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 #include "utility.hpp"
-//#include"cpu.hpp"
 #include <vector>
 
 //   From Pandocs: http://bgb.bircd.org/pandocs.htm#lcdcontrolregister

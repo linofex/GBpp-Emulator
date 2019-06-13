@@ -6,7 +6,7 @@
 
 Timer::Timer(Memory* t_mem): memory(t_mem){
     timerCounter = 1024;
-    dividerCounter = 00;
+    dividerCounter = 0;
 }
 void Timer::updateTimers(unsigned long t_cycles) {
     Timer::stepTimer(t_cycles);

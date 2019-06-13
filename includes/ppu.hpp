@@ -7,7 +7,6 @@ class Ppu{
     private:
         Memory* memory;
         std::vector<pixelInfo> pixelInfoBuffer;
-        //std::vector<RGBColor> RGBBuffer;
         std::vector<uint32_t> RGBBuffer;
         SDL_PixelFormat *pixelFormat;
 

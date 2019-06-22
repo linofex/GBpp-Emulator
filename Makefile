@@ -47,7 +47,7 @@ gameboy: $(OBJS)
 	
 
 clean:
-	${CLEAN} $(OBJS) gameboy.*
+	${CLEAN} $(OBJS) gameboy*
 
 
 # DO NOT DELETE

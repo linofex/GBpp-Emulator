@@ -14,19 +14,18 @@
 Cpu::Cpu(void) { } 
 
 Cpu::Cpu(Memory* m) {
-    mem = m; //RICORDATELO
-    // Cpu::reset();
+    memory = m;
     Cpu::initInstructions();
     clockCycles = 0;
-    flag = false;
     lastOpcode = 0x00;
     opcode = 0x00;
     pc = 0x00;
+    halt = false;
+    stop = false;
+
 }
 
 Cpu::~Cpu(void) {
-    std::cout << "CPU distruttore\n";
-    //exit(1);
 }
 
 void Cpu::initInstructions() {
@@ -60,22 +59,22 @@ void Cpu::printCpuState(){
     // std::cout<< "HL: "<< std::hex<< (int)getHL() << std::endl;
     // std::cout<< "SP: "<< std::hex<< (int)getSP() << "\t";
     // std::cout<< "\nPC: "<< std::hex<< (int)getPC()<< "\t";
-    // std::cout<< "0xFF44: "<< std::hex<< (int)mem->readByte(0xFF44) << std::endl;
+    // std::cout<< "0xFF44: "<< std::hex<< (int)memory->readByte(0xFF44) << std::endl;
     
     // std::cout<< "Opcode: "<< std::hex<< (int)opcode << std::endl;
     // std::cout<< "Instruction: "<< instrSet.at(opcode).name << std::endl;
     //std::cout<< "Last Opcode: "<< std::hex<< (int)lastOpcode << std::endl;
     
     // Print registers
-    // std::cout << "IER: " << std::hex<< (int)mem->readByte(IER_ADD) << std::endl;
-    // std::cout << "IRR: " << std::hex<< (int)mem->readByte(IRR_ADD) << std::endl;
-     std::cout << "LCDCONTROL: " << std::hex<< (int)mem->readByte(LCDCONTROL) << std::endl;
-    //std::cout << "LCDSTATUS: " << std::hex<< (int)mem->readByte(LCDSTATUS) << std::endl;
-    // std::cout << "SCANLINE: " << std::hex<< (int)mem->readByte(LCDLY) << std::endl;
-    // std::cout << "LCDLYC: " << std::hex<< (int)mem->readByte(LCDLYC) << std::endl;
+    // std::cout << "IER: " << std::hex<< (int)memory->readByte(IER_ADD) << std::endl;
+    // std::cout << "IRR: " << std::hex<< (int)memory->readByte(IRR_ADD) << std::endl;
+     std::cout << "LCDCONTROL: " << std::hex<< (int)memory->readByte(LCDCONTROL) << std::endl;
+    //std::cout << "LCDSTATUS: " << std::hex<< (int)memory->readByte(LCDSTATUS) << std::endl;
+    // std::cout << "SCANLINE: " << std::hex<< (int)memory->readByte(LCDLY) << std::endl;
+    // std::cout << "LCDLYC: " << std::hex<< (int)memory->readByte(LCDLYC) << std::endl;
 
-    //std::cout << "SCROLLX: " << std::hex<< (int)mem->readByte(SCROLLX) << std::endl;
-    std::cout << "SCROLLY: " << std::hex<< (int)mem->readByte(SCROLLY) << std::endl;
+    //std::cout << "SCROLLX: " << std::hex<< (int)memory->readByte(SCROLLX) << std::endl;
+    std::cout << "SCROLLY: " << std::hex<< (int)memory->readByte(SCROLLY) << std::endl;
 
 
     std::cout << "INTERRUPTS: " << ((isIntMasterEnable() == true) ? "ENABLED" : "DISAABLED") <<  std::endl;
@@ -91,11 +90,18 @@ void Cpu::printCpuState(){
 }
 
 BYTE Cpu::step() {
-    if(isHalted() || isStopped()){
+    
+    // if cpu is halted or stopped, return cycles and do nothing
+    if(isHalted()){
         return getInstrSetAt(0x76).cycles;
     }
-    if(pc == 0xFE && mem->isBooting()){
-        mem->resetBootPhase();
+    else if(isStopped()){
+        return getInstrSetAt(0x10).cycles;
+    }
+
+    // boot phase ended, reset the CPU and registers
+    if(pc == 0xFE && memory->isBooting()){
+        memory->resetBootPhase();
         reset();
     }
     opcode = Cpu::fetch();
@@ -121,37 +127,37 @@ void Cpu::reset() {
     regHL.reg = 0x014D;
 
     //initialization of I/O registers in the internal RAM
-    mem->writeByte(0xFF05, 0x00);	//mem->writeByte
-    mem->writeByte(0xFF06, 0x00);
-    mem->writeByte(0xFF07, 0x00);
-    mem->writeByte(0xFF10, 0x80);
-    mem->writeByte(0xFF11, 0xBF);
-    mem->writeByte(0xFF12, 0xF3);
-    mem->writeByte(0xFF14, 0xBF);
-    mem->writeByte(0xFF16, 0x3F);
-    mem->writeByte(0xFF17, 0x00);
-    mem->writeByte(0xFF19, 0xBF);
-    mem->writeByte(0xFF1A, 0x7F);
-    mem->writeByte(0xFF1B, 0xFF);
-    mem->writeByte(0xFF1C, 0x9F);
-    mem->writeByte(0xFF1E, 0xBF);
-    mem->writeByte(0xFF20, 0xFF);
-    mem->writeByte(0xFF21, 0x00);
-    mem->writeByte(0xFF22, 0x00);
-    mem->writeByte(0xFF23, 0xBF);
-    mem->writeByte(0xFF24, 0x77);
-    mem->writeByte(0xFF25, 0xF3);
-    mem->writeByte(0xFF26, 0xF1);
-    mem->writeByte(0xFF40, 0x91);
-    mem->writeByte(0xFF42, 0x00);
-    mem->writeByte(0xFF43, 0x00);
-    mem->writeByte(0xFF45, 0x00);
-    mem->writeByte(0xFF47, 0xFC);
-    mem->writeByte(0xFF48, 0xFF);
-    mem->writeByte(0xFF49, 0xFF);
-    mem->writeByte(0xFF4A, 0x00);
-    mem->writeByte(0xFF4B, 0x00);
-    mem->writeByte(0xFFFF, 0x00);
+    memory->writeByte(0xFF05, 0x00);	//memory->writeByte
+    memory->writeByte(0xFF06, 0x00);
+    memory->writeByte(0xFF07, 0x00);
+    memory->writeByte(0xFF10, 0x80);
+    memory->writeByte(0xFF11, 0xBF);
+    memory->writeByte(0xFF12, 0xF3);
+    memory->writeByte(0xFF14, 0xBF);
+    memory->writeByte(0xFF16, 0x3F);
+    memory->writeByte(0xFF17, 0x00);
+    memory->writeByte(0xFF19, 0xBF);
+    memory->writeByte(0xFF1A, 0x7F);
+    memory->writeByte(0xFF1B, 0xFF);
+    memory->writeByte(0xFF1C, 0x9F);
+    memory->writeByte(0xFF1E, 0xBF);
+    memory->writeByte(0xFF20, 0xFF);
+    memory->writeByte(0xFF21, 0x00);
+    memory->writeByte(0xFF22, 0x00);
+    memory->writeByte(0xFF23, 0xBF);
+    memory->writeByte(0xFF24, 0x77);
+    memory->writeByte(0xFF25, 0xF3);
+    memory->writeByte(0xFF26, 0xF1);
+    memory->writeByte(0xFF40, 0x91);
+    memory->writeByte(0xFF42, 0x00);
+    memory->writeByte(0xFF43, 0x00);
+    memory->writeByte(0xFF45, 0x00);
+    memory->writeByte(0xFF47, 0xFC);
+    memory->writeByte(0xFF48, 0xFF);
+    memory->writeByte(0xFF49, 0xFF);
+    memory->writeByte(0xFF4A, 0x00);
+    memory->writeByte(0xFF4B, 0x00);
+    memory->writeByte(0xFFFF, 0x00);
     
     intMasterEnable = false;
     halt = false;
@@ -159,10 +165,7 @@ void Cpu::reset() {
 }
 
 BYTE Cpu::fetch(void) {
-    //std::cout<<"fetch"<<std::endl;
-    //unsigned char opcode = 0x80;//
-   
-    BYTE opcode = mem->readByte(pc);
+    BYTE opcode = memory->readByte(pc);
     incPC();
     return opcode;
 }
@@ -172,9 +175,7 @@ struct instruction Cpu::decode(BYTE opcode) {
 }
 
 BYTE Cpu::execute(instruction instr) {
-   // std::cout<<"execute"<<std::endl;
     instr.function(this);
-
     //return clock cycles to update the counter
     return instr.cycles;
 }
@@ -182,14 +183,13 @@ BYTE Cpu::execute(instruction instr) {
 void Cpu::pushWord(WORD t_val) { 
     decSP();
     decSP();
-    mem->writeWord(getSP(), t_val);
+    memory->writeWord(getSP(), t_val);
 
 }
 
 void Cpu::push(BYTE t_val) {
-    //aggiungere controllo dell'indirizzo >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     decSP();
-    mem->writeByte(getSP(), t_val);
+    memory->writeByte(getSP(), t_val);
     
 }
 
@@ -200,7 +200,7 @@ WORD Cpu::popWord() {
 }
 
 BYTE Cpu::popByte() {
-    BYTE temp = mem->readByte(getSP());
+    BYTE temp = memory->readByte(getSP());
     incSP();
     return temp;
 }

@@ -26,8 +26,8 @@ GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory)
     memory.linkTimer(&timer);
 	hostOldTime = SDL_GetPerformanceCounter();
 	hostFrequency = SDL_GetPerformanceFrequency();
-	accumulator = 0.0;
 	initSDL();
+	
 }
 
 // If a key is pressed this method requests a JOYPAD interrupt if necessary 
@@ -152,8 +152,6 @@ bool GameBoy::loadGame(){
 	if(checkCartridge()){
 		const std::vector<BYTE> *game = rom.getRom();
 
-		//std::vector<BYTE>::const_iterator it = game->begin();
-
 		//copy the rom in the the memory
 	
 		if(game->size() > 0x8000){
@@ -162,18 +160,6 @@ bool GameBoy::loadGame(){
 		}
 		memory.loadROM(game);
 		if(isTetris) memory.writeByte(0x02F0, 0x76);
-		// for(; it != (*game).end() ; ++it){
-		// 	if(address < 0x8000){
-		// 		if(isTetris && address == 0x2F0){
-		// 			memory.writeByte(address++, 0x76);
-		// 		}		
-		// 		else{memory.writeByte(address++, *it);}
-		// 	}
-		// 	else{
-		// 		std::cerr<< "Not enough memory";
-		// 		return false;
-		// 	}
-		// }
 		memory.setReadOnlyRom();
 		return true;
 	}  
@@ -188,7 +174,7 @@ void GameBoy::playGame(){
 	for(;;){
 		userInput(); 
 
-		// REFRESH_CLOCKS_CYCLE = 70224 is the number of cycles before a lcd refresh
+		// REFRESH_CLOCKS_CYCLE = 70222 is the number of cycles before a lcd refresh
 		while (cpu.getClockCycles() < REFRESH_CLOCKS_CYCLE){
 			BYTE instructionCycles = cpu.step();
 			cpu.addClockCycles(instructionCycles);
@@ -197,9 +183,9 @@ void GameBoy::playGame(){
 			InterruptHandler::doInterrupt(&memory, &cpu);
 		}
 
-		// refresh the screen evey 70224 == 1/60s
+		// refresh the screen evey 70221 ~= 1/59.73s
 		lcd.renderScreen(renderer, texture);
-		// synchronize the two machines
+		// synchronize the emulator with the target gameboy
 		sync();
 		cpu.resetClockCycles();
 	}
@@ -210,6 +196,7 @@ bool GameBoy::checkCartridge(){
     return rom.getNintendoLogo() == testRom;
 }
 
+// Close all SDL structures and exit
 void GameBoy::turnOff(){
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
@@ -223,60 +210,25 @@ void GameBoy::turnOff(){
 // Since the host machine is faster than target machines, a sleep time
 // syncronizes the machines
 
-
-// void GameBoy::sync(){
-// 	float c = cpu.getClockCycles();
-// 	float time = c/4194304;
-// 	std::cerr << "ETIME: " << time << "\n";
-// 	std::cerr << "diffe: " << (float)SDL_GetTicks()/1000 - hostOldTime  << "\n";
-
-// 	if(((float)SDL_GetTicks()/1000 - hostOldTime) < time){
-// 		std::cerr << "ETIME: " << (time - (SDL_GetTicks()/1000 - hostOldTime))*1000000 << "\n";
-// 		usleep((time - (SDL_GetTicks()/1000 - hostOldTime))*1000000);
-// 		//hostOldTime = (float)SDL_GetTicks()/1000;
-// 	}
-// 	// double elapsedTime =   (double)(SDL_GetPerformanceCounter() - hostOldTime) / (double)hostFrequency;
-// 	// if(elapsedTime < (double)1/60){
-// 	// 	//std::cerr << "ETIME: " << elapsedTime << "\n";
-// 	// 	useconds_t t  = ((double)1/60 - elapsedTime)*1000*1000;
-// 	// 	accumulator += (((double)1/60 - elapsedTime)*1000*1000) - t;
-// 	// 	//std::cerr << accumulator << "\n";
-// 	// 	if(accumulator > 100){t+= accumulator;accumulator = 0.0;}
-// 	// 	usleep(t);
-		
-// 	//}
-// 	//else{std::cerr << "ELSE: " << elapsedTime << "\n";}
-// 	hostOldTime = (float)SDL_GetTicks()/1000;
-
-	
-// }
-
-
-
-
-// This method emulates the timing of the gameboy.
-// Since the host machine is faster than target machines, a sleep time
-// syncronizes the machines
-
 void GameBoy::sync(){
-	double elapsedTime =  (double)(SDL_GetPerformanceCounter() - hostOldTime) / (double)hostFrequency;
+	/*
+	hostOldTime = SDL_GetPerformanceCounter() -> Get the current value of the high resolution counter
+	hostFrequency = SDL_GetPerformanceFrequency() ->  Get the count per second of the high resolution counter
+	*/
+	double elapsedTime =  ((double)(SDL_GetPerformanceCounter() - hostOldTime) / (double)hostFrequency)*1.15;
 	if(elapsedTime < REFRESH_RATE){
-		elapsedTime *= 1.15;
 		unsigned int t  = (REFRESH_RATE - elapsedTime)*1000*1000;
-		std::cout << "Late" << elapsedTime << "\n";
-		//useconds_t t  = (REFRESH_RATE - elapsedTime)*1000*1000;
-		
-			#ifdef __linux__
-				usleep(t);      // usleep takes sleep time in us
-			#endif
-			#if defined (__WIN32__) || defined (__MINGW32__)
-				Sleep(t/1000);  // Sleep takes sleep time in ms
-			#endif
+		#ifdef __linux__
+			usleep(t);      // usleep takes sleep time in us
+		#endif
+		#if defined (__WIN32__) || defined (__MINGW32__)
+			Sleep(t/1000);  // Sleep takes sleep time in ms
+		#endif
 	}
+
 	hostOldTime = SDL_GetPerformanceCounter();
 	
 }
 
 GameBoy::~GameBoy(){
-    //std::cout << "GAMEBOY distruttore\n";
 }

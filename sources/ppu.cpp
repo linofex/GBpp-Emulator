@@ -99,7 +99,6 @@ RGBColor Ppu::getRGBColor(BYTE t_colorID, BYTE palette) {
     
     
     RGBColor color = getColorFromPaletteID(palette);
-  // std::cout<<" R:" << (int)color.r <<" G:" << (int)color.g <<" B:" << (int)color.b <<std::endl;
     return color;
 
 }
@@ -192,15 +191,6 @@ sprite Ppu::getSprite(BYTE spriteNum) {
     spriteInfo.posX = (int)memory->readByte(spriteAddr++) - 8;
     spriteInfo.patternNum = memory->readByte(spriteAddr++);
     spriteInfo.attribs = memory->readByte(spriteAddr);
-    //std::cout<<"PatNumb: "<<std::hex<<(int)spriteInfo.patternNum<<std::endl;
-    //if(spriteInfo.patternNum == 0) {    
-        //std::cout<<"PosY: "<<std::hex<<(int)spriteInfo.posY<<std::endl;
-        //std::cout<<"PosX: "<<std::hex<<(int)spriteInfo.posX<<std::endl;
-        //std::cout<<"PatNumb: "<<std::hex<<(int)spriteInfo.patternNum<<std::endl;
-        //std::cout<<"Attribs: "<<std::hex<<(int)spriteInfo.attribs<<std::endl;
-        //std::cout<<"__________________________________________"<<std::endl;
-    //}
-
     return spriteInfo;    
 }
 

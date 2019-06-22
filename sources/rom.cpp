@@ -29,7 +29,7 @@ bool Rom::loadRom(){
         return true;
     }
     else{
-        std::cout << "[ERROR] Unable to open file";
+        std::cerr << "[ERROR] Unable to open file";
         return false;
     }
 }

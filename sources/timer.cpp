@@ -41,7 +41,6 @@ void Timer::setTimer() {
             newTimer = 256;  //  256 = CLOCK/16384Hz
             break;
         default:
-            //exit(1);
             //std::cout<<"Invalid timer"<<std::endl;
             break; 
     }

@@ -56,7 +56,6 @@
             const Uint8* keyState;
  
             float hostOldTime;
-            float accumulator; 
             
             //Uint64 hostNewTime;
             Uint64 hostFrequency;

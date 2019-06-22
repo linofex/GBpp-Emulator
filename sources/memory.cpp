@@ -103,7 +103,6 @@ BYTE Memory::readByte(const WORD t_add) {
         return OAM.at(t_add & 0x00FF); // from 0 to 159
     }
     else if(t_add >= 0xFEA0 && t_add < 0xFEFF){
-      //std::cout << "[ERROR] MEMORY location not usable!\n";
       return 0x00;
     }
     // I/O ports
@@ -138,7 +137,6 @@ void Memory::writeByte(const WORD t_add, BYTE t_value){
     
     // Video Memory
     else if (t_add>= 0x8000 && t_add < 0xA000){
-       // std::cout<<"SCRIVO I TILE " << std::hex << (int)t_value<<std::endl;
         vRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
     }
     // external memory
@@ -147,7 +145,6 @@ void Memory::writeByte(const WORD t_add, BYTE t_value){
     }
     // work memory
     else if (t_add >= 0xC000 && t_add < 0xE000){
-         //std::cout << "BG!: " << std::hex <<(int)t_value<< "\n";
         wRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
         echowRam[t_add & 0x1FFF] = t_value; // from 0 to 8191 (8KB)
          

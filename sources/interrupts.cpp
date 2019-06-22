@@ -20,7 +20,6 @@ void InterruptHandler::serveInterrupt(const BYTE t_interrupt, Memory* t_memory, 
         case VBLANK:
             //std::cout << "V_BLANK" << std::endl;
             t_cpu->setPC(VBLANK_ADD);
-            //std::cout << std::hex << (int)t_cpu->getPC() << std::endl;
             break;
         case LCD:
             t_cpu->setPC(LCD_ADD);
@@ -29,7 +28,6 @@ void InterruptHandler::serveInterrupt(const BYTE t_interrupt, Memory* t_memory, 
             t_cpu->setPC(TIMER_ADD);
             break;
         case JOYPAD:
-            //std::cout << "JOYPAD\n" << std::endl;
             t_cpu->setPC(JOYPAD_ADD);
             t_cpu->resetStop();
     }

@@ -14,7 +14,7 @@ class Cpu {
     
     private:
         //useful pointers
-        Memory* mem;
+        Memory* memory;
         //special registers of 16 bits
         WORD pc;    //program counter
         WORD sp;    //stack pointer
@@ -32,7 +32,7 @@ class Cpu {
         std::map<unsigned char, struct instruction> instrSetCBPrefix;
 
         //interrupt master enable
-        bool intMasterEnable;       //an interrupt can only be served IFF this is TRUE
+        bool intMasterEnable; //an interrupt can only be served IFF this is TRUE
         
         BYTE opcode;        
         BYTE lastOpcode;
@@ -47,10 +47,8 @@ class Cpu {
        
    
     public:
-            void printCpuState(void);
+        void printCpuState(void);
 
-            long long int o;
-            bool flag;
         Cpu(void);
         Cpu(Memory*);
         ~Cpu(void);
@@ -106,10 +104,10 @@ class Cpu {
         inline void setFlag(const BYTE n) {regAF.low |= n;}
         inline void resetFlag(const BYTE n) {regAF.low &= ~n;}
 
-        inline BYTE readByte(WORD t_addr) {return mem->readByte(t_addr);}
-        inline void writeByte(WORD t_addr, BYTE t_val) {mem->writeByte(t_addr, t_val);}
-        inline WORD readWord(WORD t_addr) {return mem->readWord(t_addr);}
-        inline void writeWord(WORD t_addr, WORD t_val) {mem->writeWord(t_addr, t_val);}
+        inline BYTE readByte(WORD t_addr) {return memory->readByte(t_addr);}
+        inline void writeByte(WORD t_addr, BYTE t_val) {memory->writeByte(t_addr, t_val);}
+        inline WORD readWord(WORD t_addr) {return memory->readWord(t_addr);}
+        inline void writeWord(WORD t_addr, WORD t_val) {memory->writeWord(t_addr, t_val);}
 
         inline WORD getSP(void) const {return sp;}
         inline WORD getPC(void) const {return pc;}

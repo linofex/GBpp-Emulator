@@ -1,10 +1,18 @@
 #include "../includes/GameBoy.hpp"
 #include <vector>
-#include <unistd.h>
+#include <unistd.h>  // for sleep
 #include <iostream>
 #include <iomanip>
 
-//#include <windows.h>
+
+#ifdef __linux__
+	#include <unistd.h>
+#endif
+
+#if defined (__WIN32__) || defined (__MINGW32__)
+	#include <windows.h>
+#endif
+
 
 // /GameBoy::GameBoy(){}
 GameBoy::GameBoy(std::string t_RomFileName):memory(), cpu(&memory), ppu(&memory), lcd(&memory, &ppu), rom(t_RomFileName), timer(&memory){ 
@@ -253,21 +261,17 @@ void GameBoy::turnOff(){
 void GameBoy::sync(){
 	double elapsedTime =  (double)(SDL_GetPerformanceCounter() - hostOldTime) / (double)hostFrequency;
 	if(elapsedTime < REFRESH_RATE){
+		elapsedTime *= 1.15;
+		unsigned int t  = (REFRESH_RATE - elapsedTime)*1000*1000;
+		std::cout << "Late" << elapsedTime << "\n";
+		//useconds_t t  = (REFRESH_RATE - elapsedTime)*1000*1000;
 		
-		useconds_t t  = (REFRESH_RATE - elapsedTime)*1000*1000;
-		if((t - accumulator) > 0){
-			usleep(t-accumulator);
-			accumulator = 0.0;
-		}
-		else{
-			accumulator = ((accumulator - t) < 0) ? 0 : accumulator - t; 
-		}
-	}
-	else{
-		if(!memory.isBooting()){
-			
-			accumulator += (elapsedTime - REFRESH_RATE)*1000*1000;
-		}
+			#ifdef __linux__
+				usleep(t);      // usleep takes sleep time in us
+			#endif
+			#if defined (__WIN32__) || defined (__MINGW32__)
+				Sleep(t/1000);  // Sleep takes sleep time in ms
+			#endif
 	}
 	hostOldTime = SDL_GetPerformanceCounter();
 	

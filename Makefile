@@ -1,7 +1,16 @@
+ifeq ($(OS),Windows_NT)
+    CFLAGS = -g -std=c++11 -O2 -I \SDL2\i686-w64-mingw32\include -L C:\SDL2\i686-w64-mingw32\lib -lSDL2 -lSDL2main
+	LDFLAGS = -std=c++11 -lSDL2  -lSDL2main
+
+else 
+	CFLAGS = -g -std=c++11 -O2 -lSDL2 
+	LDFLAGS = -std=c++11 -lSDL2 
+
+endif
+
 CC = g++ # compilatore
 LD = g++ # linker
-CFLAGS = -g -std=c++11 -O2 -lSDL2 
-LDFLAGS = -std=c++11 -O2 -lSDL2 
+
 INCLUDES = ./includes
 SOURCES = ./sources
 

@@ -1,2 +1,63 @@
 # GBC-Emulator
-A GameBoy emulator written in C++
+A GameBoy emulator written in C++. It works on Linux and Windows platforms.
+
+It requires SDL_2 for graphic, timing, and inputs from keyboard 
+
+## Useful links
+
+- Pandocs specification. Everything You Always Wanted To Know About GAMEBOY - [link](http://bgb.bircd.org/pandocs.htm)
+
+- Very useful video about the gameboy - [link](https://media.ccc.de/v/33c3-8029-the_ultimate_game_boy_talk)
+ 
+- Table for correct instruction opcodes and CPU cycles - [link](http://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html)
+
+- GameBoy manual - [link](https://realboyemulator.files.wordpress.com/2013/01/gbcpuman.pdf)
+
+- Useful developing control flow of the emulator - [link](http://www.codeslinger.co.uk/pages/projects/gameboy.html)
+
+## Useful debugging tools
+- Useful tool to evaluate the correctness of the emulator - [link](http://bgb.bircd.org/)
+- Test roms for instructions debugging. (Already present in /roms/individual directory) - [link](https://github.com/retrio/gb-test-roms).
+
+
+## Controls
+
+
+| Gameboy  | Emulator |
+| ------------- | ------------- |
+| A  |   a |
+| B  | s |
+| UP  | up key  |
+| DOWN  | down key  |
+| LEFT  |  left key  |
+| RIGHT  |  right key  |
+| START  | space bar  |
+| SELECT  | b  |
+
+## Working games
+- tetris
+- battle city
+- shangay
+- Dr.Mario (only some sprites are too fast)
+- harmony
+- serpent
+- Q Billion
+
+## Not working games
+- space invaders is too fast
+- pop up is a bit slow
+
+## To Do
+- Implement ROM and RAM banking to support ROMs larger than 32kB
+- Implement sound emulation
+- Find bugs of sprites priority 
+- Try new games
+
+## Build
+run `make gameboy` from both Linux and Windows inside the main directory
+
+## Usage
+`cd path_to_GBpp-Emulator`, then`./gameboy gameboy_rom.gb` for Linux
+ 
+ ## Screenshots
+ 

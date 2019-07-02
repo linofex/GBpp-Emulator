@@ -52,19 +52,18 @@ class Timer;
             BYTE buildJoypadStatus(WORD);
             void setJoypadStatus(BYTE);
 
-            void loadROM(const std::vector<BYTE>*);
             // this method writes one byte ad address t_add
             void writeByte(const WORD t_add, BYTE t_value);
+            // this method writes 2 byte starting from t_add
+            void writeWord(const WORD t_add, WORD t_value);
+
+            void loadROM(const std::vector<BYTE>*);
             void setReadOnlyRom(){ readOnlyRom = true;}
             void resetReadOnlyRom(){ readOnlyRom = false;}
             
             bool isBooting(){return bootPhase;}
             void resetBootPhase(){ bootPhase = false;}
             void setBootPhase(){ bootPhase = true;}
-
-
-            // this method writes 2 byte starting from t_add
-            void writeWord(const WORD t_add, WORD t_value);
 
             void writeInStack(Cpu* t_cpu, WORD t_value);
             void linkTimer(Timer*);

@@ -16,7 +16,7 @@ bool Lcd::isLCDEnabled() {
 }
 
 BYTE Lcd::getLCDMode() {
-    return (memory->readByte(LCDSTATUS) & 0x03); // get first 2bits of FF41
+    return (memory->readByte(LCDSTATUS) & 0x03); // get first 2 bits of FF41
 }
 
 BYTE Lcd::getLCDModeRegister() {
@@ -43,7 +43,7 @@ void Lcd::setScanline(BYTE t_val) {
     
     Mode 0 is present between 201-207 clks, 2 about 77-83 clks, and 3 about 169-175 clks. 
     A complete cycle through these states takes 456 clks. VBlank lasts 4560 clks. 
-    A complete screen refresh occurs every 70224 clks.)
+    A complete screen refresh occurs every 70224 clks.
 */
  
 void Lcd::step(int cycles){

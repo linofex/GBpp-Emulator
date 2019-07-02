@@ -1,4 +1,4 @@
-# GBC-Emulator
+# GB-Emulator
 A GameBoy emulator written in C++. This project was developed for the "Emulation and virtualization" course at University of Pisa.
 
 It works on Linux and Windows platforms. 
@@ -59,7 +59,7 @@ It requires SDL_2 library for graphic, timing, and inputs from keyboard. (For Wi
 run `make gameboy` from both Linux and Windows inside the main directory
 
 ## Usage
-`cd path_to_GBpp-Emulator`, then`./gameboy gameboy_rom.gb` for Linux
+`cd path_to_GBpp-Emulator`, then `./gameboy gameboy_rom.gb` for Linux or `.\gameboy.exe gameboy_rom.gb` for Windows
  
  ## Screenshots
  <img src="https://github.com/linofex/GBpp-Emulator/blob/master/screenshots/boot.gif" height="200" width="200"> <img src="https://github.com/linofex/GBpp-Emulator/blob/master/screenshots/battle_city.png" height="200" width="200"> 

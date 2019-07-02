@@ -26,17 +26,14 @@ class Ppu{
 
         void fillLineOfTile(BYTE, int, BYTE, sourceType);
         void renderBGWindowLine(BYTE);
-        //void renderWindowLine(BYTE);
         void renderSpriteLine(BYTE);
         
         pixel toPixels(WORD, BYTE, bool, int);
         RGBColor getColorFromPaletteID(BYTE);
         RGBColor getRGBColor(BYTE, BYTE);
         sprite getSprite(BYTE);
-        //std::vector<std::vector<RGBColor>> buildSprite(sprite);
         pixel getSpritePixel(sprite, BYTE, int);
         bool checkBufferPriority(BYTE, pixelInfo, pixelInfo);
-        //std::vector<RGBColor> flipY(std::vector<RGBColor>);
 
     public:
         Ppu(Memory*);
@@ -44,9 +41,6 @@ class Ppu{
         inline const uint32_t* getRGBBuffer(void) const {return RGBBuffer.data();}
         void fillLineOfTileDB(WORD);
 
-
 };
-
-
 
 #endif

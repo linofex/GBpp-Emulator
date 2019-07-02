@@ -578,48 +578,14 @@ void init(std::map<unsigned char, instruction>& instrSet) {
     instrSet.insert(std::make_pair(0xFC, instruction("UNDEFINED", 0, not_defined))); 
     instrSet.insert(std::make_pair(0xFE, instruction("CP d8", 4, cp_A_n)));  
     instrSet.insert(std::make_pair(0xFF, instruction("RST 38", 16, rst_38))); 
-    
-    
-  
-
-    
-    
-  
-
-    //---------------------instrSet.insert(std::make_pair(0xE8, instruction("ADD SP, N", 16, add_SP_n)));  
-
-    
-    
- 
-    
     instrSet.insert(std::make_pair(0x1B, instruction("DEC DE", 4, dec_DE)));
-     
-
-
     
-
-
-
-    /* instrSet.insert(std::make_pair(0x06, instruction("LOAD B, n", 8, load_B_n)));
-    instrSet.insert(std::make_pair(0x0E, instruction("LOAD C, n", 8, load_C_n)));
-    instrSet.insert(std::make_pair(0x16, instruction("LOAD D, n", 8, load_D_n)));  
-    instrSet.insert(std::make_pair(0x1E, instruction("LOAD E, n", 8, load_E_n)));
-    
-    instrSet.insert(std::make_pair(0x2E, instruction("LOAD L, n", 8, load_L_n)));   */
-
-
-
-
-
-    ////std::cout<<"---------------------------------------------> "<<instrSet.at(0x80).name<<std::endl;
-
 }
 
 //----------------------- EMPTY -------------------------------------
 static void not_defined(Cpu* c) {
     //std::cout<<"Instruction not defined"<<std::endl;
     //std::cout<< "PC: "<<std::hex <<(int)(c->readByte(c->getPC()-2))<< "\n";
-
 }
 
 //-----------------------ADD-------------------------------------
@@ -658,28 +624,6 @@ static void add_A_n(Cpu* c) {
     unsigned char n = c->readByte(c->getPC());
     c->incPC();
     add(c, n);
-/* 
-    unsigned short res = c->getA() + n;
-    
-    if(((res) & 0x00FF) == 0)        //sum = 0
-        c->setFlag(FLAG_Z);
-    else
-        c->resetFlag(FLAG_Z);
-
-    c->resetFlag(FLAG_N);
-        
-    if(res & 0xFF00)  //sum overflow
-        c->setFlag(FLAG_C);
-    else
-        c->resetFlag(FLAG_C);
-        
-    if(((n & 0x0F) + (c->getA() & 0x0F)) > 0x0F)    //if carry from bit 3
-        c->setFlag(FLAG_H);
-    else
-        c->resetFlag(FLAG_H);
-
-    c->setA(c->getA() + n); */
-
 }
 static void add_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
@@ -726,11 +670,7 @@ static void adc_A_HL_ind(Cpu* c) {
 }
 
 static void sub(Cpu* c, unsigned char n) {
-    ////////////
-    //if cpu.registers.A < cpu.registers.A &- reg { cpu.registers.F |= GameBoyRegisters.F_CARRY }
-    //if cpu.registers.A &- reg == 0 { cpu.registers.F |= GameBoyRegisters.F_ZERO }
-    //cpu.registers.A = cpu.registers.A &- reg */
-    ////////////
+
     unsigned short res = c->getA() - n;
 
     if((c->getA() - n) == 0)        //sub = 0
@@ -740,13 +680,12 @@ static void sub(Cpu* c, unsigned char n) {
     
     c->setFlag(FLAG_N);
         
-    if(n > c->getA())  //sub with no borrow //SOSPETTA
-    //if(c->getA() < (c->getA() - n))
+    if(n > c->getA())  //sub with no borrow
         c->setFlag(FLAG_C);
     else
         c->resetFlag(FLAG_C);
     
-    if((c->getA() & 0x0F) < (n & 0x0F))    //if no borrow from bit 4 //SOSPETTA
+    if((c->getA() & 0x0F) < (n & 0x0F))    //if no borrow from bit 4
         c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);
@@ -918,12 +857,12 @@ static void cp(Cpu* c, unsigned char n) {
     c->setFlag(FLAG_N);
         
     if(res < 0)  //sub with no borrow
-        c->setFlag(FLAG_C); /////////////////////////QUAA
+        c->setFlag(FLAG_C);
     else
         c->resetFlag(FLAG_C);
 
     if(((c->getA() & 0x0F) - (n & 0x0F)) < 0)    //if no borrow from bit 4
-        c->setFlag(FLAG_H); //li ho invertiti
+        c->setFlag(FLAG_H);
     else
         c->resetFlag(FLAG_H);
 }
@@ -938,7 +877,6 @@ static void cp_A_n(Cpu* c) {
     unsigned char data = c->readByte(c->getPC());
     c->incPC();
     cp(c, data);
-    //std::cout <<"A: "<<std::hex <<(int) c->getA()<< " data: " << std::hex <<(int) data<< std::endl;
 }
 static void cp_A_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
@@ -972,25 +910,7 @@ static void inc_H(Cpu* c) {c->setH(inc(c, c->getH()));}
 static void inc_L(Cpu* c) {c->setL(inc(c, c->getL()));}
 static void inc_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
-    c->writeByte(addr, inc(c, c->readByte(addr))); //SOSPETTA
-  /*   
-    BYTE n = c->readByte(addr);
-    BYTE res = n + 1;
-    // unsigned char n = c->readByte(addr);
-    // c->setHL(inc(c, n));
-    c->resetFlag(FLAG_N);
-    if(res == 0)        //res = 0
-        c->setFlag(FLAG_Z);
-    else
-        c->resetFlag(FLAG_Z);
-    
-    if((n & 0x0F) == 0x0F)    //if carry from bit 3
-        c->setFlag(FLAG_H);
-    else
-        c->resetFlag(FLAG_H);
-    
-    c->writeByte(addr, res); //SOSPETTA */
-
+    c->writeByte(addr, inc(c, c->readByte(addr)));
 }
 
 static BYTE dec(Cpu* c, unsigned char n) {
@@ -1008,11 +928,6 @@ static BYTE dec(Cpu* c, unsigned char n) {
     else
         c->resetFlag(FLAG_H);
 
-    //FLAG C not affected
-    // if((n - 1) < 0)    //if no borrow from bit 7
-    //     c->resetFlag(FLAG_C);
-    // else
-    //     c->setFlag(FLAG_C);
     return res;
 }
 static void dec_A(Cpu* c) {c->setA(dec(c, c->getA()));}
@@ -1024,12 +939,10 @@ static void dec_H(Cpu* c) {c->setH(dec(c, c->getH()));}
 static void dec_L(Cpu* c) {c->setL(dec(c, c->getL()));}
 static void dec_HL_ind(Cpu* c) {
     WORD addr = c->getHL();
-    c->writeByte(addr, dec(c, c->readByte(addr))); //SOSPETTA
-    // unsigned char n = c->readByte(addr);
-    // c->setHL(dec(c, n));
+    c->writeByte(addr, dec(c, c->readByte(addr)));
 }
 
-static void add_HL(Cpu* c, WORD val) { //v
+static void add_HL(Cpu* c, WORD val) {
     
     unsigned long res = c->getHL() + val;
 
@@ -1041,7 +954,7 @@ static void add_HL(Cpu* c, WORD val) { //v
         c->resetFlag(FLAG_C);
     
     // Set if carry from bit 11
-    if(((c->getHL() & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF) // SOSPETTA
+    if(((c->getHL() & 0x0FFF) + (val & 0x0FFF)) > 0x0FFF)
         c->setFlag(FLAG_H);
 	else
         c->resetFlag(FLAG_H);
@@ -1086,9 +999,7 @@ static void dec_SP(Cpu* c) {c->decSP();};
 static void dec_DE(Cpu* c) {c->setDE(c->getDE() - 1);};
 static void dec_BC(Cpu* c) {c->setBC(c->getBC() - 1);};
 
-// From the manual: Put value nn into n
-// I think it's wrong, better the contrary 
-static BYTE load_nn_n(Cpu* c) { //v
+static BYTE load_nn_n(Cpu* c) {
     BYTE n = c->readByte(c->getPC());
     c->incPC();
     return n;
@@ -1195,7 +1106,6 @@ static void load_L_HL_ind(Cpu* c) {
 static void load_HL_ind_x(Cpu* c, unsigned char n) { //V
     WORD addr = c->getHL();
     c->writeByte(addr, n);
-   // std::cerr <<"load_HL_ind_x "<< std::hex << (int)addr << std::hex << (int)n << std::endl;
 }
 static void load_HL_ind_A(Cpu* c) {load_HL_ind_x(c, c->getA());}
 static void load_HL_ind_B(Cpu* c) {load_HL_ind_x(c, c->getB());}
@@ -1211,13 +1121,12 @@ static void load_HL_ind_n(Cpu* c) {
 }
 
 
-static void load_A_x_ind(Cpu* c, unsigned short  n) { //v
+static void load_A_x_ind(Cpu* c, unsigned short  n) {
     unsigned char res = c->readByte(n);
     c->setA(res);
 }
 static void load_A_BC_ind(Cpu* c) {load_A_x_ind(c, c->getBC());}
 static void load_A_DE_ind(Cpu* c) {load_A_x_ind(c, c->getDE());}
-//static void load_A_HL_ind(Cpu* c) {load_A_x_ind(c, c->getHL());}
 static void load_A_nn_ind(Cpu* c) {
     WORD nn = c->readWord(c->getPC());
     c->incPC();
@@ -1227,22 +1136,11 @@ static void load_A_nn_ind(Cpu* c) {
 
 
 static void load_A_n(Cpu* c, unsigned char n) {c->setA(n);}
-
-//static void load_A_HL_ind(Cpu* c) {load_A_x_ind(c, c->getHL());}
-
-/* static void load_B_A(Cpu* c) {c->setB(c->getA());}
-static void load_C_A(Cpu* c) {c->setC(c->getA());}
-static void load_D_A(Cpu* c) {c->setD(c->getA());}
-static void load_E_A(Cpu* c) {c->setE(c->getA());}
-static void load_H_A(Cpu* c) {c->setH(c->getA());}
-static void load_L_A(Cpu* c) {c->setL(c->getA());} */
-
 static void load_xx_ind_A(Cpu* c, unsigned short addr) {
     c->writeByte(addr, c->getA());
 }
 static void load_BC_ind_A(Cpu* c) {load_xx_ind_A(c, c->getBC());}
 static void load_DE_ind_A(Cpu* c) {load_xx_ind_A(c, c->getDE());}
-//static void load_HL_ind_A(Cpu* c) {load_xx_ind_A(c, c->getHL());}
 static void load_nn_ind_A(Cpu* c) {
     WORD nn = c->readWord(c->getPC());
     c->incPC();
@@ -1260,23 +1158,11 @@ static void load_C_ind_A(Cpu* c) {
     c->writeByte(addr, c->getA());
 }
 
-/* static void load_A_HLD_ind(Cpu* c) {
-    loadd_A_HL_ind(c);
-}
-static void load_A_HL__ind(Cpu* c) {
-    loadd_A_HL_ind(c);
-} */
 static void loadd_A_HL_ind(Cpu* c) {
     load_A_HL_ind(c);
     dec_HL(c);
 }
 
-/* static void load_HLD_ind_A(Cpu* c) {
-    loadd_HL_ind_A(c);
-}
-static void loadHL__ind_A(Cpu* c) {
-    loadd_HL_ind_A(c);
-} */
 static void loadd_HL_ind_A(Cpu* c) {
     load_HL_ind_A(c);
     dec_HL(c);
@@ -1301,14 +1187,11 @@ static void loadh_n_ind_A(Cpu* c) {
 static void loadh_A_n_ind(Cpu* c) {
     BYTE n = c->readByte(c->getPC());
     c->incPC();
-    // std::cout << "\n A = " << (int)(0xff00+n);
-
-    c->setA(c->readByte(0xFF00 + n)); //MA é un BYTE A!!!
-    //std::cout <<" LDH A a8: "<< std::hex << (int)n << "readbyte: "<<std::hex<< (int)(c->readByte(0xFF00 + n)) << " A = " <<std::hex<<(int) c->getA()<< std::endl;
+    c->setA(c->readByte(0xFF00 + n));
 }
 
 // Put value nn into n
-static WORD load_n_nn(Cpu* c) { //v
+static WORD load_n_nn(Cpu* c) {
     WORD nn = c->readWord(c->getPC());
     c->incPC();
     c->incPC();
@@ -1324,7 +1207,7 @@ static void load_SP_HL(Cpu* c) {
     c->setSP(c->getHL());
 }
 
-// Put SP + n effective address into HL.
+// Put SP + n effective address into HL
 static void loadhl_SP_n(Cpu* c) {
 
     signed char n = c->readByte(c->getPC());
@@ -1356,7 +1239,6 @@ static void load_nn_SP(Cpu* c) {
     c->incPC();
     c->incPC();
     c->writeWord(nn, c->getSP());
-    //dovrebbe essere c->setSP(nn);
 }
 
 
@@ -1481,11 +1363,10 @@ static void scf(Cpu* c) {
     c->resetFlag(FLAG_N);
 }
 static void nop(Cpu* c) {}
-static void halt(Cpu* c) { //SOSPETTO
+static void halt(Cpu* c) {
     //c->setHalt();
    if(c->isIntMasterEnable()){
         c->setHalt();
-        //std::cerr << "HALT\n";
     }
     else if (!c->isIntMasterEnable() && ((c->readByte(IRR_ADD) & c->readByte(IER_ADD) & 0x1F) == 0)){
         c->setHalt();
@@ -1509,10 +1390,7 @@ static BYTE rlc(Cpu* c, unsigned char a) {
 
     a <<= 1;
     a += carry;
-    // if(a == 0)
-    //     c->setFlag(FLAG_Z);
-    // else
-        c->resetFlag(FLAG_Z);
+    c->resetFlag(FLAG_Z);
     
     return a;
 }
@@ -1657,7 +1535,7 @@ static void rrc_HL_ind(Cpu* c) {
     c->writeByte(addr, res);
 }
 
-static BYTE rr(Cpu* c, unsigned char a) { //v
+static BYTE rr(Cpu* c, unsigned char a) {
     c->resetFlag(FLAG_N);
     c->resetFlag(FLAG_H);
 
@@ -1676,7 +1554,7 @@ static BYTE rr(Cpu* c, unsigned char a) { //v
     return a;
 }
 
-static BYTE rr_n(Cpu* c, unsigned char a) { //v
+static BYTE rr_n(Cpu* c, unsigned char a) {
     c->resetFlag(FLAG_N);
     c->resetFlag(FLAG_H);
 
@@ -1819,9 +1697,6 @@ static void bit_b_r(Cpu* c, unsigned char r, unsigned char b) {
     c->resetFlag(FLAG_N);
     c->setFlag(FLAG_H);
 
-    //BYTE b = c->readByte(c->getPC());
-    //c->incPC();//??? va tolto
-
     b = (r >> b) & 0x01;
     if(!b)
         c->setFlag(FLAG_Z);
@@ -1931,12 +1806,8 @@ static void bit_HL_ind_7(Cpu* c) {
 
 static BYTE set_b_r(Cpu* c, unsigned char r, unsigned char b) {
 
-    //BYTE b = c->readByte(c->getPC());
-    // c->incPC(); // ??? va tolto
-
     BYTE temp = (1 << b);
-
-    return (r |= temp); // ci va temp non b
+    return (r |= temp);
 }
 static void set_A_0(Cpu* c) {c->setA(set_b_r(c, c->getA(), 0));}
 static void set_A_1(Cpu* c) {c->setA(set_b_r(c, c->getA(), 1));}
@@ -2048,12 +1919,8 @@ static void set_HL_ind_7(Cpu* c) {
 
 static BYTE res_b_r(Cpu* c, unsigned char r, unsigned char b) {
 
-    //BYTE b = c->readByte(c->getPC());
-    //c->incPC(); // ?? VA TOLTO
-    
     BYTE temp = (1 << b);
-
-    return (r &= ~temp); // ci va temp non b
+    return (r &= ~temp);
 }
 static void res_A_0(Cpu* c) {c->setA(res_b_r(c, c->getA(), 0));}
 static void res_A_1(Cpu* c) {c->setA(res_b_r(c, c->getA(), 1));}
@@ -2224,12 +2091,10 @@ static void jp_hl_ind(Cpu* c) {
 }
 
 
-static void jr(Cpu* c) { //v
+static void jr(Cpu* c) {
+
     signed char n = c->readByte(c->getPC());
-    //c->incPC();
-    //std::cout<<std::hex<<"n: "<<(int)n;
     c->setPC(c->getPC() + (signed char)n + 1);
-//    / std::cout << " dopo: "<< c->getPC()<< " n: "<<(int)n << std::endl ;
 }
 static void jr_nz(Cpu* c) {
     if(!c->isFLAG_Zero()){
@@ -2272,7 +2137,6 @@ static void jr_c(Cpu* c) {
     }
 }
 static void call(Cpu* c) {
-    //WORD oldPC = c->readWord(c->getPC());
     c->pushWord(c->getPC() + 2); //next instruction 
     jp(c);
 }
@@ -2336,8 +2200,6 @@ static void rst_38(Cpu* c) {rst(c, 0x38);}
 
 static void ret(Cpu* c) {
     WORD addr = c->popWord();
-    //std::cerr<< "PC ORA: " << std::hex << (int)addr;
-    //exit(1);
     c->setPC(addr);
 }
 static void ret_nz(Cpu* c) {
@@ -2391,9 +2253,3 @@ static void cb(Cpu* c) {
 
     c->getInstrSetCBPrefixAt(opcode).function(c);
 }
-
-
-
-
-
-

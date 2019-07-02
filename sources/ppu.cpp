@@ -1,8 +1,6 @@
 #include "../includes/ppu.hpp"
 #include <iostream>
 
-//#include <algorithm>
-
 Ppu::Ppu(Memory* t_memory): memory(t_memory), pixelInfoBuffer(160*144, {0, BG}){
     pixelFormat = SDL_AllocFormat(SDL_PIXELFORMAT_RGB888);
     RGBColor white = WHITE;
@@ -15,7 +13,6 @@ void Ppu::renderLine(BYTE t_currentline){
     //if bit 0 of FF40 is 1 then
     if(LCDcontrolRegister & 0x01){ // bit 0
         renderBGWindowLine(t_currentline);
-        //std::cout<< "BG--------\n";
     }
     else{
         RGBColor white = WHITE;
@@ -51,27 +48,24 @@ pixel Ppu::toPixels(WORD t_lineOfTile, BYTE t_palette, bool flipX, int i){
     BYTE data1 = t_lineOfTile >> 8;
     int k;
 
-    //for(int i = 0; i < 8; ++i) {
-        // remember 7-1, otherwise tiles flip
-        k = (flipX) ? i : (7 - i);
-        
-        BYTE lsb = (data0 & (1 << k)) >> k;
-        BYTE msb = (data1 & (1 << k)) >> k;
-        //RGBColor rgb = getRGBColor(((msb << 1) + lsb) >> 2*i);
-        BYTE b;
-        //If is a sprite I have to change the bits (I do not why, but it works)
-        if(t_palette < 2){
-             b = (lsb<< 1) + msb;
-        }
-        else{       
-            b  = (msb << 1) + lsb;
-        }
-        RGBColor rgb = getRGBColor(b, palette);
+    k = (flipX) ? i : (7 - i);
+    
+    BYTE lsb = (data0 & (1 << k)) >> k;
+    BYTE msb = (data1 & (1 << k)) >> k;
+    BYTE b;
+    //If is a sprite I have to change the bits (I do not why, but it works)
+    if(t_palette < 2){
+            b = (lsb<< 1) + msb;
+    }
+    else{       
+        b  = (msb << 1) + lsb;
+    }
+    RGBColor rgb = getRGBColor(b, palette);
 
-        //to keep the information about the current item on the screen
-        sourceType type = (t_palette == 2) ? BG : SP;
-        pixel p = {rgb, {b, type}};
-    //}
+    //to keep the information about the current item on the screen
+    sourceType type = (t_palette == 2) ? BG : SP;
+    pixel p = {rgb, {b, type}};
+
     return p;
 }
 
@@ -97,7 +91,6 @@ RGBColor Ppu::getRGBColor(BYTE t_colorID, BYTE palette) {
 
     palette >>= (t_colorID*2); 
     
-    
     RGBColor color = getColorFromPaletteID(palette);
     return color;
 
@@ -118,7 +111,7 @@ RGBColor Ppu::getColorFromPaletteID(BYTE t_paletteID) {
     }     
 }
 
-void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, sourceType t_type){    //type = 0 -> BG, type = 1 -> Sprite
+void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, sourceType t_type){ //type = 0 ->BG, type = 1 ->Sprite
     BYTE controlRegister = getLCDControlRegister();
     WORD lineOfATile;
     signed char signedTileID;
@@ -155,10 +148,9 @@ void Ppu::fillLineOfTile(BYTE t_tileID, int i, BYTE t_currentline, sourceType t_
     }
 }
 
-
 void Ppu::renderBGWindowLine(BYTE t_currentline){
-    BYTE scrollY = getScrollY();// >> 3;
-    BYTE scrollX = getScrollX();// >> 3;  
+    BYTE scrollY = getScrollY();
+    BYTE scrollX = getScrollX();  
     BYTE LCDcontrolRegister = getLCDControlRegister();    
     WORD BGMemoryStart = LCDcontrolRegister & 0x08 ? 0x9C00 : 0x9800;
     
@@ -182,7 +174,6 @@ void Ppu::renderBGWindowLine(BYTE t_currentline){
     }
 }
 
-
 //return sprite info
 sprite Ppu::getSprite(BYTE spriteNum) {
     WORD spriteAddr = 0xFE00 + 4*spriteNum;
@@ -198,7 +189,7 @@ pixel Ppu::getSpritePixel(sprite t_sprite, BYTE t_currentline, int j) {
 
     pixel pixelOfASprite;
     WORD lineOfASprite;
-    WORD spriteStartAddr = 0x8000 + 16*t_sprite.patternNum; //sprites start at 80000 ALWAYS
+    WORD spriteStartAddr = 0x8000 + 16*t_sprite.patternNum; //sprites ALWAYS start at 8000
     bool flipOnX = isFlippedX(t_sprite.attribs);
     bool flipOnY = isFlippedY(t_sprite.attribs);
     WORD offset;
@@ -223,14 +214,14 @@ void Ppu::renderSpriteLine(BYTE t_currentline) {
     int spriteCount=0;    
     BYTE height;
   
-    //for every sprite..
+    //for every sprite
     for(int i = 0; i < 40; ++i) {
         spriteData = Ppu::getSprite(i);
         getLCDControlRegister() & 0x04 ? height = 16: height = 8;  //sprite height (8x8 || 8x16)
 
         if((t_currentline >= spriteData.posY) && (t_currentline < spriteData.posY + height)) { // scanline is over a sprite
             if (spriteCount++ > 9) break; // Max 10 sprites per line
-            for(int j = 0; j < 8; ++j) { // * pixel
+            for(int j = 0; j < 8; ++j) { // per pixel
                 spritePixel = Ppu::getSpritePixel(spriteData, t_currentline, j);  
                 int offset = (t_currentline)*160 + spriteData.posX + j;
                 if (offset >= 0 && offset < (160*144) && checkBufferPriority(spriteData.attribs, spritePixel.info, pixelInfoBuffer[offset])) {

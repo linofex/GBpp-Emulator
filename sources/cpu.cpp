@@ -28,9 +28,9 @@ Cpu::Cpu(Memory* m) {
 Cpu::~Cpu(void) {
 }
 
-void Cpu::initInstructions() {
-    init(instrSet);
-    initCBPrefix(instrSetCBPrefix);
+void Cpu::initInstructions() {          //loads the maps (hash=opcode, value=instruction) for both the instruction sets
+    init(instrSet);                     //standard instruction
+    initCBPrefix(instrSetCBPrefix);     //CB prefix instruction
 }
 
 struct instruction Cpu::getInstrSetAt(BYTE t_opcode) {
@@ -98,12 +98,16 @@ BYTE Cpu::step() {
     else if(isStopped()){
         return getInstrSetAt(0x10).cycles;
     }
-
-    // boot phase ended, reset the CPU and registers
+ 
+    // boot phase ended, reset the CPU and registers to their initial values.
+    // When the GameBoy is powered up, a 256 byte program starting at memory location 0 is executed, and is 
+    // located in a ROM. The program read the cartridge locations from $104 to $133 and place this graphic of
+    // a Nintendo logo on the screen at the top, then is scrolled down.
     if(pc == 0xFE && memory->isBooting()){
         memory->resetBootPhase();
         reset();
     }
+
     opcode = Cpu::fetch();
     instruction instr = Cpu::decode(opcode);
     BYTE cycles = Cpu::execute(instr);
@@ -114,7 +118,7 @@ BYTE Cpu::step() {
     return cycles;
 }
 
-void Cpu::reset() {
+void Cpu::reset() {     //first initialization of the registers and some special memory locations
 
     //initialization of special registers
     pc = 0x100;
@@ -164,20 +168,19 @@ void Cpu::reset() {
     stop = false;
 }
 
-BYTE Cpu::fetch(void) {
+BYTE Cpu::fetch(void) {     //read from the memory the BYTE pointed by the Program Counter, then increments PC
     BYTE opcode = memory->readByte(pc);
     incPC();
     return opcode;
 }
 
-struct instruction Cpu::decode(BYTE opcode) {
-    return instrSet.at(opcode);
+struct instruction Cpu::decode(BYTE opcode) {   //uses the given opcode as a key for the instructionSet map
+    return instrSet.at(opcode);                 //return an Instruction struct
 }
 
-BYTE Cpu::execute(instruction instr) {
+BYTE Cpu::execute(instruction instr) {      //execute the function of the instruction struct through a function pointer
     instr.function(this);
-    //return clock cycles to update the counter
-    return instr.cycles;
+    return instr.cycles;                    //return clock cycles to update the counter for synchronization
 }
 
 void Cpu::pushWord(WORD t_val) { 

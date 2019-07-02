@@ -8,17 +8,16 @@
 class Cpu;
 
 struct instruction {
-    std::string name;
-    BYTE cycles;
-    void (*function)(Cpu*);
+    std::string name;           //name of the instruction
+    BYTE cycles;                //clock cycles needed to be executed
+    void (*function)(Cpu*);     //pointer to the function to be emulated
 
     //constructor
     instruction(std::string, BYTE, void(*)(Cpu*));
 };
-//std::map<unsigned char, instruction> instrSet;
+
 void init(std::map<unsigned char, instruction>&);
 void initCBPrefix(std::map<unsigned char, instruction>&);
-//instruction getInstr(unsigned char);
 
 
 //________________________________ 8/bit Arithmetic_____________________________

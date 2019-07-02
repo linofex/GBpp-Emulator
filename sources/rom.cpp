@@ -12,8 +12,8 @@ Rom::Rom(){}
 Rom::~Rom(){
 }
 
-Rom::Rom (const std::string t_RomFileName){                
-    RomFileName =t_RomFileName;
+Rom::Rom(const std::string t_RomFileName){                
+    RomFileName = t_RomFileName;
 }
 
 
@@ -38,7 +38,7 @@ BYTE Rom::getRomByte(BYTE t_currentRomBank, WORD t_addr){
     return game.at(t_currentRomBank*0x4000 + t_addr);
 }
 
-void Rom::printRomName() const{
+void Rom::printRomName() const {
     std::vector<BYTE>::const_iterator it = game.begin() + 0x0134;
     for (; it <= game.begin() + 0x0142; ++it){std::cout << *it;}
     std::cout << std::endl;

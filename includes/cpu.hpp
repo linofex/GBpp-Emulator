@@ -24,23 +24,24 @@ class Cpu {
         REGISTER regBC;
         REGISTER regDE;
         REGISTER regHL;
+        
         unsigned long clockCycles;
     
-        //map for the instructions
-        std::map<unsigned char, struct instruction> instrSet;
-        void initInstructions(void);
-        std::map<unsigned char, struct instruction> instrSetCBPrefix;
+        
+        std::map<unsigned char, struct instruction> instrSet;           //map for the instructions
+        std::map<unsigned char, struct instruction> instrSetCBPrefix;   //map for the extended instructions
+        void initInstructions(void);      //creates the two maps
 
         //interrupt master enable
         bool intMasterEnable; //an interrupt can only be served IFF this is TRUE
         
-        BYTE opcode;        
+        BYTE opcode;
         BYTE lastOpcode;
         
         bool halt; //use to halt the CPU after HALT instruction
         bool stop; //use to stop the CPU after STOP instruction
 
-        //execution functions
+        //CPU step functions
         BYTE fetch(void);
         struct instruction decode(BYTE);
         BYTE execute(instruction);
@@ -132,9 +133,6 @@ class Cpu {
         inline void addClockCycles(int t_clock){clockCycles += t_clock;}
         inline void resetClockCycles(void){clockCycles = 0;}
         
-
-
-
 };
 
 #endif

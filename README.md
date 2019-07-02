@@ -3,7 +3,13 @@ A GameBoy emulator written in C++. This project was developed for the "Emulation
 
 It works on Linux and Windows platforms. 
 
-It requires SDL_2 library for graphic, timing, and inputs from keyboard. (For Windows users this library is already present in the ./SDL2 folder of this project)
+It requires SDL_2 library for graphic, timing, and inputs from keyboard.
+
+For Windows users this library is already present in the ./SDL2 folder of this project
+
+For Linux users:
+- Using apt-get `sudo apt-get install libsdl2-dev`
+- From [source](https://www.libsdl.org/download-2.0.php). Then `./configure`, `make all` and `sudo make install` 
 
 ## Useful links
 

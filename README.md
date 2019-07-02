@@ -1,7 +1,9 @@
 # GBC-Emulator
-A GameBoy emulator written in C++. It works on Linux and Windows platforms.
+A GameBoy emulator written in C++. This project was developed for the "Emulation and virtualization" course at University of Pisa.
 
-It requires SDL_2 for graphic, timing, and inputs from keyboard 
+It works on Linux and Windows platforms. 
+
+It requires SDL_2 library for graphic, timing, and inputs from keyboard. (For Windows users this library is already present in the ./SDL2 folder of this project)
 
 ## Useful links
 
@@ -38,20 +40,20 @@ It requires SDL_2 for graphic, timing, and inputs from keyboard
 - tetris
 - battle city
 - shangay
-- Dr.Mario (only some sprites are too fast)
+- Dr.Mario (only some sprites move too fast, but fully playable)
 - harmony
 - serpent
 - Q Billion
 
-## Not working games
+## Not fully working games
 - space invaders is too fast
 - pop up is a bit slow
 
-## To Do
+## TO DO
 - Implement ROM and RAM banking to support ROMs larger than 32kB
 - Implement sound emulation
-- Find bugs of sprites priority 
 - Try new games
+- Find new bugs
 
 ## Build
 run `make gameboy` from both Linux and Windows inside the main directory
@@ -60,4 +62,11 @@ run `make gameboy` from both Linux and Windows inside the main directory
 `cd path_to_GBpp-Emulator`, then`./gameboy gameboy_rom.gb` for Linux
  
  ## Screenshots
+ <img src="https://github.com/linofex/GBpp-Emulator/blob/master/screenshots/boot.gif" height="200" width="200"> <img src="https://github.com/linofex/GBpp-Emulator/blob/master/screenshots/battle_city.png" height="200" width="200"> 
  
+<img src="https://github.com/linofex/GBpp-Emulator/blob/master/screenshots/tetris.png" height="200" width="200"> <img src="https://github.com/linofex/GBpp-Emulator/blob/master/screenshots/tetris.gif" height="200" width="200">  
+
+## Contributors
+Fabio Condomitti - [@fcondo](https://github.com/fcondo)
+
+Alessandro Noferi - [@linofex](https://github.com/linofex)

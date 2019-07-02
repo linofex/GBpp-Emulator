@@ -41,6 +41,8 @@ For Linux users:
 | RIGHT  |  right key  |
 | START  | space bar  |
 | SELECT  | b  |
+| SHUTDOWN  | q  |
+
 
 ## Working games
 - tetris

@@ -3,14 +3,6 @@ A GameBoy emulator written in C++. This project was developed for the "Emulation
 
 It works on Linux and Windows platforms. 
 
-It requires SDL_2 library for graphic, timing, and inputs from keyboard.
-
-For Windows users this library is already present in the ./SDL2 folder of this project
-
-For Linux users:
-- Using apt-get `sudo apt-get install libsdl2-dev`
-- From [source](https://www.libsdl.org/download-2.0.php). Then `./configure`, `make all` and `sudo make install` 
-
 ## Useful links
 
 - Pandocs specification. Everything You Always Wanted To Know About GAMEBOY - [link](http://bgb.bircd.org/pandocs.htm)
@@ -41,6 +33,8 @@ For Linux users:
 | RIGHT  |  right key  |
 | START  | space bar  |
 | SELECT  | b  |
+| SHUTDOWN  | q  |
+
 
 ## Working games
 - tetris
@@ -61,11 +55,23 @@ For Linux users:
 - Try new games
 - Find new bugs
 
+
+## SDL 2 
+It requires SDL_2 library for graphic, timing, and inputs from keyboard - [link](https://www.libsdl.org/)
+
+For Windows users this library is already present in the ./SDL2 folder of this project
+
+For Linux users:
+- Using apt-get `sudo apt-get install libsdl2-dev`
+- From [source](https://www.libsdl.org/download-2.0.php). Then `./configure`, `make all` and `sudo make install` 
+
 ## Build
 run `make gameboy` from both Linux and Windows inside the main directory
 
 ## Usage
-`cd path_to_GBpp-Emulator`, then `./gameboy gameboy_rom.gb` for Linux or `.\gameboy.exe gameboy_rom.gb` for Windows
+Put the rom in the `roms` folder.
+
+Move to the `GBpp-Emulator` folder, then `./gameboy gameboy_rom.gb` for Linux or `.\gameboy.exe gameboy_rom.gb` for Windows
  
  ## Screenshots
  <img src="https://github.com/linofex/GBpp-Emulator/blob/master/screenshots/boot.gif" height="200" width="200"> <img src="https://github.com/linofex/GBpp-Emulator/blob/master/screenshots/battle_city.png" height="200" width="200"> 
@@ -76,3 +82,4 @@ run `make gameboy` from both Linux and Windows inside the main directory
 Fabio Condomitti - [@fcondo](https://github.com/fcondo)
 
 Alessandro Noferi - [@linofex](https://github.com/linofex)
+ 

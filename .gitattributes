@@ -1,2 +1,2 @@
 * linguist-vendored
-*.h linguist-vendored=false
+*.cc linguist-vendored=false

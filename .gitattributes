@@ -1,2 +1,6 @@
-* linguist-vendored
-*.cpp linguist-vendored=false
+SDL2/* linguist-vendored
+includes/* linguist-vendored
+roms/* linguist-vendored
+screenshots/* linguist-vendored
+
+
